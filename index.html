@@ -3,23 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Portfolio</title>
-    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Artist Portfolio</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header>
-        <h1>Your Name</h1>
-        <p>Artist Portfolio</p>
-    </header>
-    <section id="gallery">
-        <h2>My Paintings</h2>
-        <div class="artwork">
-            <img src="images/your-painting1.jpg" alt="Artwork 1">
-            <p>Artwork Title 1</p>
+<body class="bg-gray-100 h-screen m-0 p-0">
+    <div class="relative w-full h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('assets/banner/test.jpeg');">
+        <!-- Menu and content -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <button 
+                id="menu-button" 
+                class="bg-gray-800 text-white px-8 py-4 text-lg rounded-md focus:outline-none"
+                onclick="toggleMenu()">
+                Menu
+            </button>
+            <ul id="menu" class="mt-4">
+                <li class="bg-gray-800 rounded-md mb-2">
+                    <a href="content/biography.html" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Biography</a>
+                </li>
+                <li class="bg-gray-800 rounded-md mb-2">
+                    <a href="#painting" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Painting</a>
+                </li>
+                <li class="bg-gray-800 rounded-md">
+                    <a href="#exhibitions" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Exhibitions</a>
+                </li>
+            </ul>
         </div>
-    </section>
-    <footer>
-        <p>&copy; 2024 Your Name</p>
-    </footer>
+    </div>
+
+
+
+    <script src="script.js"></script>
 </body>
 </html>

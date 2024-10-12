@@ -1,0 +1,139 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.banner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    background-color: #f5f5f5;
+}
+
+.banner-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+/* Accordion styles */
+.accordion-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.accordion {
+    background-color: #f1f1f1;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    transition: 0.4s;
+    margin-bottom: 10px;
+}
+
+.accordion:hover {
+    background-color: #ddd;
+}
+
+.accordion:after {
+    content: '\002B'; /* Unicode character for "+" sign */
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\2212"; /* Unicode character for "-" sign */
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.nav-button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    outline: none;
+}
+
+.nav-button:hover {
+    background-color: #555;
+}
+
+.nav-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: none;
+    text-align: center;
+}
+
+.nav-list li {
+    background-color: #333;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.nav-list li a {
+    display: block;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.nav-list li a:hover {
+    background-color: #555;
+}
+
+.bg-landing {
+    background-image: url('assets/banner/test.jpeg');
+}
+
+#menu {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+    max-height: 0; /* Start collapsed */
+    opacity: 0; /* Start hidden */
+}
+
+#menu.expanded {
+    max-height: 200px; /* Set a maximum height for expansion */
+    opacity: 1; /* Show the menu */
+}
