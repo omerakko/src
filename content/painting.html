@@ -56,7 +56,20 @@ const camera = new THREE.PerspectiveCamera();
 camera.matrixAutoUpdate = false;
 
 // Initialize a WebXR session using "immersive-ar".
-const session = await navigator.xr.requestSession("immersive-ar");
+const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor'] })
+  .then(session => {
+    // Session successfully created
+  })
+  .catch(error => {
+    if (error.name === 'NotSupportedError') {
+      // Handle the error, e.g., try a different session mode or reference space type
+      console.error('Session configuration not supported:', error);
+    } else {
+      // Handle other errors
+      console.error('An error occurred:', error);
+    }
+  });
+
 session.updateRenderState({
   baseLayer: new XRWebGLLayer(session, gl)
 });
