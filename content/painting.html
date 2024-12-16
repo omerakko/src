@@ -45,14 +45,12 @@
 
          <div style="width: 100%; height: 100%; margin: 0; padding: 0;" xr="fullwindow">
             <a-scene embedded xrweb>
-                <!-- Place your image as a plane -->
                 <a-plane 
-                    src="https://proxy.cors.sh/https://via.placeholder.com/800x450.png?text=Sample+Image"
-                    position="0 0 -2"
+                    src="https://proxy.cors.sh/https://via.placeholder.com/800x450.png?text=Sample+Image" 
+                    position="0 0 -2" 
                     width="1.5" 
                     height="1">
                 </a-plane>
-                <!-- Camera -->
                 <a-camera></a-camera>
             </a-scene>
         </div>
@@ -62,12 +60,11 @@
 
 
     <script>
-        // 8th Wall Initialization
         XR8.addCameraPipelineModules([
             XRExtras.RuntimeError.pipelineModule(),
             XR8.Canvas.pipelineModule(),
         ]);
-        XR8.run({canvas: document.querySelector('canvas')});
+        XR8.run();
     </script>
             
 
