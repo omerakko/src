@@ -15,18 +15,15 @@
 
 <body style="margin: 0; overflow: hidden;">
   <!-- A-Frame Scene -->
-  <a-scene 
-  embedded 
-  arjs="sourceType: webcam;" 
-  vr-mode-ui="enabled: false"
->
-  <a-plane 
-    src="../assets/images/test.jpeg" 
-    position="0 0 -2" 
-    width="5.5" 
-    height="1"
-    rotation="0 0 0"
-  ></a-plane>
+  <a-scene arjs="sourceType: webcam; scale: 0.5;" vr-mode-ui="enabled: false">
+
+<a-plane 
+src="../assets/images/test.jpeg" 
+position="0 0 -2"
+width="1.5" 
+height="1"
+rotation="0 0 0">
+</a-plane>
   <a-camera></a-camera>
 </a-scene>
 
