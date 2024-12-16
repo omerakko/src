@@ -58,6 +58,10 @@ camera.matrixAutoUpdate = false;
 // Initialize a WebXR session using "immersive-ar".
 const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor'] })
   .then(session => {
+
+    session.updateRenderState({
+  baseLayer: new XRWebGLLayer(session, gl)
+});
     // Session successfully created
   })
   .catch(error => {
@@ -70,9 +74,9 @@ const session = await navigator.xr.requestSession('immersive-vr', { optionalFeat
     }
   });
 
-session.updateRenderState({
-  baseLayer: new XRWebGLLayer(session, gl)
-});
+
+
+
 
 // A 'local' reference space has a native origin that is located
 // near the viewer's position at the time the session was created.
