@@ -1,7 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
   <meta charset="UTF-8">
+<<<<<<< web_AR_v1
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>AR Wall-Fitting Image</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+  <!-- AR.js for markerless AR -->
+  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
+
+  <script>
+    AFRAME.registerComponent('dynamic-scale', {
+      schema: { targetWidth: { type: 'number', default: 1.5 } },
+
+      init: function () {
+        this.camera = document.querySelector('[gps-camera]');
+        this.imagePlane = this.el; // The entity using this component
+      },
+
+      tick: function () {
+        if (!this.camera || !this.imagePlane) return;
+
+        // Get distance from the camera to the object
+        const cameraPosition = this.camera.object3D.position;
+        const planePosition = this.imagePlane.object3D.position;
+        const distance = cameraPosition.distanceTo(planePosition);
+
+        // Dynamically scale the image based on the distance
+        const scaleFactor = distance / 2; // Adjust the divisor to fine-tune scaling
+        this.imagePlane.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+      }
+    });
+  </script>
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+  <!-- A-Frame Scene -->
+  <a-scene arjs="sourceType: webcam; scale: 0.5;" vr-mode-ui="enabled: false">
+    
+    <!-- Dynamically Scaling Plane -->
+    <a-plane 
+      src="../assets/images/test.jpeg" 
+      position="0 1 -3"  <!-- Initial position, adjust height (Y-axis) -->
+      width="1.5" 
+      height="1"
+      dynamic-scale  <!-- Attach the scaling component -->
+      rotation="0 0 0">
+    </a-plane>
+
+    <!-- AR.js Camera -->
+    <a-camera gps-camera rotation-reader></a-camera>
+  </a-scene>
+=======
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebXR Polyfill with Modules</title>
 </head>
@@ -56,5 +110,6 @@
     renderer.render(scene, camera);
   }
 </script>
+>>>>>>> main
 </body>
 </html>
