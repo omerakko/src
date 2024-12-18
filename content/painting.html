@@ -7,47 +7,28 @@
         content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
   <title>AR Wall-Fitting Image Centered</title>
 
-  <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <!-- Model Viewer -->
+  <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-  <!-- AR.js for markerless AR -->
-  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
-
-  <script>
-    AFRAME.registerComponent('centered-image', {
-      init: function () {
-        this.camera = document.querySelector('[gps-camera]');
-        this.imagePlane = this.el; // The entity using this component
-      },
-
-      tick: function (time, delta) {
-        if (!this.camera || !this.imagePlane) return;
-
-        // Position the image plane at the screen center
-        const cameraPos = this.camera.object3D.position;
-        this.imagePlane.setAttribute('position', '0 0 -2'); // Adjust the Z position as needed to place in front of the camera
-      }
-    });
-  </script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
-  <!-- A-Frame Scene -->
-  <a-scene arjs="sourceType: webcam; scale: 0.5;" vr-mode-ui="enabled: false">
-    
-    <!-- Centered Image Plane -->
-    <a-plane 
-      src="../assets/images/test.jpeg" 
-      position="0 0 0"  
-      width="1.5" 
-      height="1"
-      centered-image  
-      rotation="0 0 0">
-    </a-plane>
-
-    <!-- AR.js Camera -->
-    <a-camera gps-camera rotation-reader></a-camera>
-  </a-scene>
-
+<body>
+  <!-- AR Scene using Model Viewer -->
+  <model-viewer 
+    src="../../assets/images/test.jpeg" 
+    alt="An image of some wall art" 
+    ar 
+    ar-placement="wall" 
+    camera-controls 
+    touch-action="pan-y" 
+    scale="0.5"  
+    style="width: 100%; height: 100%;">
+  </model-viewer>
 </body>
 </html>
