@@ -7,8 +7,9 @@
         content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
   <title>AR Wall-Fitting Image Centered</title>
 
-  <!-- Model Viewer with Polyfill for ES6 modules -->
+  <!-- Web Components Polyfill for ES6 module support -->
   <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <!-- Model Viewer Library -->
   <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
@@ -22,13 +23,13 @@
 <body>
   <!-- AR Scene using Model Viewer -->
   <model-viewer 
-  src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+    src="../../assets/images/test.jpeg" 
     alt="An image of some wall art" 
     ar 
     ar-placement="wall" 
     camera-controls 
     touch-action="pan-y" 
-    scale="0.5"  
+    scale="0.5"  <!-- Initial scale factor -->
     style="width: 100%; height: 100%;">
   </model-viewer>
 </body>
