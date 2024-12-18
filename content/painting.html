@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
 
   <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>AR Wall-Fitting Image Centered</title>
+        content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
+  <title>AR Wall-Fitting Image Centered with Touch Scale Adjustment</title>
 
   <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -20,24 +20,45 @@
       init: function () {
         this.camera = document.querySelector('[gps-camera]');
         this.imagePlane = this.el; // The entity using this component
+        this.initialDistance = 2; // Initial placement distance from the camera
+        this.scaleFactor = 1; // Initial scale factor
       },
 
       tick: function (time, delta) {
         if (!this.camera || !this.imagePlane) return;
 
-        // Calculate the center position of the screen
+        // Calculate the screen center position in front of the camera
         const cameraPos = this.camera.object3D.position;
-        const screenCenter = new THREE.Vector3(0, 0, -2); // Adjust `-2` based on how far in front of the camera you want to place the image
-
-        // Set the image plane's position to the screen center
+        const screenCenter = new THREE.Vector3(0, 0, -this.initialDistance); // Adjust `-2` for placement distance
         this.imagePlane.setAttribute('position', screenCenter);
 
-        // Calculate distance from camera to image plane
+        // Scale the image based on camera distance
         const distance = cameraPos.distanceTo(this.imagePlane.object3D.position);
-        const scaleFactor = Math.max(0.5, Math.min(2, distance / 2)); // Adjust the divisor to fine-tune scaling
+        const scale = Math.max(0.5, Math.min(5, distance / 2)); // Adjust scaling range as needed
+        this.scaleFactor = scale;
+        this.imagePlane.setAttribute('scale', `${scale} ${scale} ${scale}`);
+      },
 
-        // Scale the image plane accordingly
-        this.imagePlane.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+      events: {
+        'touchstart': function (evt) {
+          this.startScale = this.scaleFactor;
+          this.startTouchDistance = this.getTouchDistance(evt.touches);
+        },
+
+        'touchmove': function (evt) {
+          if (evt.touches.length === 2) {
+            const currentTouchDistance = this.getTouchDistance(evt.touches);
+            const scaleChange = currentTouchDistance / this.startTouchDistance;
+            this.scaleFactor = Math.max(0.5, Math.min(5, this.startScale * scaleChange));
+            this.imagePlane.setAttribute('scale', `${this.scaleFactor} ${this.scaleFactor} ${this.scaleFactor}`);
+          }
+        }
+      },
+
+      getTouchDistance: function (touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
       }
     });
   </script>
@@ -47,7 +68,7 @@
   <!-- A-Frame Scene -->
   <a-scene arjs="sourceType: webcam; scale: 0.5;" vr-mode-ui="enabled: false">
     
-    <!-- Dynamically Scaling and Centering Plane -->
+    <!-- Dynamically Scaling and Centering Plane with Touch Adjustment -->
     <a-plane 
       src="../assets/images/test.jpeg" 
       position="0 0 0"  // Initially place the image at the center of the screen
