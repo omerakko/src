@@ -25,24 +25,18 @@
       tick: function (time, delta) {
         if (!this.camera || !this.imagePlane) return;
 
-        // Get the camera position and forward direction
+        // Calculate the center position of the screen
         const cameraPos = this.camera.object3D.position;
-        const cameraDir = new THREE.Vector3();
-        this.camera.object3D.getWorldDirection(cameraDir);
+        const screenCenter = new THREE.Vector3(0, 0, -2); // Adjust `-2` based on how far in front of the camera you want to place the image
 
-        // Calculate the target position for the image plane
-        const targetPosition = cameraPos.clone().add(cameraDir.multiplyScalar(-2)); // 2 units in front of the camera
+        // Set the image plane's position to the screen center
+        this.imagePlane.setAttribute('position', screenCenter);
 
-        // Interpolate the current position with the target position for smooth movement
-        const currentPosition = this.imagePlane.object3D.position;
-        currentPosition.lerp(targetPosition, 0.1); // Adjust the value (0.1) for smoother or faster response
-
-        // Update the image plane position
-        this.imagePlane.setAttribute('position', currentPosition);
-        
-        // Scale the image based on the camera distance
-        const distance = cameraPos.distanceTo(currentPosition);
+        // Calculate distance from camera to image plane
+        const distance = cameraPos.distanceTo(this.imagePlane.object3D.position);
         const scaleFactor = Math.max(0.5, Math.min(2, distance / 2)); // Adjust the divisor to fine-tune scaling
+
+        // Scale the image plane accordingly
         this.imagePlane.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
       }
     });
