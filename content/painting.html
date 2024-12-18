@@ -30,17 +30,18 @@
         const cameraDir = new THREE.Vector3();
         this.camera.object3D.getWorldDirection(cameraDir);
 
-        // Raycast from the camera position in the direction the camera is facing
-        const raycaster = new THREE.Raycaster(cameraPos, cameraDir);
-        const intersects = raycaster.intersectObject(this.imagePlane.object3D, true);
+        // Calculate the target position for the image plane
+        const targetPosition = cameraPos.clone().add(cameraDir.multiplyScalar(-2)); // 2 units in front of the camera
 
-        if (intersects.length > 0) {
-          // Position the image plane at the intersection point
-          this.imagePlane.setAttribute('position', intersects[0].point);
-        }
+        // Interpolate the current position with the target position for smooth movement
+        const currentPosition = this.imagePlane.object3D.position;
+        currentPosition.lerp(targetPosition, 0.1); // Adjust the value (0.1) for smoother or faster response
 
+        // Update the image plane position
+        this.imagePlane.setAttribute('position', currentPosition);
+        
         // Scale the image based on the camera distance
-        const distance = cameraPos.distanceTo(this.imagePlane.object3D.position);
+        const distance = cameraPos.distanceTo(currentPosition);
         const scaleFactor = Math.max(0.5, Math.min(2, distance / 2)); // Adjust the divisor to fine-tune scaling
         this.imagePlane.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
       }
