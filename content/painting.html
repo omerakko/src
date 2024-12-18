@@ -5,9 +5,10 @@
 
   <meta name="viewport"
         content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
-  <title>AR Wall-Fitting 3D Model Centered</title>
+  <title>AR Wall-Fitting Image Centered</title>
 
   <!-- Model Viewer -->
+  <script src="https://unpkg.com/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
   <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
@@ -21,15 +22,14 @@
 <body>
   <!-- AR Scene using Model Viewer -->
   <model-viewer 
-  src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
-  alt="A 3D model of an astronaut" 
-  ar 
-  ar-placement="wall" 
-  camera-controls 
-  touch-action="pan-y" 
-  scale="0.5" 
-  style="width: 100%; height: 100%;">
-</model-viewer>
-
+    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+    alt="An image of some wall art" 
+    ar 
+    ar-placement="wall" 
+    camera-controls 
+    touch-action="pan-y" 
+    scale="0.5"  <!-- Initial scale factor -->
+    style="width: 100%; height: 100%;">
+  </model-viewer>
 </body>
 </html>
