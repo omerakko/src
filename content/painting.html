@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebXR Wall Fitting</title>
+  <title>WebXR with Polyfill</title>
   <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-
-
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/webxr/VRButton.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js';
-        import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/webxr/VRButton.js';
+<script>
+  // Initialize WebXR Polyfill
+  const polyfill = new WebXRPolyfill();
+
   let scene, camera, renderer;
   let plane;
 
-  // Initialize the AR Scene
   function init() {
-    // Create a Three.js Scene
+    // Create the Scene
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
-    // Set up WebGL Renderer
+    // Set up the Renderer
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.xr.enabled = true;
@@ -30,42 +30,27 @@
     // Add WebXR Button
     document.body.appendChild(VRButton.createButton(renderer));
 
-    // Add a Light
+    // Add Lights
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
     scene.add(light);
 
-    // Create an Image Plane
+    // Add a Plane with an Image
     const textureLoader = new THREE.TextureLoader();
     const texture = textureLoader.load('../assets/images/test.jpeg'); // Replace with your image
-    const geometry = new THREE.PlaneGeometry(1.5, 1); // Initial dimensions
+    const geometry = new THREE.PlaneGeometry(1.5, 1);
     const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
     plane = new THREE.Mesh(geometry, material);
-    plane.position.set(0, 1, -2); // Default position in front of the camera
+    plane.position.set(0, 1, -2);
     scene.add(plane);
 
-    // Add Animation Loop
+    // Animation Loop
     renderer.setAnimationLoop(render);
   }
 
-  // Adjust Plane Scale Based on Distance
-  function updateScaleBasedOnDistance() {
-    if (!plane || !camera) return;
-
-    // Calculate the distance between the camera and the plane
-    const distance = camera.position.distanceTo(plane.position);
-
-    // Dynamically adjust the scale of the plane
-    const scaleFactor = Math.max(distance / 2, 0.1); // Minimum scale to avoid disappearing
-    plane.scale.set(scaleFactor, scaleFactor, scaleFactor);
-  }
-
-  // Render Loop
   function render() {
-    updateScaleBasedOnDistance();
     renderer.render(scene, camera);
   }
 
-  // Initialize on Window Load
   window.onload = init;
 </script>
 </body>
