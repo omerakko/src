@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebXR with Polyfill</title>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-
+  <title>WebXR Polyfill with Modules</title>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js';
-        import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/webxr/VRButton.js';
-  // Initialize WebXR Polyfill
-  const polyfill = new WebXRPolyfill();
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js';
+  import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/webxr/VRButton.js';
+
+  // Dynamically load the WebXR Polyfill
+  import('https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.min.js').then(() => {
+    console.log('WebXR Polyfill loaded!');
+    init();
+  }).catch(error => {
+    console.error('Failed to load WebXR Polyfill:', error);
+  });
 
   let scene, camera, renderer;
   let plane;
@@ -51,8 +55,6 @@
   function render() {
     renderer.render(scene, camera);
   }
-
-  window.onload = init;
 </script>
 </body>
 </html>
