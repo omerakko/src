@@ -2,9 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
+  <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
   <title>AR Wall-Fitting Image Centered</title>
 
   <!-- Web Components Polyfill for ES6 module support -->
@@ -12,49 +10,98 @@
   <!-- Import Model Viewer -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-
   <style>
     body {
       margin: 0;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .gallery-item {
+      margin-bottom: 20px;
+      position: relative;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .ar-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .ar-overlay.show {
+      display: flex;
     }
   </style>
 </head>
-
-
 <body>
 
-    <model-viewer src="../assets/images/untitled.glb" ar ar-placement="wall" camera-controls touch-action="pan-y" alt="A 3D model of some wall art"></model-viewer>
-<!doctype html>
-<html>
-<head>
-  <meta charset="UTF-8">
+  <div class="gallery">
+    <div class="gallery-item">
+      <img src="../assets/images/untitled.jpg" alt="Wall art" data-model="../assets/images/untitled.glb">
+      <div class="ar-overlay">View in AR</div>
+    </div>
+    <div class="gallery-item">
+      <img src="../assets/images/untitled.jpg" alt="Wall art" data-model="../assets/images/untitled.glb">
+      <div class="ar-overlay">View in AR</div>
+    </div>
+  </div>
 
-  <meta name="viewport"
-        content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5">
-  <title>AR Wall-Fitting Image Centered</title>
-
-  <!-- Web Components Polyfill for ES6 module support -->
-  <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <!-- Import Model Viewer -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js"></script>
-
-
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
+  <script>
+    function isMobileDevice() {
+      return /Mobi|Android|iPhone/i.test(navigator.userAgent);
     }
-  </style>
-</head>
 
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      const arOverlay = item.querySelector('.ar-overlay');
+      const image = item.querySelector('img');
 
-<body>
+      if (isMobileDevice()) {
+        // Show AR overlay on mobile devices
+        arOverlay.classList.add('show');
 
-    <model-viewer src="../assets/images/untitled.glb" ar ar-placement="wall" camera-controls touch-action="pan-y" alt="A 3D model of some wall art"></model-viewer>
-    <model-viewer src="../assets/images/untitled.glb" ar ar-placement="wall" camera-controls touch-action="pan-y" alt="A 3D model of some wall art"></model-viewer>
-</body>
-</html>
+        // Add event listener to AR overlay
+        arOverlay.addEventListener('click', () => {
+          const modelUrl = image.getAttribute('data-model');
+          const modelViewer = document.createElement('model-viewer');
+          modelViewer.setAttribute('src', modelUrl);
+          modelViewer.setAttribute('ar', '');
+          modelViewer.setAttribute('ar-placement', 'wall');
+          modelViewer.setAttribute('camera-controls', '');
+          modelViewer.setAttribute('touch-action', 'pan-y');
+          modelViewer.setAttribute('alt', 'A 3D model of some wall art');
+          document.body.innerHTML = ''; // Clear current content
+          document.body.appendChild(modelViewer); // Add model viewer
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>
