@@ -1,139 +1,647 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Global Styles */
 body, html {
-    height: 100%;
-    font-family: Arial, sans-serif;
-}
-
-.banner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50vh;
-    background-color: #f5f5f5;
-}
-
-.banner-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-}
-
-/* Accordion styles */
-.accordion-container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.accordion {
-    background-color: #f1f1f1;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fafafa;
+  }
+  
+  /* ==================== NAVIGATION ==================== */
+  nav {
+    position: fixed;
+    top: 0;
     width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 18px;
-    transition: 0.4s;
-    margin-bottom: 10px;
-}
-
-.accordion:hover {
-    background-color: #ddd;
-}
-
-.accordion:after {
-    content: '\002B'; /* Unicode character for "+" sign */
-    color: #777;
-    font-weight: bold;
-    float: right;
-    margin-left: 5px;
-}
-
-.active:after {
-    content: "\2212"; /* Unicode character for "-" sign */
-}
-
-.panel {
-    padding: 0 18px;
-    background-color: white;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
-}
-
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-.nav-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
+  
+  .logo {
+    font-weight: 700;
+    font-size: 24px;
+    text-decoration: none;
+    color: #333;
+    letter-spacing: 1px;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 40px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-links a:hover {
+    color: #888;
+  }
+  
+  .nav-links .active {
+    border-bottom: 2px solid #333;
+  }
+  
+  /* ==================== FOOTER ==================== */
+  footer {
+    background-color: #333;
+    color: #fff;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .social-links {
     display: flex;
     justify-content: center;
-    margin-top: 50px;
-}
-
-.nav-button {
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    border-radius: 5px;
-    outline: none;
-}
-
-.nav-button:hover {
-    background-color: #555;
-}
-
-.nav-list {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: none;
-    text-align: center;
-}
-
-.nav-list li {
-    background-color: #333;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.nav-list li a {
-    display: block;
-    color: white;
-    padding: 10px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .social-links a {
+    color: #fff;
+    font-size: 24px;
     text-decoration: none;
-}
-
-.nav-list li a:hover {
-    background-color: #555;
-}
-
-.bg-landing {
-    background-image: url('assets/banner/test.jpeg');
-}
-
-#menu {
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .copyright {
+    font-size: 14px;
+    color: #aaa;
+  }
+  
+  /* ==================== HOME PAGE ==================== */
+  /* Hero Section */
+  .hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    position: relative;
     overflow: hidden;
-    max-height: 0; /* Start collapsed */
-    opacity: 0; /* Start hidden */
+  }
+  
+  .hero-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    z-index: 1;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 20px;
+  }
+  
+  .hero-title {
+    font-size: 64px;
+    margin-bottom: 20px;
+    font-weight: 300;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  
+  .hero-subtitle {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 40px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  
+  .hero-button {
+    padding: 12px 30px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .hero-button:hover {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  /* Featured Work Section */
+  .featured-work {
+    padding: 100px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .section-title {
+    font-size: 36px;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+  }
+  
+  .featured-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .featured-item:hover {
+    transform: translateY(-10px);
+  }
+  
+  .featured-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+  }
+  
+  .featured-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 15px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .featured-item:hover .featured-caption {
+    transform: translateY(0);
+  }
+  
+  .featured-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .featured-year {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #888;
+  }
+  
+  /* ==================== PAINTINGS PAGE ==================== */
+  /* Page Header */
+  .page-header {
+    padding: 150px 20px 60px;
+    text-align: center;
+    background-color: #f5f5f5;
+  }
+  
+  .page-title {
+    font-size: 48px;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  
+  .page-description {
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 18px;
+    color: #666;
+  }
+  
+  /* Gallery */
+  .gallery-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  
+  /* Gallery Categories */
+  .gallery-categories {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .category-button {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  
+  .category-button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .category-button.active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+  }
+  
+  /* Gallery Grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+  }
+  
+  .gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .gallery-item:hover {
+    transform: translateY(-10px);
+  }
+  
+  .gallery-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+  }
+  
+  .gallery-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .gallery-item:hover .gallery-caption {
+    transform: translateY(0);
+  }
+  
+  .gallery-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .gallery-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #888;
+  }
+  
+  /* Image Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+  }
+  
+  .modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+  }
+  
+  .modal-caption {
+    color: white;
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* ==================== ABOUT PAGE ==================== */
+  /* About Section */
+  .about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 20px 60px;
+  }
+  
+  .about-header {
+    margin-bottom: 60px;
+  }
+  
+  .about-title {
+    font-size: 48px;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  
+  /* Artist Bio */
+  .artist-bio {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 50px;
+    margin-bottom: 80px;
+    align-items: start;
+  }
+  
+  .artist-image {
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bio-content h2 {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  
+  .bio-content p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.8;
+  }
+  
+  /* Artist Statement */
+  .artist-statement {
+    background-color: #f5f5f5;
+    padding: 60px;
+    border-radius: 4px;
+    margin-bottom: 80px;
+  }
+  
+  .artist-statement h2 {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+  
+  .artist-statement p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  
+  /* CV Section */
+  .cv-section h2 {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+  
+  .cv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+  }
+  
+  .cv-category h3 {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .cv-item {
+    margin-bottom: 20px;
+  }
+  
+  .cv-year {
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #666;
+  }
+  
+  .cv-description {
+    margin: 0;
+  }
+  
+  /* Contact Section */
+  .contact-section {
+    background-color: #f5f5f5;
+    padding: 60px;
+    border-radius: 4px;
+    margin-top: 80px;
+    text-align: center;
+  }
+  
+  .contact-section h2 {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+  
+  .contact-section p {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  
+  .contact-button {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .contact-button:hover {
+    background-color: #555;
+  }
+  
+  /* ==================== MEDIA QUERIES ==================== */
+  @media (max-width: 992px) {
+    .artist-bio {
+      grid-template-columns: 1fr;
+    }
+  
+    .artist-image {
+      max-width: 400px;
+      margin: 0 auto 40px;
+    }
+  
+    .cv-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 42px;
+    }
+  
+    .hero-subtitle {
+      font-size: 18px;
+    }
+  
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .page-title, 
+    .about-title {
+      font-size: 36px;
+    }
+  
+    .artist-statement,
+    .contact-section {
+      padding: 30px;
+    }
+  
+    .nav-links {
+      gap: 20px;
+    }
+  
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+  }
+
+  /* These are additional CSS styles to add to your existing styles.css file */
+
+/* Page Transitions */
+body {
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
-#menu.expanded {
-    max-height: 200px; /* Set a maximum height for expansion */
-    opacity: 1; /* Show the menu */
+body.fade-in {
+  opacity: 0;
+}
+
+/* Navigation Scroll Effect */
+nav {
+  transition: padding 0.3s ease, background-color 0.3s ease;
+}
+
+nav.scrolled {
+  padding: 15px 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Gallery Item Animations */
+.gallery-item {
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Modal Animations */
+.modal {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content {
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal[style*="display: flex"] {
+  opacity: 1;
+}
+
+.modal[style*="display: flex"] .modal-content {
+  transform: translateY(0);
+}
+
+/* Social Links Hover Effect */
+.social-links a {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.social-links a:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.social-links a:hover:after {
+  width: 100%;
+}
+
+/* Button Hover Effects */
+.hero-button,
+.contact-button,
+.category-button {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-button:before,
+.contact-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.7s ease;
+  z-index: -1;
+}
+
+.hero-button:hover:before,
+.contact-button:hover:before {
+  left: 100%;
 }

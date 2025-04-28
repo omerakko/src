@@ -1,42 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
-
-
-    <title>Artist Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Portfolio | Home</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 h-screen m-0 p-0">
-    <div class="relative w-full h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('assets/banner/test.jpeg');">
-        <!-- Menu and content -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <button 
-                id="menu-button" 
-                class="bg-gray-800 text-white px-8 py-4 text-lg rounded-md focus:outline-none"
-                onclick="toggleMenu()">
-                Menu
-            </button>
-            <ul id="menu" class="mt-4">
-                <li class="bg-gray-800 rounded-md mb-2">
-                    <a href="content/biography.html" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Biography</a>
-                </li>
-                <li class="bg-gray-800 rounded-md mb-2">
-                    <a href="content/painting.html" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Painting</a>
-                </li>
-                <li class="bg-gray-800 rounded-md">
-                    <a href="#exhibitions" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Exhibitions</a>
-                </li>
-            </ul>
-        </div>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">ARTIST NAME</a>
+      <div class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="content\painting.html">Paintings</a>
+        <a href="about.html">About</a>
+      </div>
     </div>
+  </nav>
 
+  <!-- Hero Section -->
+  <section class="hero">
+    <img src="/api/placeholder/1920/1080" alt="Artist's featured painting" class="hero-image">
+    <div class="hero-content">
+      <h1 class="hero-title">ARTIST NAME</h1>
+      <p class="hero-subtitle">Contemporary painter exploring themes of nature and human connection</p>
+      <a href="paintings.html" class="hero-button">View Gallery</a>
+    </div>
+  </section>
 
+  <!-- Featured Work Section -->
+  <section class="featured-work">
+    <h2 class="section-title">Featured Works</h2>
+    <div class="featured-grid">
+      <div class="featured-item">
+        <img src="/api/placeholder/600/800" alt="Painting 1" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Summer Dreams</h3>
+          <p class="featured-year">2023</p>
+        </div>
+      </div>
+      <div class="featured-item">
+        <img src="/api/placeholder/600/800" alt="Painting 2" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Mountain Solitude</h3>
+          <p class="featured-year">2022</p>
+        </div>
+      </div>
+      <div class="featured-item">
+        <img src="/api/placeholder/600/800" alt="Painting 3" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Urban Poetry</h3>
+          <p class="featured-year">2024</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <script src="scripts/mainPage.js"></script>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="social-links">
+        <a href="#">Instagram</a>
+        <a href="#">Twitter</a>
+        <a href="#">Facebook</a>
+      </div>
+      <p class="copyright">© 2025 ARTIST NAME. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
 </body>
 </html>

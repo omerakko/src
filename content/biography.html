@@ -1,42 +1,140 @@
-<!-- content/biography.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Biography</title>
-    <link rel="stylesheet" href="../styles.css"> <!-- Link to your main stylesheet -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Portfolio | About</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-4">Biography</h1>
-        <p>
-            Nilüfer Örel, Türk bir sanatçıdır.
-            Şeref Bigalı'dan çeşitli resim dersleri aldı. Romanya'da yaşadığı dört yıl boyunca, Bükreş'te kurduğu atölyede Rumen ve Fransız sanatçılarla çalıştı.
-            Son üç yıldır, Bodrum'da bir köyde ormanlık bir alanda yaşıyor, güneş enerjisi ve doğrudan kaynak suyu kullanarak, vahşi yaşamı komşu olarak benimsemiş durumda. Şu anda, denizde yaşarken deneyimlediği dalgalar ve mavi deniz tutkusu ve bitmek bilmeyen yelken arzusu ile kendi dünyasını ve doğayı farklı tekniklerle harmanlayarak dönüştürüyor.
-            Nilüfer'in tutkusu, 2023'te düzenlenen Bodrum Sanat Fuarı ve Denizbank Sanat Galerisi gibi çeşitli sergiler aracılığıyla izleyicisine ulaştı.
-            2024 yılında Merqezart Bodrum'da "Hayatımın Katmanları" başlıklı ilk kişisel sanat sergisini açtı.
-
-        </p>
-
-        <p>
-            Nilufer Örel is a Turkish artist.
-            She took various painting lessons from Seref Bigali. During the period when she lived in Romania for 4 years, she worked with Romanian and French artists at the workshop she established in Bucharest.
-            For the past three years, she has been living in a forest area in Bodrum / Turkiye in a village, using solar electricity and direct spring water source and nearby the wildlife as her neighborhood. For the time being she transforms her passion for waves and blue sea, and her never-ending desire for sailing, which she experienced while living on the sea, by blending his own world and nature with diff erent techniques.
-            Nilufer’s passion reached her audience throughout several exhibitions such as Bodrum Art fair and Denizbank Art Gallery held in 2023.
-            She exposed her fi rst individual art exposition in Merqezart Bodrum in 2024, titled “ Layers of my life “.
-            
-        </p>
-
-        <p>
-            Nilüfer Örel est un peintre Turque.
-            Elle a pris plusieurs cours de peinture avec Şeref Bigalı. Pendant la période où elle a vécu en Roumanie pendant 4 ans, elle a travaillé avec des artistes roumains et français dans l'atelier qu'elle a établi à Bucarest.
-            Depuis trois ans, elle vit dans une zone forestière à Bodrum, en Turquie, dans un village, utilisant l'électricité solaire et une source d'eau directe, et ayant la faune environnante pour voisinage. Actuellement, elle transforme sa passion pour les vagues et la mer bleue, ainsi que son désir incessant de naviguer, qu'elle a expérimenté en vivant sur la mer, en mélangeant son propre monde et la nature avec diff érentes techniques.
-            La passion de Nilüfer a atteint son public à travers plusieurs expositions, telles que la foire d'art de Bodrum et la galerie d'art Denizbank, tenues en 2023.
-            Elle a exposé sa première exposition d'art individuelle à Merqezart Bodrum en 2024, intitulée "Les couches de ma vie".
-            
-        </p>
-        <a href="../index.html" class="mt-4 inline-block bg-gray-800 text-white px-4 py-2 rounded-md">Back to Portfolio</a>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">ARTIST NAME</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="paintings.html">Paintings</a>
+        <a href="about.html" class="active">About</a>
+      </div>
     </div>
+  </nav>
+
+  <!-- About Section -->
+  <section class="about-container">
+    <div class="about-header">
+      <h1 class="about-title">About the Artist</h1>
+    </div>
+
+    <!-- Artist Bio -->
+    <div class="artist-bio">
+      <img src="/api/placeholder/600/800" alt="Artist portrait" class="artist-image">
+      <div class="bio-content">
+        <h2>Biography</h2>
+        <p>Born in [City], [Artist Name] has been creating art for over [X] years. With a background in [Education/Training], [his/her] work explores themes of nature, human connection, and abstract expressionism. [Artist Name]'s unique perspective stems from [brief background or influential experiences].</p>
+        <p>Throughout [his/her] career, [Artist Name] has developed a distinctive style characterized by [key elements of style, technique, or approach]. [His/Her] work has been exhibited in galleries across [locations] and has been acquired by private collectors internationally.</p>
+        <p>[Artist Name] currently lives and works in [City], where [he/she] continues to explore new artistic directions and challenge conventional boundaries in contemporary painting.</p>
+      </div>
+    </div>
+
+    <!-- Artist Statement -->
+    <div class="artist-statement">
+      <h2>Artist Statement</h2>
+      <p>My work explores the intersection between the natural world and human experience. I am fascinated by how we perceive and interact with our environment, and how these interactions shape our understanding of ourselves and our place in the world.</p>
+      <p>Through my paintings, I seek to capture moments of connection and revelation—those fleeting instances when the ordinary becomes extraordinary. I am drawn to the tension between representation and abstraction, between what is seen and what is felt.</p>
+      <p>Color plays a crucial role in my practice, serving as both an emotional catalyst and a structural element. I use layering techniques to create depth and complexity, inviting viewers to look beyond the surface and discover new perspectives with each viewing.</p>
+      <p>Ultimately, my aim is to create work that resonates on multiple levels—visually stimulating, emotionally evocative, and intellectually engaging. I hope to inspire viewers to see the world around them with fresh eyes and a renewed sense of wonder.</p>
+    </div>
+
+    <!-- CV Section -->
+    <div class="cv-section">
+      <h2>Curriculum Vitae</h2>
+      <div class="cv-grid">
+        <!-- Exhibitions -->
+        <div class="cv-category">
+          <h3>Exhibitions</h3>
+          <div class="cv-item">
+            <p class="cv-year">2024</p>
+            <p class="cv-description">"Nature's Dialogue," Solo Exhibition, Gallery Name, City</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2023</p>
+            <p class="cv-description">"Contemporary Perspectives," Group Show, Museum Name, City</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2022</p>
+            <p class="cv-description">"Emerging Voices," Gallery Name, City</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2021</p>
+            <p class="cv-description">"Urban Rhythms," International Art Fair, City</p>
+          </div>
+        </div>
+
+        <!-- Education & Awards -->
+        <div class="cv-category">
+          <h3>Education & Awards</h3>
+          <div class="cv-item">
+            <p class="cv-year">2022</p>
+            <p class="cv-description">Artist Residency Program, Institution Name, City</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2021</p>
+            <p class="cv-description">Excellence in Arts Award, Organization Name</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2018-2020</p>
+            <p class="cv-description">MFA in Fine Arts, University Name, City</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2014-2018</p>
+            <p class="cv-description">BFA in Painting, University Name, City</p>
+          </div>
+        </div>
+
+        <!-- Publications & Press -->
+        <div class="cv-category">
+          <h3>Publications & Press</h3>
+          <div class="cv-item">
+            <p class="cv-year">2024</p>
+            <p class="cv-description">"Emerging Talents to Watch," Art Magazine Name</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2023</p>
+            <p class="cv-description">"The Evolution of Contemporary Painting," Book Title, Publisher</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2022</p>
+            <p class="cv-description">Artist Interview, Arts & Culture Publication Name</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2021</p>
+            <p class="cv-description">"New Perspectives in Abstract Art," Journal Name</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <h2>Contact</h2>
+      <p>For inquiries about artwork, commissions, or exhibitions, please get in touch.</p>
+      <a href="mailto:info@artistname.com" class="contact-button">Email Me</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="social-links">
+        <a href="#">Instagram</a>
+        <a href="#">Twitter</a>
+        <a href="#">Facebook</a>
+      </div>
+      <p class="copyright">© 2025 ARTIST NAME. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
 </body>
 </html>
