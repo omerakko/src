@@ -8,7 +8,7 @@ const { Sequelize, DataTypes, Op } = require('sequelize');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const verifyFirebaseToken = require('./middleware/firebaseAuth');
+//const verifyFirebaseToken = require('./middleware/firebaseAuth');
 
 
 
@@ -559,7 +559,7 @@ sequelize.query(`
  */
 
 // Create new painting
-app.post('/api/admin/paintings',verifyFirebaseToken, async (req, res) => {
+app.post('/api/admin/paintings' , async (req, res) => {
   try {
 
     const paintingData = req.body;
@@ -577,7 +577,7 @@ app.post('/api/admin/paintings',verifyFirebaseToken, async (req, res) => {
 });
 
 // Update existing painting
-app.put('/api/admin/paintings/:id',verifyFirebaseToken, async (req, res) => {
+app.put('/api/admin/paintings/:id' , async (req, res) => {
   try {
     const paintingId = req.params.id;
     const updateData = req.body;
@@ -600,7 +600,7 @@ app.put('/api/admin/paintings/:id',verifyFirebaseToken, async (req, res) => {
 });
 
 // Delete painting
-app.delete('/api/admin/paintings/:id',verifyFirebaseToken, async (req, res) => {
+app.delete('/api/admin/paintings/:id' , async (req, res) => {
   try {
     const paintingId = req.params.id;
     
@@ -631,7 +631,7 @@ app.delete('/api/admin/paintings/:id',verifyFirebaseToken, async (req, res) => {
 });
 
 // Upload image for painting
-app.post('/api/admin/paintings/:id/image', upload.single('image'),verifyFirebaseToken, async (req, res) => {
+app.post('/api/admin/paintings/:id/image', upload.single('image') , async (req, res) => {
   try {
     const paintingId = req.params.id;
     
@@ -658,7 +658,7 @@ app.post('/api/admin/paintings/:id/image', upload.single('image'),verifyFirebase
 
 // Fixed reorder paintings endpoint - Replace the existing one in your server.js
 
-app.post('/api/admin/paintings/reorder',verifyFirebaseToken, async (req, res) => {
+app.post('/api/admin/paintings/reorder' , async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
@@ -776,6 +776,6 @@ app.post('/api/admin/paintings/reorder',verifyFirebaseToken, async (req, res) =>
 
 
 // Serve admin page
-app.get('/pages/admin.html',verifyFirebaseToken, (req, res) => {
+app.get('/pages/admin.html' , (req, res) => {
   res.sendFile(path.join(__dirname, 'pages', 'admin.html'));
 });

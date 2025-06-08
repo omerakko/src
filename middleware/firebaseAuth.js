@@ -1,3 +1,5 @@
+
+/*
 const admin = require('../firebase');
 
 async function verifyFirebaseToken(req, res, next) {
@@ -20,3 +22,4 @@ async function verifyFirebaseToken(req, res, next) {
 }
 
 module.exports = verifyFirebaseToken;
+*/

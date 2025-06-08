@@ -1,3 +1,5 @@
+
+/*
 const admin = require('firebase-admin');
 const serviceAccount = require('./firebase-admin.json'); // or ./config/...
 
@@ -6,3 +8,4 @@ admin.initializeApp({
 });
 
 module.exports = admin;
+*/
