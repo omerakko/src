@@ -1,4 +1,3 @@
-
 class PaintingAdmin {
   constructor() {
     this.paintings = [];
@@ -68,9 +67,10 @@ class PaintingAdmin {
   async loadPaintings() {
     this.showLoading(true);
     try {
-      const response = await fetch(`/api/paintings?perPage=100&category=${this.currentCategory}`);
+      const response = await fetch(`/api/paintings?perPage=100&category=${this.currentCategory}&sortBy=order&sortOrder=desc`);
       const data = await response.json();
       this.paintings = data.paintings;
+      console.log('Loaded paintings:', this.paintings.map(p => ({ id: p.id, title: p.title, order: p.order })));
       this.renderPaintings();
     } catch (error) {
       console.error('Error loading paintings:', error);
@@ -80,116 +80,105 @@ class PaintingAdmin {
     }
   }
 
-renderPaintings() {
-  console.log('Rendering paintings:', this.paintings.length);
-  this.galleryGrid.innerHTML = '';
-  
-  if (!Array.isArray(this.paintings)) {
-    console.error('Paintings is not an array:', this.paintings);
-    this.showMessage('Error: Invalid paintings data', 'error');
-    return;
-  }
-  
-  this.paintings.forEach((painting, index) => {
-    try {
-      const paintingElement = this.createPaintingElement(painting, index);
-      if (paintingElement) {
-        this.galleryGrid.appendChild(paintingElement);
-      } else {
-        console.error('Failed to create element for painting:', painting);
+  renderPaintings() {
+    console.log('Rendering paintings:', this.paintings.length);
+    this.galleryGrid.innerHTML = '';
+    
+    if (!Array.isArray(this.paintings)) {
+      console.error('Paintings is not an array:', this.paintings);
+      this.showMessage('Error: Invalid paintings data', 'error');
+      return;
+    }
+    
+    // Sort paintings by order (descending - highest order first)
+    const sortedPaintings = [...this.paintings].sort((a, b) => (b.order || 0) - (a.order || 0));
+    
+    sortedPaintings.forEach((painting, visualIndex) => {
+      try {
+        const paintingElement = this.createPaintingElement(painting, visualIndex);
+        if (paintingElement) {
+          this.galleryGrid.appendChild(paintingElement);
+        } else {
+          console.error('Failed to create element for painting:', painting);
+        }
+      } catch (error) {
+        console.error(`Error creating painting element:`, error, painting);
       }
-    } catch (error) {
-      console.error(`Error creating painting element at index ${index}:`, error, painting);
-    }
-  });
-  
-  // Verify all elements have the required data attributes
-  const addedElements = this.galleryGrid.children;
-  console.log(`Added ${addedElements.length} elements to gallery`);
-  
-  // Debug: Check for missing data attributes
-  for (let i = 0; i < addedElements.length; i++) {
-    const element = addedElements[i];
-    if (!element.dataset.paintingId) {
-      console.error(`Element at index ${i} missing paintingId:`, element);
-    }
+    });
+    
+    console.log(`Rendered ${this.galleryGrid.children.length} painting elements`);
   }
-}
 
-createPaintingElement(painting, index) {
-  // Validate painting object
-  if (!painting || !painting.id) {
-    console.error('Invalid painting object:', painting);
-    return null;
-  }
-  
-  const element = document.createElement('div');
-  element.className = 'gallery-item admin-gallery-item';
-  
-  // Ensure data attributes are set correctly
-  element.dataset.paintingId = painting.id.toString();
-  element.dataset.index = index.toString();
-  
-  // Validate required fields with fallbacks
-  const title = painting.title || 'Untitled';
-  const medium = painting.medium || 'Unknown Medium';
-  const year = painting.year || 'Unknown Year';
-  const imageUrl = painting.imageurl || '/assets/images/placeholder.jpg';
-  
-  element.innerHTML = `
-    <img src="${imageUrl}" alt="${title}" class="gallery-image" loading="lazy" 
-         onerror="this.src='/assets/images/placeholder.jpg'">
-    <div class="gallery-caption">
-      <h3 class="gallery-title">${title}</h3>
-      <div class="gallery-details">
-        <span>${medium}</span>
-        <span>${year}</span>
+  createPaintingElement(painting, visualIndex) {
+    // Validate painting object
+    if (!painting || !painting.id) {
+      console.error('Invalid painting object:', painting);
+      return null;
+    }
+    
+    const element = document.createElement('div');
+    element.className = 'gallery-item admin-gallery-item';
+    
+    // Set data attributes
+    element.dataset.paintingId = painting.id.toString();
+    element.dataset.order = (painting.order || 0).toString();
+    element.dataset.visualIndex = visualIndex.toString();
+    
+    // Validate required fields with fallbacks
+    const title = painting.title || 'Untitled';
+    const medium = painting.medium || 'Unknown Medium';
+    const year = painting.year || 'Unknown Year';
+    const imageUrl = painting.imageurl || '/assets/images/placeholder.jpg';
+    
+    element.innerHTML = `
+      <img src="${imageUrl}" alt="${title}" class="gallery-image" loading="lazy" 
+           onerror="this.src='/assets/images/placeholder.jpg'">
+      <div class="gallery-caption">
+        <h3 class="gallery-title">${title}</h3>
+        <div class="gallery-details">
+          <span>${medium}</span>
+          <span>${year}</span>
+        </div>
+        <div class="order-info" style="font-size: 0.8em; color: #666;">
+          Order: ${painting.order || 0}
+        </div>
       </div>
-    </div>
+      
+      <div class="admin-item-controls">
+        <button class="control-btn edit-btn" title="Edit">✏</button>
+        <button class="control-btn delete-btn" title="Delete">🗑</button>
+      </div>
+      
+      <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+    `;
     
-    <div class="admin-item-controls">
-      <button class="control-btn edit-btn" title="Edit">✏</button>
-      <button class="control-btn delete-btn" title="Delete">🗑</button>
-    </div>
+    // Bind events
+    const editBtn = element.querySelector('.edit-btn');
+    const deleteBtn = element.querySelector('.delete-btn');
     
-    <button class="drag-handle" title="Drag to reorder">⋮⋮</button>
-  `;
-  
-  // Verify the data attributes were set
-  console.log('Created element for painting:', {
-    id: painting.id,
-    title: painting.title,
-    datasetPaintingId: element.dataset.paintingId,
-    datasetIndex: element.dataset.index
-  });
-  
-  // Bind events
-  const editBtn = element.querySelector('.edit-btn');
-  const deleteBtn = element.querySelector('.delete-btn');
-  
-  if (editBtn) {
-    editBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.openEditModal(painting);
-    });
+    if (editBtn) {
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openEditModal(painting);
+      });
+    }
+    
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.confirmDelete(painting);
+      });
+    }
+    
+    // Drag and drop events
+    element.draggable = true;
+    element.addEventListener('dragstart', (e) => this.handleDragStart(e));
+    element.addEventListener('dragover', (e) => this.handleDragOver(e));
+    element.addEventListener('drop', (e) => this.handleDrop(e));
+    element.addEventListener('dragend', (e) => this.handleDragEnd(e));
+    
+    return element;
   }
-  
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.confirmDelete(painting);
-    });
-  }
-  
-  // Drag and drop events
-  element.draggable = true;
-  element.addEventListener('dragstart', (e) => this.handleDragStart(e));
-  element.addEventListener('dragover', (e) => this.handleDragOver(e));
-  element.addEventListener('drop', (e) => this.handleDrop(e));
-  element.addEventListener('dragend', (e) => this.handleDragEnd(e));
-  
-  return element;
-}
 
   openAddModal() {
     this.modalTitle.textContent = 'Add New Painting';
@@ -265,7 +254,7 @@ createPaintingElement(painting, index) {
           body: JSON.stringify(paintingData)
         });
       } else {
-        // Create new painting
+        // Create new painting - it will automatically get the highest order value
         response = await fetch('/api/admin/paintings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -275,20 +264,22 @@ createPaintingElement(painting, index) {
       
       if (!response.ok) throw new Error('Failed to save painting');
       
+      const result = await response.json();
+      const savedPainting = result.painting;
+      
       // Handle image upload if provided
-const fileInput = this.paintingForm.querySelector('input[name="imageFile"]');
-const imageFile = fileInput?.files?.[0];
+      const fileInput = this.paintingForm.querySelector('input[name="imageFile"]');
+      const imageFile = fileInput?.files?.[0];
 
-if (imageFile) {
-  const savedPainting = await response.json();
-  await this.uploadImage(savedPainting.painting.id, imageFile);
-}
-
-
+      if (imageFile) {
+        await this.uploadImage(savedPainting.id, imageFile);
+      }
       
       this.showMessage(isEdit ? 'Painting updated successfully' : 'Painting added successfully', 'success');
       this.closeModal();
-      this.loadPaintings();
+      
+      // Reload paintings to show the new/updated painting in correct position
+      await this.loadPaintings();
       
     } catch (error) {
       console.error('Error saving painting:', error);
@@ -356,6 +347,8 @@ if (imageFile) {
       document.querySelectorAll('.admin-gallery-item').forEach(item => {
         item.classList.add('reorder-mode');
       });
+      
+      this.showMessage('Drag and drop to reorder paintings. Click "Save Order" when done.', 'info');
     } else {
       this.galleryGrid.classList.remove('reorder-mode');
       this.toggleReorderBtn.querySelector('.btn-text').textContent = 'Enable Reorder';
@@ -372,121 +365,94 @@ if (imageFile) {
     }
   }
 
-// Replace your existing saveOrder method in admin.js with this improved version
-
-// Replace your saveOrder method with this debug version to identify the issue
-
-// Fixed saveOrder method - Replace the existing one in your admin.js
-
-async saveOrder() {
-  try {
-    console.log('Starting saveOrder process...');
-    
-    // Get the current order from the DOM
-    const galleryItems = Array.from(this.galleryGrid.children);
-    
-    console.log('Total gallery items found:', galleryItems.length);
-    
-    if (galleryItems.length === 0) {
-      this.showMessage('No items to reorder', 'error');
-      return;
-    }
-    
-    // Validate that all items are gallery items
-    const validItems = galleryItems.filter(item => 
-      item.classList.contains('admin-gallery-item')
-    );
-    
-    if (validItems.length !== galleryItems.length) {
-      console.warn(`Found ${galleryItems.length} items but only ${validItems.length} are valid gallery items`);
-    }
-    
-    const paintingOrder = [];
-    const missingIds = [];
-    
-    // Build the order array with validation
-    validItems.forEach((item, index) => {
-      const paintingId = item.dataset.paintingId;
-      
-      if (!paintingId) {
-        console.error(`Missing painting ID for item at index ${index}:`, {
-          className: item.className,
-          dataset: item.dataset
-        });
-        missingIds.push(index);
-        return;
-      }
-      
-      const numericId = parseInt(paintingId, 10);
-      if (isNaN(numericId)) {
-        console.error(`Invalid painting ID at index ${index}:`, paintingId);
-        missingIds.push(index);
-        return;
-      }
-      
-      paintingOrder.push({
-        id: numericId,
-        order: index + 1 // Start from 1 instead of 0 for cleaner ordering
-      });
-    });
-    
-    // Check for missing IDs
-    if (missingIds.length > 0) {
-      throw new Error(`Missing or invalid painting IDs at positions: ${missingIds.join(', ')}`);
-    }
-    
-    if (paintingOrder.length === 0) {
-      throw new Error('No valid paintings found to reorder');
-    }
-    
-    console.log('Sending order data:', paintingOrder);
-    
-    this.showLoading(true);
-    
-    // Send the reorder request
-    const response = await fetch('/api/admin/paintings/reorder', {
-      method: 'POST', // Make sure this matches your server endpoint
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ order: paintingOrder })
-    });
-    
-    const responseText = await response.text();
-    console.log('Server response status:', response.status);
-    console.log('Server response text:', responseText);
-    
-    let responseData;
+  async saveOrder() {
     try {
-      responseData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse response:', parseError);
-      throw new Error(`Server returned invalid JSON: ${response.status} ${response.statusText}`);
+      console.log('Starting saveOrder process...');
+      
+      // Get the current visual order from the DOM
+      const galleryItems = Array.from(this.galleryGrid.children);
+      
+      if (galleryItems.length === 0) {
+        this.showMessage('No items to reorder', 'error');
+        return;
+      }
+      
+      // Calculate the maximum order value to assign proper descending order
+      const maxOrderValue = Math.max(...this.paintings.map(p => p.order || 0)) + galleryItems.length;
+      
+      const paintingOrder = [];
+      
+      // Build the order array - first item in DOM gets highest order (appears first)
+      galleryItems.forEach((item, visualIndex) => {
+        const paintingId = item.dataset.paintingId;
+        
+        if (!paintingId) {
+          console.error(`Missing painting ID for item at visual index ${visualIndex}`);
+          return;
+        }
+        
+        const numericId = parseInt(paintingId, 10);
+        if (isNaN(numericId)) {
+          console.error(`Invalid painting ID: ${paintingId}`);
+          return;
+        }
+        
+        // First item (index 0) gets the highest order value
+        const newOrder = maxOrderValue - visualIndex;
+        
+        paintingOrder.push({
+          id: numericId,
+          order: newOrder
+        });
+        
+        // Update the visual order info
+        const orderInfo = item.querySelector('.order-info');
+        if (orderInfo) {
+          orderInfo.textContent = `Order: ${newOrder}`;
+        }
+      });
+      
+      if (paintingOrder.length === 0) {
+        throw new Error('No valid paintings found to reorder');
+      }
+      
+      console.log('Sending order data:', paintingOrder);
+      
+      this.showLoading(true);
+      
+      // Send the reorder request
+      const response = await fetch('/api/admin/paintings/reorder', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ order: paintingOrder })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || errorData?.error || `Server error: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+      
+      const responseData = await response.json();
+      console.log('Order saved successfully:', responseData);
+      
+      // Success
+      this.showMessage(`Order saved successfully! Updated ${responseData.updatedCount} paintings.`, 'success');
+      this.toggleReorderMode(); // Exit reorder mode
+      
+      // Reload paintings to reflect new order from database
+      await this.loadPaintings();
+      
+    } catch (error) {
+      console.error('Error in saveOrder:', error);
+      this.showMessage(`Failed to save order: ${error.message}`, 'error');
+    } finally {
+      this.showLoading(false);
     }
-    
-    if (!response.ok) {
-      const errorMessage = responseData.message || responseData.error || `Server error: ${response.status}`;
-      console.error('Server error response:', responseData);
-      throw new Error(errorMessage);
-    }
-    
-    console.log('Order saved successfully:', responseData);
-    
-    // Success
-    this.showMessage(`Order saved successfully! Updated ${responseData.updatedCount} paintings.`, 'success');
-    this.toggleReorderMode(); // Exit reorder mode
-    
-    // Reload paintings to reflect new order
-    await this.loadPaintings();
-    
-  } catch (error) {
-    console.error('Error in saveOrder:', error);
-    this.showMessage(`Failed to save order: ${error.message}`, 'error');
-  } finally {
-    this.showLoading(false);
   }
-}
 
   handleCategoryFilter(e) {
     document.querySelectorAll('.category-button').forEach(btn => {
@@ -498,70 +464,94 @@ async saveOrder() {
     this.loadPaintings();
   }
 
- // Replace your drag and drop handlers with these improved versions
-
-handleDragStart(e) {
-  if (!this.isReorderMode) return;
-  
-  // Ensure we're dragging the gallery item, not a nested element
-  let dragTarget = e.target;
-  if (!dragTarget.classList.contains('admin-gallery-item')) {
-    dragTarget = dragTarget.closest('.admin-gallery-item');
-  }
-  
-  if (!dragTarget) return;
-  
-  this.draggedElement = dragTarget;
-  dragTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/html', dragTarget.outerHTML);
-}
-
-handleDragOver(e) {
-  if (!this.isReorderMode || !this.draggedElement) return;
-  
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  
-  const afterElement = this.getDragAfterElement(this.galleryGrid, e.clientY);
-  if (afterElement == null) {
-    this.galleryGrid.appendChild(this.draggedElement);
-  } else {
-    this.galleryGrid.insertBefore(this.draggedElement, afterElement);
-  }
-}
-
-handleDrop(e) {
-  if (!this.isReorderMode) return;
-  e.preventDefault();
-  e.stopPropagation();
-}
-
-handleDragEnd(e) {
-  if (!this.isReorderMode) return;
-  
-  // Clean up dragging state
-  const allItems = this.galleryGrid.querySelectorAll('.admin-gallery-item');
-  allItems.forEach(item => item.classList.remove('dragging'));
-  
-  this.draggedElement = null;
-}
-
-getDragAfterElement(container, y) {
-  // Only consider actual gallery items, not nested elements
-  const draggableElements = [...container.querySelectorAll('.admin-gallery-item:not(.dragging)')];
-  
-  return draggableElements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
-    
-    if (offset < 0 && offset > closest.offset) {
-      return { offset: offset, element: child };
-    } else {
-      return closest;
+  // Improved drag and drop handlers
+  handleDragStart(e) {
+    if (!this.isReorderMode) {
+      e.preventDefault();
+      return;
     }
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
+    
+    // Find the gallery item element
+    let dragTarget = e.target;
+    if (!dragTarget.classList.contains('admin-gallery-item')) {
+      dragTarget = dragTarget.closest('.admin-gallery-item');
+    }
+    
+    if (!dragTarget) {
+      e.preventDefault();
+      return;
+    }
+    
+    this.draggedElement = dragTarget;
+    dragTarget.classList.add('dragging');
+    
+    // Set drag data
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', '');
+    
+    console.log('Drag started for painting:', dragTarget.dataset.paintingId);
+  }
+
+  handleDragOver(e) {
+    if (!this.isReorderMode || !this.draggedElement) return;
+    
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const afterElement = this.getDragAfterElement(e.clientY);
+    const dragging = this.draggedElement;
+    
+    if (afterElement == null) {
+      this.galleryGrid.appendChild(dragging);
+    } else {
+      this.galleryGrid.insertBefore(dragging, afterElement);
+    }
+  }
+
+  handleDrop(e) {
+    if (!this.isReorderMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Drop completed');
+  }
+
+  handleDragEnd(e) {
+    if (!this.isReorderMode) return;
+    
+    // Clean up dragging state
+    if (this.draggedElement) {
+      this.draggedElement.classList.remove('dragging');
+      this.draggedElement = null;
+    }
+    
+    // Remove dragging class from all items
+    document.querySelectorAll('.admin-gallery-item').forEach(item => {
+      item.classList.remove('dragging');
+    });
+    
+    console.log('Drag ended - new order:', 
+      Array.from(this.galleryGrid.children).map(item => ({
+        id: item.dataset.paintingId,
+        title: item.querySelector('.gallery-title').textContent
+      }))
+    );
+  }
+
+  getDragAfterElement(y) {
+    const draggableElements = [...this.galleryGrid.querySelectorAll('.admin-gallery-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
 
   previewImage(file) {
     if (file) {
@@ -588,12 +578,30 @@ getDragAfterElement(container, y) {
     const messageEl = document.createElement('div');
     messageEl.className = `message ${type}`;
     messageEl.textContent = message;
+    messageEl.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      ${type === 'success' ? 'background-color: #28a745;' : ''}
+      ${type === 'error' ? 'background-color: #dc3545;' : ''}
+      ${type === 'info' ? 'background-color: #17a2b8;' : ''}
+    `;
+    
     document.body.appendChild(messageEl);
     
-    setTimeout(() => messageEl.classList.add('show'), 100);
+    setTimeout(() => {
+      messageEl.style.transform = 'translateX(0)';
+    }, 100);
     
     setTimeout(() => {
-      messageEl.classList.remove('show');
+      messageEl.style.transform = 'translateX(100%)';
       setTimeout(() => messageEl.remove(), 300);
     }, 3000);
   }
