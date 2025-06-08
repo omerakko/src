@@ -1,42 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
-
-
-    <title>Artist Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Portfolio | Home</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 h-screen m-0 p-0">
-    <div class="relative w-full h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('assets/banner/test.jpeg');">
-        <!-- Menu and content -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <button 
-                id="menu-button" 
-                class="bg-gray-800 text-white px-8 py-4 text-lg rounded-md focus:outline-none"
-                onclick="toggleMenu()">
-                Menu
-            </button>
-            <ul id="menu" class="mt-4">
-                <li class="bg-gray-800 rounded-md mb-2">
-                    <a href="content/biography.html" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Biography</a>
-                </li>
-                <li class="bg-gray-800 rounded-md mb-2">
-                    <a href="content/painting.html" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Painting</a>
-                </li>
-                <li class="bg-gray-800 rounded-md">
-                    <a href="#exhibitions" class="block text-white px-8 py-4 text-lg hover:bg-gray-700 rounded-md">Exhibitions</a>
-                </li>
-            </ul>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">Nilufer Orel</a>
+      <div class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="pages/paintings.html">Paintings</a>
+        <a href="pages/biography.html">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <img src="assets/banner/test.jpeg" alt="Artist's featured painting" class="hero-image">
+    <div class="hero-content">
+      <h1 class="hero-title">Nilufer Orel</h1>
+      <p class="hero-subtitle">Contemporary painter exploring themes of nature and human connection</p>
+      <a href="pages/paintings.html" class="hero-button">View Gallery</a>
+    </div>
+  </section>
+
+  <!-- Featured Work Section -->
+  <section class="featured-work">
+    <h2 class="section-title">Featured Works</h2>
+    <div class="featured-grid">
+      <div class="featured-item">
+        <img src="../assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg" alt="Painting 1" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Summer Dreams</h3>
+          <p class="featured-year">2023</p>
         </div>
+      </div>
+      <div class="featured-item">
+        <img src="../assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg" alt="Painting 2" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Mountain Solitude</h3>
+          <p class="featured-year">2022</p>
+        </div>
+      </div>
+      <div class="featured-item">
+        <img src="../assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg" alt="Painting 3" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">Urban Poetry</h3>
+          <p class="featured-year">2024</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+      <span class="close-modal">&times;</span>
+      <div class="modal-content">
+        <img class="modal-image" id="modalImage">
+        <div class="modal-caption" id="modalCaption"></div>
+      </div>
     </div>
 
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="social-links">
+        <a href="https://www.instagram.com/nilufer.orel/">Instagram</a>
 
-
-    <script src="scripts/mainPage.js"></script>
+        <a href="#">Facebook</a>
+      </div>
+      <p class="copyright">© 2025 Nilufer Orel. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="scripts/main-js.js"></script>
 </body>
 </html>

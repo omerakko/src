@@ -227,7 +227,7 @@ app.get('/api/paintings', async (req, res) => {
     const offset = (page - 1) * perPage;
     
     // Build order clause
-    let order = [['order', 'ASC'], [sortBy, sortOrder]];
+    let order = [['order', 'DESC'], [sortBy, sortOrder]];
 
     // Execute query with count
     const { count, rows: paintings } = await Painting.findAndCountAll({
