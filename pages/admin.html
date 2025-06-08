@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | Paintings Management</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../styles/admin.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="../index.html" class="logo">Nilufer Orel</a>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="paintings.html">Paintings</a>
+        <a href="biography.html">About</a>
+        <a href="admin.html" class="active">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Paintings Management</h1>
+    <p class="page-description">Add, edit, remove, and reorder your artwork collection.</p>
+  </header>
+
+  <!-- Admin Controls -->
+  <section class="admin-controls">
+    <div class="control-buttons">
+      <button class="btn-primary" id="addPaintingBtn">
+        <span class="btn-icon">+</span>
+        Add New Painting
+      </button>
+      <button class="btn-secondary" id="toggleReorderBtn">
+        <span class="btn-icon">↕</span>
+        <span class="btn-text">Enable Reorder</span>
+      </button>
+      <button class="btn-secondary" id="saveOrderBtn" style="display: none;">
+        <span class="btn-icon">✓</span>
+        Save Order
+      </button>
+    </div>
+
+    <!-- Gallery Categories (for filtering while editing) -->
+    <div class="gallery-categories">
+      <button class="category-button active" data-category="All Works">All Works</button>
+      <button class="category-button" data-category="Nature">Nature</button>
+      <button class="category-button" data-category="Abstract">Abstract</button>
+      <button class="category-button" data-category="Portraits">Portraits</button>
+      <button class="category-button" data-category="Landscapes">Landscapes</button>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery-container">
+    <!-- Gallery Grid -->
+    <div class="gallery-grid" id="adminGalleryGrid">
+      <!-- Paintings will be loaded here -->
+    </div>
+  </section>
+
+  <!-- Add/Edit Painting Modal -->
+  <div class="modal" id="paintingModal">
+    <div class="modal-content painting-form-modal">
+      <span class="close-modal" id="closePaintingModal">&times;</span>
+      <h2 id="modalTitle">Add New Painting</h2>
+      
+      <form id="paintingForm" enctype="multipart/form-data">
+        <input type="hidden" id="paintingId" name="id">
+        
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="medium">Medium *</label>
+            <input type="text" id="medium" name="medium" required placeholder="e.g., Oil on Canvas">
+          </div>
+          <div class="form-group">
+            <label for="year">Year *</label>
+            <input type="number" id="year" name="year" required min="1900" max="2030">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="imageFile">Image</label>
+          <input type="file" id="imageFile" name="imageFile" accept="image/*">
+          <div class="current-image" id="currentImagePreview" style="display: none;">
+            <img id="currentImage" src="" alt="Current image">
+            <p>Current image</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="categories">Categories</label>
+          <div class="checkbox-group" id="categoriesGroup">
+            <label><input type="checkbox" name="categories" value="Nature"> Nature</label>
+            <label><input type="checkbox" name="categories" value="Abstract"> Abstract</label>
+            <label><input type="checkbox" name="categories" value="Portraits"> Portraits</label>
+            <label><input type="checkbox" name="categories" value="Landscapes"> Landscapes</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Price ($)</label>
+            <input type="number" id="price" name="price" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label for="isavailable">Available for Sale</label>
+            <select id="isavailable" name="isavailable">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveBtn">Save Painting</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content confirm-modal">
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <p id="confirmMessage">Are you sure you want to perform this action?</p>
+      <div class="form-buttons">
+        <button type="button" class="btn-secondary" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>Processing...</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="social-links">
+        <a href="https://www.instagram.com/nilufer.orel/">Instagram</a>
+        <a href="#">Facebook</a>
+      </div>
+      <p class="copyright">© 2025 Nilufer Orel. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../scripts/admin.js"></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+<!-- Firebase Authentication -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+
+
+
+
+</body>
+</html>
