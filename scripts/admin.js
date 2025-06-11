@@ -1,5 +1,124 @@
+/**
+ * Admin Authentication Helper
+ * Add this to your admin.js file or include it separately
+ */
+
+class AdminAuth {
+    constructor() {
+        this.token = localStorage.getItem('adminToken');
+        this.isAuthenticated = false;
+        this.init();
+    }
+
+    async init() {
+        if (this.token) {
+            await this.verifyToken();
+        } else {
+            this.redirectToLogin();
+        }
+    }
+
+    async verifyToken() {
+        try {
+            const response = await fetch('/api/auth/verify', {
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.isAuthenticated = true;
+                this.user = data.user;
+                this.setupLogoutHandler();
+            } else {
+                this.logout();
+            }
+        } catch (error) {
+            console.error('Token verification error:', error);
+            this.logout();
+        }
+    }
+
+    setupLogoutHandler() {
+        // Add logout button to admin interface
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.logout());
+        }
+
+
+    }
+
+    logout() {
+        // Clear token
+        localStorage.removeItem('adminToken');
+        this.token = null;
+        this.isAuthenticated = false;
+        this.user = null;
+
+        // Optional: Call logout endpoint
+        if (this.token) {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                }
+            }).catch(error => console.error('Logout error:', error));
+        }
+
+        // Redirect to login
+        this.redirectToLogin();
+    }
+
+    redirectToLogin() {
+        window.location.href = '/pages/login.html';
+    }
+
+    getAuthHeaders() {
+        return {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+        };
+    }
+
+async authenticatedFetch(url, options = {}) {
+    if (!this.isAuthenticated) {
+        throw new Error('Not authenticated');
+    }
+
+    // Get base auth headers
+    const authHeaders = this.getAuthHeaders();
+    
+    // If body is FormData, don't add Content-Type (let browser handle it)
+    const headers = options.body instanceof FormData 
+        ? { 
+            'Authorization': authHeaders.Authorization,
+            ...options.headers 
+          }
+        : {
+            ...authHeaders,
+            ...options.headers
+          };
+
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
+
+    // Handle token expiration
+    if (response.status === 401 || response.status === 403) {
+        this.logout();
+        throw new Error('Authentication expired');
+    }
+
+    return response;
+}
+}
+
 class PaintingAdmin {
-  constructor() {
+  constructor(adminAuth) {
+    this.adminAuth = adminAuth; // ADD this line
     this.paintings = [];
     this.currentCategory = 'All Works';
     this.isReorderMode = false;
@@ -10,6 +129,11 @@ class PaintingAdmin {
     this.bindEvents();
     this.loadPaintings();
   }
+
+    async authenticatedFetch(url, options = {}) {
+    return this.adminAuth.authenticatedFetch(url, options);
+  }
+
 
   initializeElements() {
     // Modal elements
@@ -248,14 +372,14 @@ class PaintingAdmin {
       
       if (isEdit) {
         // Update existing painting
-        response = await fetch(`/api/admin/paintings/${paintingId}`, {
+        response = await this.authenticatedFetch(`/api/admin/paintings/${paintingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(paintingData)
         });
       } else {
         // Create new painting - it will automatically get the highest order value
-        response = await fetch('/api/admin/paintings', {
+        response = await this.authenticatedFetch('/api/admin/paintings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(paintingData)
@@ -293,7 +417,7 @@ class PaintingAdmin {
     const formData = new FormData();
     formData.append('image', imageFile);
     
-    const response = await fetch(`/api/admin/paintings/${paintingId}/image`, {
+    const response = await this.authenticatedFetch(`/api/admin/paintings/${paintingId}/image`, {
       method: 'POST',
       body: formData
     });
@@ -317,7 +441,7 @@ class PaintingAdmin {
     this.showLoading(true);
     
     try {
-      const response = await fetch(`/api/admin/paintings/${paintingId}`, {
+      const response = await this.authenticatedFetch(`/api/admin/paintings/${paintingId}`, {
         method: 'DELETE'
       });
       
@@ -421,7 +545,7 @@ class PaintingAdmin {
       this.showLoading(true);
       
       // Send the reorder request
-      const response = await fetch('/api/admin/paintings/reorder', {
+      const response = await this.authenticatedFetch('/api/admin/paintings/reorder', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -607,7 +731,27 @@ class PaintingAdmin {
   }
 }
 
-// Initialize admin interface when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  new PaintingAdmin();
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize authentication first
+  adminAuth = new AdminAuth();
+  
+  // Wait for auth to complete
+  let authCheckCount = 0;
+  const maxAuthChecks = 50; // 5 seconds max wait
+  
+  while (!adminAuth.isAuthenticated && authCheckCount < maxAuthChecks) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    authCheckCount++;
+  }
+  
+  // If authenticated, initialize the admin panel
+  if (adminAuth.isAuthenticated) {
+    new PaintingAdmin(adminAuth);
+  }
+  // If not authenticated, AdminAuth will handle the redirect
 });

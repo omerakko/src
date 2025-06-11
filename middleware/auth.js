@@ -1,30 +1,59 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
 
-const requireAuth = (req, res, next) => {
-  // Check session first
-  if (req.session && req.session.isAdmin) {
-    return next();
-  }
-  
-  // Check JWT token
-  const token = req.headers.authorization?.split(' ')[1] || req.session.token;
-  
+/**
+ * Middleware to verify JWT token
+ */
+const verifyToken = (req, res, next) => {
+  // Get token from header
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
   if (!token) {
-    return res.status(401).json({ error: 'Access denied. No token provided.' });
+    return res.status(401).json({ 
+      error: 'Access denied', 
+      message: 'No token provided' 
+    });
   }
-  
+
   try {
+    // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
-    if (decoded.isAdmin) {
-      req.user = decoded;
-      return next();
-    }
-    return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    req.user = decoded;
+    next();
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid token.' });
+    console.error('Token verification error:', error);
+    return res.status(403).json({ 
+      error: 'Invalid token',
+      message: 'Token is not valid or has expired'
+    });
   }
 };
 
-module.exports = { requireAuth };
+/**
+ * Generate JWT token
+ */
+const generateToken = (payload, expiresIn = '24h') => {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+};
+
+/**
+ * Verify if user is admin (you can extend this for role-based access)
+ */
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ 
+      error: 'Access denied', 
+      message: 'Admin privileges required' 
+    });
+  }
+  next();
+};
+
+module.exports = {
+  verifyToken,
+  generateToken,
+  requireAdmin,
+  JWT_SECRET
+};

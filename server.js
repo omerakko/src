@@ -8,16 +8,14 @@ const { Sequelize, DataTypes, Op } = require('sequelize');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-//const verifyFirebaseToken = require('./middleware/firebaseAuth');
+
+
+// Add these imports at the top of your server.js file (after existing imports)
+const { verifyToken, requireAdmin } = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
 
 
 
-/*
-const validator = require('validator'); // if not already imported
-const session = require('express-session');
-const authRoutes = require('./routes/admin-auth');
-const { requireAuth } = require('./middleware/auth');
-*/
 
 // Database connection
 const sequelize = new Sequelize(
@@ -167,11 +165,23 @@ const PaintingCategory = sequelize.define('PaintingCategory', {
 Painting.belongsToMany(Category, { through: PaintingCategory, foreignKey: 'paintingId' });
 Category.belongsToMany(Painting, { through: PaintingCategory, foreignKey: 'categoryId' });
 
-// Serve static files and middleware
+// Serve static files
 app.use(express.static(path.join(__dirname)));
-app.use(express.json());
 
+// Apply JSON parsing selectively - NOT globally
+app.use('/api/auth', express.json({ limit: '50mb' }));
+app.use('/api/admin', (req, res, next) => {
+  // Skip JSON parsing for image upload routes
+  if (req.path.includes('/image') && req.method === 'POST') {
+    return next();
+  }
+  express.json({ limit: '50mb' })(req, res, next);
+});
 
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+app.use('/api/auth', authRoutes);
+// ... rest of your routes
 
 
 /**
@@ -559,7 +569,7 @@ sequelize.query(`
  */
 
 // Create new painting
-app.post('/api/admin/paintings' , async (req, res) => {
+app.post('/api/admin/paintings' ,verifyToken, requireAdmin, async (req, res) => {
   try {
 
     const paintingData = req.body;
@@ -577,7 +587,7 @@ app.post('/api/admin/paintings' , async (req, res) => {
 });
 
 // Update existing painting
-app.put('/api/admin/paintings/:id' , async (req, res) => {
+app.put('/api/admin/paintings/:id' ,verifyToken, requireAdmin, async (req, res) => {
   try {
     const paintingId = req.params.id;
     const updateData = req.body;
@@ -600,7 +610,7 @@ app.put('/api/admin/paintings/:id' , async (req, res) => {
 });
 
 // Delete painting
-app.delete('/api/admin/paintings/:id' , async (req, res) => {
+app.delete('/api/admin/paintings/:id' ,verifyToken, requireAdmin, async (req, res) => {
   try {
     const paintingId = req.params.id;
     
@@ -631,8 +641,12 @@ app.delete('/api/admin/paintings/:id' , async (req, res) => {
 });
 
 // Upload image for painting
-app.post('/api/admin/paintings/:id/image', upload.single('image') , async (req, res) => {
+app.post('/api/admin/paintings/:id/image', verifyToken, requireAdmin, upload.single('image'), async (req, res) => {
   try {
+     console.log('Content-Type:', req.headers['content-type']);
+  console.log('Authorization:', req.headers.authorization);
+  console.log('Body type:', typeof req.body);
+  console.log('Files:', req.files);
     const paintingId = req.params.id;
     
     if (!req.file) {
@@ -658,7 +672,7 @@ app.post('/api/admin/paintings/:id/image', upload.single('image') , async (req, 
 
 // Fixed reorder paintings endpoint - Replace the existing one in your server.js
 
-app.post('/api/admin/paintings/reorder' , async (req, res) => {
+app.post('/api/admin/paintings/reorder' ,verifyToken, requireAdmin, async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
@@ -773,6 +787,9 @@ app.post('/api/admin/paintings/reorder' , async (req, res) => {
   }
 });
 
+app.get('/pages/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'login.html'));
+});
 
 
 // Serve admin page

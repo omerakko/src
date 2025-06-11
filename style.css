@@ -999,3 +999,48 @@ nav.scrolled {
 .message.error {
   background: #ef4444;
 }
+
+/* Logout Button Styles */
+.logout-btn {
+  padding: 8px 16px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+.logout-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+.logout-btn .btn-icon {
+  font-size: 16px;
+}
+
+/* Responsive adjustments for navigation */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .logout-btn {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+}
