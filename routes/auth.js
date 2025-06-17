@@ -6,9 +6,9 @@ const router = express.Router();
 // In production, store this in a database
 // For now, we'll use a simple in-memory admin user
 const ADMIN_CREDENTIALS = {
-  username: process.env.ADMIN_USERNAME || 'admin',
+  username: process.env.ADMIN_USERNAME,
   // Default password is 'admin123' - CHANGE THIS IN PRODUCTION
-  passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2b$10$WK8sXRcVET.dLoIngrOFceEcHbK.jtuDtFX/BknlFMOaLrJH8XSfa'
+  passwordHash: process.env.ADMIN_PASSWORD_HASH
 };
 
 /**
