@@ -63,45 +63,50 @@
       <p>Ultimately, my aim is to create work that resonates on multiple levels—visually stimulating, emotionally evocative, and intellectually engaging. I hope to inspire viewers to see the world around them with fresh eyes and a renewed sense of wonder.</p>
     </div>
 
-   <!-- Exhibitions Section -->
-    <div class="cv-section">
-      <h2>Exhibitions</h2>
-      <div class="cv-category">
-        <div class="cv-item">
-          <p class="cv-year">2024</p>
-          <p class="cv-description">Oasis Art Gallery, Bodrum, Karma exhibition</p>
-        </div>
-        <div class="cv-item">
-          <p class="cv-year">2023</p>
-          <p class="cv-description">Bodrum Art Fair, Bodrum, Private stand</p>
-        </div>
-        <div class="cv-item">
-          <p class="cv-year">2023</p>
-          <p class="cv-description">Denizbank Art Gallery, Karma exhibition</p>
+  <!-- Exhibitions Section - Expandable -->
+    <div class="expandable-section">
+      <div class="section-header" onclick="toggleSection('exhibitions')">
+        <h2>Exhibitions</h2>
+        <span class="expand-icon" id="exhibitionsIcon">+</span>
+      </div>
+      <div class="section-content" id="exhibitionsContent">
+        <div class="cv-category">
+          <div class="cv-item">
+            <p class="cv-year">2024</p>
+            <p class="cv-description">Oasis Art Gallery, Bodrum, Karma exhibition</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2023</p>
+            <p class="cv-description">Bodrum Art Fair, Bodrum, Private stand</p>
+          </div>
+          <div class="cv-item">
+            <p class="cv-year">2023</p>
+            <p class="cv-description">Denizbank Art Gallery, Karma exhibition</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Techniques Section - Expandable -->
-    <div class="techniques-section">
-      <div class="techniques-header" onclick="toggleTechniques()">
+    <div class="expandable-section">
+      <div class="section-header" onclick="toggleSection('techniques')">
         <h2>Artistic Techniques</h2>
-        <span class="expand-icon" id="expandIcon">+</span>
+        <span class="expand-icon" id="techniquesIcon">+</span>
       </div>
-      <div class="techniques-content" id="techniquesContent">
+      <div class="section-content" id="techniquesContent">
         <div class="techniques-grid">
           <div class="technique-item">
-            <div class="technique-title">Linocut</div>
+            <div class="technique-title">Baskı Tekniği (Linol)</div>
             <div class="technique-description">Linocut printmaking technique creating bold, expressive prints with rich textures and striking contrasts.</div>
           </div>
           
           <div class="technique-item">
-            <div class="technique-title">Layered Acrylic Work</div>
+            <div class="technique-title">Katmanlı Akrilik Çalışması</div>
             <div class="technique-description">Layered acrylic work building depth and complexity through multiple transparent and opaque layers.</div>
           </div>
           
           <div class="technique-item">
-            <div class="technique-title">Acrylic Paintings</div>
+            <div class="technique-title">Akrilik Çalışmaları</div>
             <div class="technique-description">Acrylic paintings exploring vibrant colors and dynamic compositions with quick-drying versatility.</div>
           </div>
           

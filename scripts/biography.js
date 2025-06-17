@@ -1,7 +1,7 @@
 
-    function toggleTechniques() {
-      const content = document.getElementById('techniquesContent');
-      const icon = document.getElementById('expandIcon');
+  function toggleSection(sectionId) {
+      const content = document.getElementById(sectionId + 'Content');
+      const icon = document.getElementById(sectionId + 'Icon');
       
       if (content.classList.contains('expanded')) {
         content.classList.remove('expanded');
@@ -10,10 +10,9 @@
       } else {
         content.classList.add('expanded');
         icon.classList.add('expanded');
-        icon.textContent = '−';
+        icon.textContent = '+';
       }
     }
-
 document.addEventListener('DOMContentLoaded', async () => {
  
   // If authenticated, initialize the admin panel
