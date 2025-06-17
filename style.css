@@ -1044,3 +1044,101 @@ nav.scrolled {
     align-self: flex-start;
   }
 }
+
+
+ .techniques-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .technique-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #2c3e50;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .technique-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .technique-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    
+    .technique-description {
+      color: #666;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+    
+    .cv-section {
+      margin-bottom: 40px;
+    }
+    
+    .techniques-section {
+      margin-top: 40px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .techniques-header {
+      background: #f8f9fa;
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s ease;
+    }
+    
+    .techniques-header:hover {
+      background: #e9ecef;
+    }
+    
+    .techniques-header h2 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    .expand-icon {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c3e50;
+      transition: transform 0.3s ease;
+    }
+    
+    .expand-icon.expanded {
+      transform: rotate(45deg);
+    }
+    
+    .techniques-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: white;
+    }
+    
+    .techniques-content.expanded {
+      max-height: 1000px;
+      padding: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .techniques-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .techniques-content.expanded {
+        max-height: 1500px;
+      }
+
+    }

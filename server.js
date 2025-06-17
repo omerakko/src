@@ -206,11 +206,11 @@ app.get('/api/paintings', async (req, res) => {
     const where = { isavailable: true };
     
     // Apply category filter (using array contains)
-    if (category && category !== 'All Works') {
-      console.log('filter value for category:', category);
-
-      where[Op.and] = literal(`categories @> ARRAY['${category}']::text[]`);
-    }
+ // Apply category filter (using array contains)
+if (category && category !== 'All Works') {
+  console.log('filter value for category:', category);
+  where[Op.and] = literal(`'${category}' = ANY(categories)`);
+}
     
     // Apply year filter
     if (year) {

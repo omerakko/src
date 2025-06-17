@@ -27,7 +27,7 @@
 
     <!-- Artist Bio -->
     <div class="artist-bio">
-      <img src="..\assets\images\artist.jpg" alt="Artist portrait" class="artist-image">
+      <img src="..\assets\images\artistPhoto.jpg" alt="Artist portrait" class="artist-image">
       <div class="bio-content">
         <h2>Biography</h2>
         <p>Nilüfer Örel, Türk bir sanatçıdır.
@@ -63,70 +63,61 @@
       <p>Ultimately, my aim is to create work that resonates on multiple levels—visually stimulating, emotionally evocative, and intellectually engaging. I hope to inspire viewers to see the world around them with fresh eyes and a renewed sense of wonder.</p>
     </div>
 
-    <!-- CV Section -->
+   <!-- Exhibitions Section -->
     <div class="cv-section">
-      <h2>Curriculum Vitae</h2>
-      <div class="cv-grid">
-        <!-- Exhibitions -->
-        <div class="cv-category">
-          <h3>Exhibitions</h3>
-          <div class="cv-item">
-            <p class="cv-year">2024</p>
-            <p class="cv-description">"Nature's Dialogue," Solo Exhibition, Gallery Name, City</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2023</p>
-            <p class="cv-description">"Contemporary Perspectives," Group Show, Museum Name, City</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2022</p>
-            <p class="cv-description">"Emerging Voices," Gallery Name, City</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2021</p>
-            <p class="cv-description">"Urban Rhythms," International Art Fair, City</p>
-          </div>
+      <h2>Exhibitions</h2>
+      <div class="cv-category">
+        <div class="cv-item">
+          <p class="cv-year">2024</p>
+          <p class="cv-description">Oasis Art Gallery, Bodrum, Karma exhibition</p>
         </div>
-
-        <!-- Education & Awards -->
-        <div class="cv-category">
-          <h3>Education & Awards</h3>
-          <div class="cv-item">
-            <p class="cv-year">2022</p>
-            <p class="cv-description">Artist Residency Program, Institution Name, City</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2021</p>
-            <p class="cv-description">Excellence in Arts Award, Organization Name</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2018-2020</p>
-            <p class="cv-description">MFA in Fine Arts, University Name, City</p>
-          </div>
-          <div class="cv-item">
-            <p class="cv-year">2014-2018</p>
-            <p class="cv-description">BFA in Painting, University Name, City</p>
-          </div>
+        <div class="cv-item">
+          <p class="cv-year">2023</p>
+          <p class="cv-description">Bodrum Art Fair, Bodrum, Private stand</p>
         </div>
+        <div class="cv-item">
+          <p class="cv-year">2023</p>
+          <p class="cv-description">Denizbank Art Gallery, Karma exhibition</p>
+        </div>
+      </div>
+    </div>
 
-        <!-- Publications & Press -->
-        <div class="cv-category">
-          <h3>Publications & Press</h3>
-          <div class="cv-item">
-            <p class="cv-year">2024</p>
-            <p class="cv-description">"Emerging Talents to Watch," Art Magazine Name</p>
+    <!-- Techniques Section - Expandable -->
+    <div class="techniques-section">
+      <div class="techniques-header" onclick="toggleTechniques()">
+        <h2>Artistic Techniques</h2>
+        <span class="expand-icon" id="expandIcon">+</span>
+      </div>
+      <div class="techniques-content" id="techniquesContent">
+        <div class="techniques-grid">
+          <div class="technique-item">
+            <div class="technique-title">Linocut</div>
+            <div class="technique-description">Linocut printmaking technique creating bold, expressive prints with rich textures and striking contrasts.</div>
           </div>
-          <div class="cv-item">
-            <p class="cv-year">2023</p>
-            <p class="cv-description">"The Evolution of Contemporary Painting," Book Title, Publisher</p>
+          
+          <div class="technique-item">
+            <div class="technique-title">Layered Acrylic Work</div>
+            <div class="technique-description">Layered acrylic work building depth and complexity through multiple transparent and opaque layers.</div>
           </div>
-          <div class="cv-item">
-            <p class="cv-year">2022</p>
-            <p class="cv-description">Artist Interview, Arts & Culture Publication Name</p>
+          
+          <div class="technique-item">
+            <div class="technique-title">Acrylic Paintings</div>
+            <div class="technique-description">Acrylic paintings exploring vibrant colors and dynamic compositions with quick-drying versatility.</div>
           </div>
-          <div class="cv-item">
-            <p class="cv-year">2021</p>
-            <p class="cv-description">"New Perspectives in Abstract Art," Journal Name</p>
+          
+          <div class="technique-item">
+            <div class="technique-title">Pastel</div>
+            <div class="technique-description">Soft pastel works capturing delicate color transitions and atmospheric effects with pure pigment.</div>
+          </div>
+          
+          <div class="technique-item">
+            <div class="technique-title">Mixed Media Canvas</div>
+            <div class="technique-description">Canvas works combining various materials and techniques to create rich, textural compositions.</div>
+          </div>
+          
+          <div class="technique-item">
+            <div class="technique-title">Mixed Media on Wood</div>
+            <div class="technique-description">Wood-based mixed media pieces incorporating natural textures with contemporary artistic elements.</div>
           </div>
         </div>
       </div>
@@ -154,6 +145,6 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="js/main.js"></script>
+   <script src="../scripts/biography.js"></script>
 </body>
 </html>
