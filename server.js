@@ -643,10 +643,7 @@ app.delete('/api/admin/paintings/:id' ,verifyToken, requireAdmin, async (req, re
 // Upload image for painting
 app.post('/api/admin/paintings/:id/image', verifyToken, requireAdmin, upload.single('image'), async (req, res) => {
   try {
-     console.log('Content-Type:', req.headers['content-type']);
-  console.log('Authorization:', req.headers.authorization);
-  console.log('Body type:', typeof req.body);
-  console.log('Files:', req.files);
+
     const paintingId = req.params.id;
     
     if (!req.file) {
