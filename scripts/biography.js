@@ -13,9 +13,3 @@
         icon.textContent = '+';
       }
     }
-document.addEventListener('DOMContentLoaded', async () => {
- 
-  // If authenticated, initialize the admin panel
-    new toggleTechniques()
-  
-});

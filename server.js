@@ -577,7 +577,6 @@ app.post('/api/admin/paintings' ,verifyToken, requireAdmin, async (req, res) => 
     // Get the highest order value and increment
     const maxOrder = await Painting.max('order') || 0;
     paintingData.order = maxOrder + 1;
-    
     const painting = await Painting.create(paintingData);
     res.status(201).json({ painting });
   } catch (error) {
@@ -649,6 +648,7 @@ app.post('/api/admin/paintings/:id/image', verifyToken, requireAdmin, upload.sin
     if (!req.file) {
       return res.status(400).json({ error: 'No image file provided' });
     }
+    
     const imageUrl = `/assets/images/${req.file.filename}`;
 
     
