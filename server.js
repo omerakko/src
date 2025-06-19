@@ -19,7 +19,7 @@ const authRoutes = require('./routes/auth');
 
 // Database connection
 const sequelize = new Sequelize(
-  process.env.DATABASE_URL || 'postgresql://postgres:omer@localhost:5432/painting_gallery',
+  process.env.DATABASE_URL,
   {
     dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
