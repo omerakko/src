@@ -2,6 +2,7 @@
  * server.js - Express server with PostgreSQL database for paintings
  * This handles pagination and filtering for the painting gallery
  */
+require('dotenv').config(); // CommonJS style
 
 const express = require('express');
 const { Sequelize, DataTypes, Op } = require('sequelize');
