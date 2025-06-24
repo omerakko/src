@@ -262,12 +262,12 @@ class PaintingAdmin {
     element.innerHTML = `
       <img src="${imageUrl}" alt="${title}" class="gallery-image" loading="lazy" 
            onerror="this.src='/assets/images/placeholder.jpg'">
+           ${soldBadge}
       <div class="gallery-caption">
         <h3 class="gallery-title">${title}</h3>
         <div class="gallery-details">
           <span>${medium}</span>
           <span>${year}</span>
-          <span>${soldBadge}</span>
         </div>
         <div class="order-info" style="font-size: 0.8em; color: #666;">
           Order: ${painting.order || 0}
