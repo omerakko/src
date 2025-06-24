@@ -253,6 +253,11 @@ class PaintingAdmin {
     const medium = painting.medium || 'Unknown Medium';
     const year = painting.year || 'Unknown Year';
     const imageUrl = painting.imageurl || '/assets/images/placeholder.jpg';
+    const isavailable= painting.isavailable;
+
+    const soldBadge = !isavailable
+    ? `<div class="sold-badge" title="Sold"></div>`
+    : '';
 
     element.innerHTML = `
       <img src="${imageUrl}" alt="${title}" class="gallery-image" loading="lazy" 
@@ -262,6 +267,7 @@ class PaintingAdmin {
         <div class="gallery-details">
           <span>${medium}</span>
           <span>${year}</span>
+          <span>${soldBadge}</span>
         </div>
         <div class="order-info" style="font-size: 0.8em; color: #666;">
           Order: ${painting.order || 0}

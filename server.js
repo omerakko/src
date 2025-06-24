@@ -204,7 +204,7 @@ app.get('/api/paintings', async (req, res) => {
 
     
     // Build where clause
-    const where = { isavailable: true };
+    const where = {};
     
     // Apply category filter (using array contains)
  // Apply category filter (using array contains)
@@ -276,7 +276,7 @@ if (category && category !== 'All Works') {
 app.get('/api/paintings/:id', async (req, res) => {
   try {
     const painting = await Painting.findByPk(req.params.id, {
-      where: { isavailable: true }
+      
     });
     
     if (!painting) {
@@ -299,7 +299,7 @@ app.get('/api/categories', async (req, res) => {
     const [results] = await sequelize.query(`
       SELECT DISTINCT unnest(categories) as category 
       FROM paintings 
-      WHERE "isavailable" = true 
+      
       AND categories IS NOT NULL 
       AND array_length(categories, 1) > 0
       ORDER BY category
@@ -320,7 +320,7 @@ app.get('/api/years', async (req, res) => {
   try {
     const years = await Painting.findAll({
       attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('year')), 'year']],
-      where: { isavailable: true },
+      
       order: [['year', 'DESC']],
       raw: true
     });
@@ -343,7 +343,7 @@ app.get('/api/price-range', async (req, res) => {
         [Sequelize.fn('MAX', Sequelize.col('price')), 'maxPrice']
       ],
       where: { 
-        isavailable: true,
+        
         price: { [Op.ne]: null }
       },
       raw: true

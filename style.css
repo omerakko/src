@@ -1156,3 +1156,24 @@ nav.scrolled {
         max-height: 1500px;
       }
     }
+
+
+
+    /* sold badge*/
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.sold-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  background-color: red;
+  border-radius: 50%;
+  border: 2px solid white;
+  z-index: 2;
+}
+

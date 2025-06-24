@@ -135,12 +135,19 @@ function renderPaintings(paintings) {
 function createPaintingElement(painting) {
   const galleryItem = document.createElement('div');
   galleryItem.className = 'gallery-item';
+
+  const soldBadge = !painting.isavailable
+    ? `<div class="sold-badge" title="Sold"></div>`
+    : '';
   
   galleryItem.innerHTML = `
+    <div class="image-wrapper">
     <img src="${painting.imageurl}" alt="${painting.title}" class="gallery-image" loading="lazy">
+    ${soldBadge}
+  </div>
     <div class="gallery-caption">
       <h3 class="gallery-title">${painting.title}</h3>
-      <div class="gallery-details">
+      <div class="gallery-details ">
         <span>${painting.medium}</span>
         <span>${painting.year}</span>
       </div>
