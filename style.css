@@ -1164,16 +1164,29 @@ nav.scrolled {
   position: relative;
   display: inline-block;
 }
-
 .sold-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 16px;
-  height: 16px;
+  bottom: 0.5em;
+  right: 0.5em;
+  width: 1.5em;
+  height: 1.5em;
   background-color: red;
   border-radius: 50%;
   border: 2px solid white;
-  z-index: 2;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .sold-badge {
+    width: 1.2em;
+    height: 1.2em;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sold-badge {
+    width: 1.8em;
+    height: 1.8em;
+  }
 }
 
