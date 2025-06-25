@@ -270,6 +270,48 @@ if (category && category !== 'All Works') {
   }
 });
 
+app.get('/api/admin/paintings/all',verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const category = req.query.category;
+    const sortBy = req.query.sortBy || 'order';
+    const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
+    const { literal } = require('sequelize');
+    
+    // Build where clause
+    const where = {};
+    
+    // Apply category filter
+    if (category && category !== 'All Works') {
+      where[Op.and] = literal(`'${category}' = ANY(categories)`);
+    }
+    
+    // Build order clause
+    let order = [['order', 'DESC'], [sortBy, sortOrder]];
+
+    // Get ALL paintings for admin (no limit)
+    const paintings = await Painting.findAll({
+      where,
+      order,
+      attributes: { exclude: ['updatedAt'] }
+    });
+    
+    const totalCount = paintings.length;
+    
+    res.json({
+      paintings,
+      totalCount,
+      message: `Loaded ${totalCount} paintings for admin`
+    });
+    
+  } catch (error) {
+    console.error('Error in /api/admin/paintings/all:', error);
+    res.status(500).json({ 
+      error: 'Server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
 /**
  * API endpoint for getting a single painting by ID
  */

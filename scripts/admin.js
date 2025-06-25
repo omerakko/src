@@ -188,21 +188,21 @@ class PaintingAdmin {
     });
   }
 
-  async loadPaintings() {
-    this.showLoading(true);
-    try {
-      const response = await fetch(`/api/paintings?perPage=100&category=${this.currentCategory}&sortBy=order&sortOrder=desc`);
-      const data = await response.json();
-      this.paintings = data.paintings;
-      console.log('Loaded paintings:', this.paintings.map(p => ({ id: p.id, title: p.title, order: p.order })));
-      this.renderPaintings();
-    } catch (error) {
-      console.error('Error loading paintings:', error);
-      this.showMessage('Failed to load paintings', 'error');
-    } finally {
-      this.showLoading(false);
-    }
+async loadPaintings() {
+  this.showLoading(true);
+  try {
+    const response = await this.authenticatedFetch(`/api/admin/paintings/all?category=${this.currentCategory}&sortBy=order&sortOrder=desc`);
+    const data = await response.json();
+    this.paintings = data.paintings;
+    console.log('Loaded paintings:', this.paintings.map(p => ({ id: p.id, title: p.title, order: p.order })));
+    this.renderPaintings();
+  } catch (error) {
+    console.error('Error loading paintings:', error);
+    this.showMessage('Failed to load paintings', 'error');
+  } finally {
+    this.showLoading(false);
   }
+}
 
   renderPaintings() {
     console.log('Rendering paintings:', this.paintings.length);
