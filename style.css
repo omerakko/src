@@ -1181,7 +1181,6 @@ nav.scrolled {
   height: 1.5em;
   background-color: red;
   border-radius: 50%;
-  border: 2px solid white;
   z-index: 0;
 }
 
