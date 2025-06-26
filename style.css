@@ -7,6 +7,28 @@ body, html {
     color: #333;
     background-color: #fafafa;
   }
+/* Add this at the very top of your CSS file */
+/* iOS Safari fixes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent zoom on input focus in iOS */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
   
   /* ==================== NAVIGATION ==================== */
   nav {
@@ -869,23 +891,27 @@ nav.scrolled {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  justify-content: flex-start; /* ensures left alignment on wrap */
+  justify-content: flex-start;
+  align-items: flex-start; /* Add this */
 }
 
 .checkbox-group label {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 16px; /* Increased from previous size */
   cursor: pointer;
-  flex: 0 1 auto; /* prevent labels from shrinking weirdly */
+  flex: 0 0 auto;
+  min-width: 0; /* Add this */
+  word-break: break-word; /* Add this */
 }
 
 .checkbox-group input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #333; /* consistent checkbox style */
+  accent-color: #333;
   flex-shrink: 0;
+  margin: 0; /* Add this */
 }
 
 .current-image {
@@ -1043,10 +1069,53 @@ nav.scrolled {
 
 /* Responsive adjustments for navigation */
 @media (max-width: 768px) {
-  .nav-links {
+  .nav-container {
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    padding: 15px 20px;
   }
+  
+  .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+  }
+  
+  .logout-btn {
+    margin-left: 0;
+    align-self: center;
+  }
+  
+  /* Existing styles... */
+  .hero-title {
+    font-size: 42px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title, 
+  .about-title {
+    font-size: 36px;
+  }
+
+  .artist-statement,
+  .contact-section {
+    padding: 30px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+}
   
   .logout-btn {
     margin-left: 0;
@@ -1200,14 +1269,76 @@ nav.scrolled {
 
 
  /* for small screens*/
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .checkbox-group {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
   }
 
   .checkbox-group label {
     width: 100%;
+  }
+}
+
+/* Mobile modal fixes */
+@media (max-width: 768px) {
+  .modal {
+    padding: 10px;
+    align-items: flex-start; /* Change from center */
+    padding-top: 20px; /* Add top padding */
+  }
+  
+  .painting-form-modal {
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: calc(100vh - 40px); /* Prevent full height */
+    padding: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .control-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger {
+    width: 100%; /* Full width on mobile */
+    justify-content: center;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (max-width: 768px) {
+  .control-btn {
+    width: 40px; /* Increased from 32px */
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .category-button {
+    padding: 12px 20px; /* Increased padding */
+    font-size: 16px;
+    min-height: 44px; /* Apple's recommended touch target */
+  }
+  
+  .gallery-categories {
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-buttons button {
+    padding: 15px 24px; /* Larger touch targets */
+    font-size: 16px;
   }
 }
