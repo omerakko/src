@@ -320,11 +320,44 @@ select {
     transform: translateY(-10px);
   }
   
-  .gallery-image {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-  }
+.gallery-image {
+  width: 100%;
+  /* Remove fixed height */
+  /* height: 400px; */
+  object-fit: cover;
+  /* Option A: Use aspect-ratio (modern CSS) */
+  aspect-ratio: 4/3; /* Example: adjust this to a common aspect ratio of your paintings (e.g., 16/9, 1/1, 3/2) */
+
+  /* Option B: Fallback for older browsers or if you prefer padding-bottom hack for aspect ratio */
+  /* If using Option B, you'd apply this to the .gallery-item or a wrapper inside it, not directly to the image */
+  /* For example, create a .image-aspect-ratio-container around the image */
+}
+
+/* If you choose Option B (padding-bottom hack) */
+/* This requires a wrapper around your image in the HTML */
+/* <div class="gallery-item">
+    <div class="image-aspect-ratio-container">
+        <img class="gallery-image" src="..." alt="...">
+    </div>
+    <div class="gallery-caption">...</div>
+</div> */
+.image-aspect-ratio-container {
+  width: 100%;
+  padding-bottom: 75%; /* For a 4:3 aspect ratio (height is 75% of width) */
+  /* For 16:9, use padding-bottom: 56.25%; */
+  /* For 1:1, use padding-bottom: 100%; */
+  position: relative;
+  overflow: hidden; /* Ensures the image doesn't overflow */
+}
+
+.image-aspect-ratio-container .gallery-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
   
   .gallery-caption {
     position: absolute;
@@ -339,6 +372,7 @@ select {
   
   .gallery-item:hover .gallery-caption {
     transform: translateY(0);
+    
   }
   
   .gallery-title {
