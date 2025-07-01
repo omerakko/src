@@ -1,0 +1,119 @@
+/* Admin Section Toggle Styles */
+.admin-sections {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 20px;
+}
+
+.section-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.section-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}
+
+.section-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.section-btn.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: white;
+}
+
+.section-btn .btn-icon {
+  font-size: 1.2em;
+}
+
+.admin-content-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Exhibition Grid Styles */
+.exhibitions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.admin-exhibition-item {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.admin-exhibition-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.admin-exhibition-item .exhibition-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.admin-exhibition-item .exhibition-info {
+  padding: 1rem;
+}
+
+.admin-exhibition-item .exhibition-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.admin-exhibition-item .exhibition-date {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-exhibition-item .photo-count {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* Exhibition Form Modal */
+.exhibition-form-modal {
+  width: 90%;
+  max-width: 600px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section-buttons {
+    flex-direction: column;
+  }
+  
+  .section-btn {
+    justify-content: center;
+  }
+  
+  .exhibitions-grid {
+    grid-template-columns: 1fr;
+  }
+}

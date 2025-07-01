@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exhibitions Gallery | Nilufer Orel</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../styles/gallery.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="logo">Nilufer Orel</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="paintings.html">Paintings</a>
+                <a href="gallery.html" class="active">Gallery</a>
+                <a href="biography.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1 class="page-title">Exhibitions Gallery</h1>
+        <p class="page-description">Explore my exhibitions and artistic journey through curated collections.</p>
+    </header>
+
+    <!-- Gallery Controls -->
+    <section class="gallery-controls">
+        <div class="view-toggle">
+            <button class="toggle-btn active" data-view="masonry">
+                <span class="btn-icon">⚏</span>
+                Masonry
+            </button>
+            <button class="toggle-btn" data-view="grid">
+                <span class="btn-icon">▦</span>
+                Grid
+            </button>
+        </div>
+        
+        <div class="sort-controls">
+            <select id="sortBy">
+                <option value="date_desc">Newest First</option>
+                <option value="date_asc">Oldest First</option>
+                <option value="title_asc">Title A-Z</option>
+                <option value="title_desc">Title Z-A</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Exhibitions Gallery -->
+    <section class="exhibitions-container">
+        <div class="gallery-masonry active" id="exhibitionsGallery">
+            <!-- Exhibitions will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Exhibition Detail Modal -->
+    <div class="modal" id="exhibitionModal">
+        <div class="modal-content exhibition-modal">
+            <span class="close-modal" id="closeExhibitionModal">&times;</span>
+            <div class="exhibition-detail" id="exhibitionDetail">
+                <!-- Exhibition details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading exhibitions...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.instagram.com/nilufer.orel/">Instagram</a>
+            </div>
+            <p class="copyright">© 2025 Nilufer Orel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../scripts/gallery.js"></script>
+</body>
+</html>

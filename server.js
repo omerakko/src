@@ -124,6 +124,86 @@ imageurl: {
   ]
 });
 
+// Exhibition Model
+const Exhibition = sequelize.define('Exhibition', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [1, 255]
+    }
+  },
+  description: {
+    type: DataTypes.TEXT,
+    defaultValue: ''
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  location: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: 0
+  }
+}, {
+  tableName: 'exhibitions',
+  timestamps: true
+});
+
+// Exhibition Photo Model
+const ExhibitionPhoto = sequelize.define('ExhibitionPhoto', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  exhibitionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Exhibition,
+      key: 'id'
+    }
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  imageurl: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+}, {
+  tableName: 'exhibition_photos',
+  timestamps: true
+});
+
+// Define associations
+Exhibition.hasMany(ExhibitionPhoto, { 
+  foreignKey: 'exhibitionId', 
+  as: 'photos',
+  onDelete: 'CASCADE'
+});
+ExhibitionPhoto.belongsTo(Exhibition, { 
+  foreignKey: 'exhibitionId', 
+  as: 'exhibition' 
+});
+
 // Category Model (alternative approach - normalized)
 const Category = sequelize.define('Category', {
   id: {
@@ -425,131 +505,101 @@ app.get('/api/price-range', async (req, res) => {
  */
 app.post('/api/init', async (req, res) => {
   try {
-    // Sync database (creates tables)
-    await sequelize.sync({ force: false });
+    // Sync all models to create tables
+    await sequelize.sync({ alter: true });
+    console.log('Database tables synchronized successfully');
     
-    // Check if data already exists
-    const existingCount = await Painting.count();
-    if (existingCount > 0) {
-      return res.json({ message: 'Database already initialized' });
-    }
-    
-    /*const samplePaintings = [
-      {
-        title: 'Summer Dreams',
-        medium: 'Oil on Canvas',
-        year: '2023',
-        imageurl: '../assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Nature'],
-        description: 'A vibrant representation of summer landscapes',
-        price: 1200.00
+    // Check if exhibitions table exists, if not create it explicitly
+    await sequelize.getQueryInterface().createTable('exhibitions', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
       },
-      {
-        title: 'Mountain Solitude',
-        medium: 'Acrylic on Canvas',
-        year: '2022',
-        imageurl: '../assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Landscapes'],
-        description: 'Peaceful mountain scene capturing tranquility',
-        price: 800.00
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false
       },
-      {
-        title: 'Urban Poetry',
-        medium: 'Mixed Media',
-        year: '2024',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Abstract'],
-        description: 'Contemporary urban expression through mixed media',
-        price: 1500.00
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true
       },
-      {
-        title: 'Autumn Reflections',
-        medium: 'Watercolor',
-        year: '2021',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Nature', 'Landscapes'],
-        description: 'Delicate watercolor capturing autumn\'s beauty',
-        price: 600.00
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false
       },
-      {
-        title: 'Abstract Flow',
-        medium: 'Oil on Canvas',
-        year: '2023',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Abstract'],
-        description: 'Dynamic abstract composition with flowing forms',
-        price: 1400.00
+      location: {
+        type: DataTypes.STRING,
+        allowNull: true
       },
-      {
-        title: 'Winter Silence',
-        medium: 'Acrylic on Canvas',
-        year: '2022',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Nature', 'Landscapes'],
-        description: 'Serene winter landscape in muted tones',
-        price: 900.00
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
       },
-      {
-        title: 'Self Portrait',
-        medium: 'Oil on Canvas',
-        year: '2024',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Portraits'],
-        description: 'Introspective self-portrait exploring identity',
-        price: 2000.00
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false
       },
-      {
-        title: 'Coastal Dreams',
-        medium: 'Oil on Canvas',
-        year: '2021',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Nature', 'Landscapes'],
-        description: 'Dreamy coastal scene with soft lighting',
-        price: 1100.00
-      },
-      {
-        title: 'Evening Light',
-        medium: 'Oil on Canvas',
-        year: '2020',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Landscapes'],
-        description: 'Golden hour lighting captured in oil',
-        price: 950.00
-      },
-      {
-        title: 'Abstract Emotion',
-        medium: 'Mixed Media',
-        year: '2023',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Abstract'],
-        description: 'Emotional expression through abstract forms',
-        price: 1300.00
-      },
-      {
-        title: 'Spring Blossoms',
-        medium: 'Watercolor',
-        year: '2022',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Nature'],
-        description: 'Delicate spring flowers in watercolor',
-        price: 550.00
-      },
-      {
-        title: 'Family Portrait',
-        medium: 'Oil on Canvas',
-        year: '2021',
-        imageurl: '/assets/images/WhatsApp Image 2024-09-16 at 16.45.23 (1).jpeg',
-        categories: ['Portraits'],
-        description: 'Warm family portrait capturing love and connection',
-        price: 2500.00
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false
       }
-    ];*/
-    
-    await Painting.bulkCreate(samplePaintings);
-    res.json({ message: 'Database initialized and seeded successfully', count: samplePaintings.length });
+    }).catch(err => {
+      if (err.original && err.original.code === '42P07') {
+        console.log('Exhibitions table already exists');
+      } else {
+        console.error('Error creating exhibitions table:', err);
+      }
+    });
+
+    // Check if exhibition_photos table exists
+    await sequelize.getQueryInterface().createTable('exhibition_photos', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
+      exhibitionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'exhibitions',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      imageurl: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      }
+    }).catch(err => {
+      if (err.original && err.original.code === '42P07') {
+        console.log('Exhibition photos table already exists');
+      } else {
+        console.error('Error creating exhibition_photos table:', err);
+      }
+    });
+
   } catch (error) {
-    console.error('Error initializing database:', error);
-    res.status(500).json({ error: 'Failed to initialize database' });
+    console.error('Database initialization error:', error);
   }
 });
 
@@ -560,6 +610,11 @@ app.get('/pages/paintings.html', (req, res) => {
 
 app.get('/pages/biography.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'pages', 'biography.html'));
+});
+
+// Add this with your other page routes
+app.get('/pages/gallery.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'gallery.html'));
 });
 
 // Index route
@@ -873,6 +928,316 @@ app.post('/api/admin/paintings/reorder' ,verifyToken, requireAdmin, async (req, 
     });
   }
 });
+
+
+// Add these exhibition endpoints after your existing painting endpoints
+
+/**
+ * Exhibition API Routes
+ */
+
+// Get all exhibitions (public endpoint for gallery.html)
+app.get('/api/exhibitions', async (req, res) => {
+  try {
+    const sortBy = req.query.sortBy || 'date';
+    const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
+    
+    const exhibitions = await Exhibition.findAll({
+      include: [{
+        model: ExhibitionPhoto,
+        as: 'photos',
+        order: [['order', 'ASC']]
+      }],
+      order: [[sortBy, sortOrder]]
+    });
+    
+    res.json({ exhibitions });
+  } catch (error) {
+    console.error('Error fetching exhibitions:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get single exhibition by ID (public endpoint)
+app.get('/api/exhibitions/:id', async (req, res) => {
+  try {
+    const exhibition = await Exhibition.findByPk(req.params.id, {
+      include: [{
+        model: ExhibitionPhoto,
+        as: 'photos',
+        order: [['order', 'ASC']]
+      }]
+    });
+    
+    if (!exhibition) {
+      return res.status(404).json({ error: 'Exhibition not found' });
+    }
+    
+    res.json(exhibition);
+  } catch (error) {
+    console.error('Error fetching exhibition:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin: Get all exhibitions
+app.get('/api/admin/exhibitions', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const exhibitions = await Exhibition.findAll({
+      include: [{
+        model: ExhibitionPhoto,
+        as: 'photos',
+        order: [['order', 'ASC']]
+      }],
+      order: [['date', 'DESC']]
+    });
+    
+    res.json({ exhibitions });
+  } catch (error) {
+    console.error('Error fetching exhibitions:', error);
+    res.status(500).json({ error: 'Failed to fetch exhibitions' });
+  }
+});
+
+// Admin: Create new exhibition
+app.post('/api/admin/exhibitions', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const exhibitionData = req.body;
+    
+    // Get the highest order value and increment
+    const maxOrder = await Exhibition.max('order') || 0;
+    exhibitionData.order = maxOrder + 1;
+    
+    const exhibition = await Exhibition.create(exhibitionData);
+    res.status(201).json({ exhibition });
+  } catch (error) {
+    console.error('Error creating exhibition:', error);
+    res.status(500).json({ error: 'Failed to create exhibition' });
+  }
+});
+
+// Admin: Update exhibition
+app.put('/api/admin/exhibitions/:id', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const exhibitionId = req.params.id;
+    const updateData = req.body;
+    
+    const [updatedRows] = await Exhibition.update(updateData, {
+      where: { id: exhibitionId },
+      returning: true
+    });
+    
+    if (updatedRows === 0) {
+      return res.status(404).json({ error: 'Exhibition not found' });
+    }
+    
+    const updatedExhibition = await Exhibition.findByPk(exhibitionId, {
+      include: [{
+        model: ExhibitionPhoto,
+        as: 'photos',
+        order: [['order', 'ASC']]
+      }]
+    });
+    
+    res.json({ exhibition: updatedExhibition });
+  } catch (error) {
+    console.error('Error updating exhibition:', error);
+    res.status(500).json({ error: 'Failed to update exhibition' });
+  }
+});
+
+// Admin: Delete exhibition
+app.delete('/api/admin/exhibitions/:id', verifyToken, requireAdmin, async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
+  try {
+    const exhibitionId = req.params.id;
+    
+    // Get exhibition with photos before deletion
+    const exhibition = await Exhibition.findByPk(exhibitionId, {
+      include: [{
+        model: ExhibitionPhoto,
+        as: 'photos'
+      }]
+    });
+    
+    if (!exhibition) {
+      return res.status(404).json({ error: 'Exhibition not found' });
+    }
+    
+    // Delete photo files
+    if (exhibition.photos && exhibition.photos.length > 0) {
+      for (const photo of exhibition.photos) {
+        if (photo.imageurl && photo.imageurl.startsWith('/assets/images/')) {
+          try {
+            const imagePath = path.join(__dirname, photo.imageurl);
+            await fs.unlink(imagePath);
+          } catch (err) {
+            console.log('Could not delete photo file:', err.message);
+          }
+        }
+      }
+    }
+    
+    // Delete photos from database (cascade should handle this, but explicit is better)
+    await ExhibitionPhoto.destroy({
+      where: { exhibitionId: exhibitionId },
+      transaction
+    });
+    
+    // Delete exhibition
+    await Exhibition.destroy({
+      where: { id: exhibitionId },
+      transaction
+    });
+    
+    await transaction.commit();
+    
+    res.json({ message: 'Exhibition deleted successfully' });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error deleting exhibition:', error);
+    res.status(500).json({ error: 'Failed to delete exhibition' });
+  }
+});
+
+// Admin: Upload photos for exhibition
+app.post('/api/admin/exhibitions/:id/photos', verifyToken, requireAdmin, upload.array('photos', 10), async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
+  try {
+    const exhibitionId = req.params.id;
+    
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No photo files provided' });
+    }
+    
+    // Verify exhibition exists
+    const exhibition = await Exhibition.findByPk(exhibitionId);
+    if (!exhibition) {
+      return res.status(404).json({ error: 'Exhibition not found' });
+    }
+    
+    // Get current max order for photos
+    const maxOrder = await ExhibitionPhoto.max('order', {
+      where: { exhibitionId }
+    }) || 0;
+    
+    // Create photo records
+    const photoPromises = req.files.map((file, index) => {
+      return ExhibitionPhoto.create({
+        exhibitionId: exhibitionId,
+        imageurl: `/assets/images/${file.filename}`,
+        title: req.body.titles ? req.body.titles[index] : null,
+        order: maxOrder + index + 1
+      }, { transaction });
+    });
+    
+    const photos = await Promise.all(photoPromises);
+    await transaction.commit();
+    
+    res.json({ 
+      message: 'Photos uploaded successfully',
+      photos,
+      count: photos.length 
+    });
+  } catch (error) {
+    await transaction.rollback();
+    
+    // Clean up uploaded files on error
+    if (req.files) {
+      req.files.forEach(file => {
+        fs.unlink(file.path).catch(err => 
+          console.log('Could not delete uploaded file:', err.message)
+        );
+      });
+    }
+    
+    console.error('Error uploading photos:', error);
+    res.status(500).json({ error: 'Failed to upload photos' });
+  }
+});
+
+// Admin: Delete single photo
+app.delete('/api/admin/exhibitions/:exhibitionId/photos/:photoId', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { exhibitionId, photoId } = req.params;
+    
+    const photo = await ExhibitionPhoto.findOne({
+      where: { 
+        id: photoId, 
+        exhibitionId: exhibitionId 
+      }
+    });
+    
+    if (!photo) {
+      return res.status(404).json({ error: 'Photo not found' });
+    }
+    
+    // Delete file
+    if (photo.imageurl && photo.imageurl.startsWith('/assets/images/')) {
+      try {
+        const imagePath = path.join(__dirname, photo.imageurl);
+        await fs.unlink(imagePath);
+      } catch (err) {
+        console.log('Could not delete photo file:', err.message);
+      }
+    }
+    
+    // Delete from database
+    await ExhibitionPhoto.destroy({
+      where: { id: photoId }
+    });
+    
+    res.json({ message: 'Photo deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting photo:', error);
+    res.status(500).json({ error: 'Failed to delete photo' });
+  }
+});
+
+// Admin: Reorder exhibition photos
+app.post('/api/admin/exhibitions/:id/photos/reorder', verifyToken, requireAdmin, async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
+  try {
+    const exhibitionId = req.params.id;
+    const { order } = req.body;
+    
+    if (!Array.isArray(order)) {
+      return res.status(400).json({ error: 'Order must be an array' });
+    }
+    
+    // Update photo orders
+    const updatePromises = order.map(item => {
+      return ExhibitionPhoto.update(
+        { order: item.order },
+        { 
+          where: { 
+            id: item.id, 
+            exhibitionId: exhibitionId 
+          },
+          transaction 
+        }
+      );
+    });
+    
+    await Promise.all(updatePromises);
+    await transaction.commit();
+    
+    res.json({ 
+      message: 'Photo order updated successfully',
+      updatedCount: order.length 
+    });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error reordering photos:', error);
+    res.status(500).json({ error: 'Failed to update photo order' });
+  }
+});
+
+
+
 
 app.get('/pages/login.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'pages', 'login.html'));

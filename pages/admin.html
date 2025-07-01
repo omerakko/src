@@ -18,59 +18,93 @@
       <div class="nav-links">
         <a href="../index.html">Home</a>
         <a href="paintings.html">Paintings</a>
+        <a href="gallery.html">Gallery</a>
         <a href="biography.html">About</a>
         <a href="admin.html" class="active">Admin</a>
         <button class="logout-btn" id="logoutBtn">
-    <span class="btn-icon">⏻</span>
-    Logout
-  </button>
+          <span class="btn-icon">⏻</span>
+          Logout
+        </button>
       </div>
     </div>
-</div>
   </nav>
 
   <!-- Page Header -->
   <header class="page-header">
-    <h1 class="page-title">Paintings Management</h1>
-    <p class="page-description">Add, edit, remove, and reorder your artwork collection.</p>
+    <h1 class="page-title">Admin Panel</h1>
+    <p class="page-description">Manage your artwork collection and exhibitions.</p>
   </header>
 
-  <!-- Admin Controls -->
-  <section class="admin-controls">
-    <div class="control-buttons">
-      <button class="btn-primary" id="addPaintingBtn">
-        <span class="btn-icon">+</span>
-        Add New Painting
+  <!-- Admin Section Toggle -->
+  <section class="admin-sections">
+    <div class="section-buttons">
+      <button class="section-btn active" data-section="paintings">
+        <span class="btn-icon">🎨</span>
+        Paintings Management
       </button>
-      <button class="btn-secondary" id="toggleReorderBtn">
-        <span class="btn-icon">↕</span>
-        <span class="btn-text">Enable Reorder</span>
+      <button class="section-btn" data-section="exhibitions">
+        <span class="btn-icon">📸</span>
+        Exhibitions Management
       </button>
-      <button class="btn-secondary" id="saveOrderBtn" style="display: none;">
-        <span class="btn-icon">✓</span>
-        Save Order
-      </button>
-    </div>
-
-    <!-- Gallery Categories (for filtering while editing) -->
-    <div class="gallery-categories">
-      <button class="category-button active" data-category="All Works">All Works</button>
-      <button class="category-button" data-category="Nature">Nature</button>
-      <button class="category-button" data-category="Abstract">Abstract</button>
-      <button class="category-button" data-category="Portraits">Portraits</button>
-      <button class="category-button" data-category="Landscapes">Landscapes</button>
     </div>
   </section>
 
-  <!-- Gallery -->
-  <section class="gallery-container">
-    <!-- Gallery Grid -->
-    <div class="gallery-grid" id="adminGalleryGrid">
-      <!-- Paintings will be loaded here -->
+  <!-- Paintings Management Section -->
+  <section class="admin-content-section" id="paintingsSection">
+    <!-- Admin Controls -->
+    <div class="admin-controls">
+      <div class="control-buttons">
+        <button class="btn-primary" id="addPaintingBtn">
+          <span class="btn-icon">+</span>
+          Add New Painting
+        </button>
+        <button class="btn-secondary" id="toggleReorderBtn">
+          <span class="btn-icon">↕</span>
+          <span class="btn-text">Enable Reorder</span>
+        </button>
+        <button class="btn-secondary" id="saveOrderBtn" style="display: none;">
+          <span class="btn-icon">✓</span>
+          Save Order
+        </button>
+      </div>
+
+      <!-- Gallery Categories -->
+      <div class="gallery-categories">
+        <button class="category-button active" data-category="All Works">All Works</button>
+        <button class="category-button" data-category="Nature">Nature</button>
+        <button class="category-button" data-category="Abstract">Abstract</button>
+        <button class="category-button" data-category="Portraits">Portraits</button>
+        <button class="category-button" data-category="Landscapes">Landscapes</button>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="gallery-container">
+      <div class="gallery-grid" id="adminGalleryGrid">
+        <!-- Paintings will be loaded here -->
+      </div>
     </div>
   </section>
 
-  <!-- Add/Edit Painting Modal -->
+  <!-- Exhibitions Management Section -->
+  <section class="admin-content-section" id="exhibitionsSection" style="display: none;">
+    <div class="admin-controls">
+      <div class="control-buttons">
+        <button class="btn-primary" id="addExhibitionBtn">
+          <span class="btn-icon">+</span>
+          Add New Exhibition
+        </button>
+      </div>
+    </div>
+
+    <div class="exhibitions-container">
+      <div class="exhibitions-grid" id="adminExhibitionsGrid">
+        <!-- Exhibitions will be loaded here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Existing Painting Modal -->
   <div class="modal" id="paintingModal">
     <div class="modal-content painting-form-modal">
       <span class="close-modal" id="closePaintingModal">&times;</span>
@@ -149,7 +183,51 @@
     </div>
   </div>
 
-  <!-- Confirmation Modal -->
+  <!-- Exhibition Modal -->
+  <div class="modal" id="exhibitionModal">
+    <div class="modal-content exhibition-form-modal">
+      <span class="close-modal" id="closeExhibitionModal">&times;</span>
+      <h2 id="exhibitionModalTitle">Add New Exhibition</h2>
+      
+      <form id="exhibitionForm">
+        <input type="hidden" id="exhibitionId" name="id">
+        
+        <div class="form-group">
+          <label for="exhibitionTitle">Title *</label>
+          <input type="text" id="exhibitionTitle" name="title" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="exhibitionDate">Date *</label>
+            <input type="date" id="exhibitionDate" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="exhibitionLocation">Location</label>
+            <input type="text" id="exhibitionLocation" name="location" placeholder="e.g., Gallery Name, City">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="exhibitionDescription">Description</label>
+          <textarea id="exhibitionDescription" name="description" rows="3" placeholder="Describe this exhibition..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="exhibitionPhotos">Photos</label>
+          <input type="file" id="exhibitionPhotos" name="photos" accept="image/*" multiple>
+          <small class="form-help">Select multiple photos for this exhibition (you can add more later)</small>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="button" class="btn-secondary" id="cancelExhibitionBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveExhibitionBtn">Save Exhibition</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Existing Confirmation Modal -->
   <div class="modal" id="confirmModal">
     <div class="modal-content confirm-modal">
       <h3 id="confirmTitle">Confirm Action</h3>
@@ -180,8 +258,5 @@
   <!-- Scripts -->
   <script src="../scripts/admin.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@latest/dist/browser-image-compression.js"></script>
-
-
-
 </body>
 </html>
