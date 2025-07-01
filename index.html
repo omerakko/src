@@ -30,33 +30,13 @@
   </section>
 
   <!-- Featured Work Section -->
-  <section class="featured-work">
-    <h2 class="section-title">Featured Works</h2>
-    <div class="featured-grid">
-      <div class="featured-item">
-        <img src="../assets/images/ordek1.jpg" alt="Painting 1" class="featured-image">
-        <div class="featured-caption">
-          <h3 class="featured-title">No title</h3>
-          <p class="featured-year">2025</p>
-        </div>
-      </div>
-      <div class="featured-item">
-        <img src="../assets/images/ordek3.jpg" alt="Painting 2" class="featured-image">
-        <div class="featured-caption">
-          <h3 class="featured-title">No title</h3>
-          <p class="featured-year">2025</p>
-          <p class="">2025</p>
-        </div>
-      </div>
-      <div class="featured-item">
-        <img src="../assets/images/ordek2.jpg" alt="Painting 3" class="featured-image">
-        <div class="featured-caption">
-          <h3 class="featured-title">Not title</h3>
-          <p class="featured-year">2025</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- Featured Work Section -->
+<section class="featured-work">
+  <h2 class="section-title">Featured Works</h2>
+  <div class="featured-grid" id="featuredGrid">
+    <!-- Featured paintings will be loaded here -->
+  </div>
+</section>
 
     <!-- Image Modal -->
     <div class="modal" id="imageModal">
@@ -78,6 +58,40 @@
   </footer>
   
   <!-- Scripts -->
-  <script src="scripts/main-js.js"></script>
+  <script>
+// Load featured paintings on page load
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    console.log('Loading featured paintings...');
+    const response = await fetch('/api/paintings/featured');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Featured paintings data:', data);
+    
+    const featuredGrid = document.getElementById('featuredGrid');
+    
+    if (data.paintings && data.paintings.length > 0) {
+      featuredGrid.innerHTML = data.paintings.map(painting => `
+        <div class="featured-item">
+          <img src="${painting.imageurl}" alt="${painting.title}" class="featured-image">
+          <div class="featured-caption">
+            <h3 class="featured-title">${painting.title}</h3>
+            <p class="featured-year">${painting.year}</p>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      featuredGrid.innerHTML = '<p>No featured paintings selected yet.</p>';
+    }
+  } catch (error) {
+    console.error('Error loading featured paintings:', error);
+    document.getElementById('featuredGrid').innerHTML = '<p>Error loading featured paintings.</p>';
+  }
+});
+</script>
 </body>
 </html>

@@ -98,7 +98,11 @@ imageurl: {
     allowNull: true,
     defaultValue: 0,
     field: 'order' // Explicitly specify the column name
-  }
+  },// Add this to your Painting model definition
+    featured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+    }
 
 }, {
   tableName: 'paintings',
@@ -312,6 +316,22 @@ app.get('/api/admin/paintings/all',verifyToken, requireAdmin, async (req, res) =
   }
 });
 
+// Add this new endpoint
+app.get('/api/paintings/featured', async (req, res) => {
+  try {
+    const featuredPaintings = await Painting.findAll({
+      where: { featured: true },
+      order: [['updatedAt', 'DESC']],
+      limit: 3,
+      attributes: { exclude: ['updatedAt'] }
+    });
+    
+    res.json({ paintings: featuredPaintings });
+  } catch (error) {
+    console.error('Error fetching featured paintings:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 /**
  * API endpoint for getting a single painting by ID
  */
@@ -331,6 +351,8 @@ app.get('/api/paintings/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
 
 /**
  * API endpoint for getting unique categories
@@ -601,12 +623,10 @@ const upload = multer({
   }
 });
 
-// Add order field to Painting model (run this migration)
+// Add this after the existing order column migration
 sequelize.query(`
-  ALTER TABLE paintings ADD COLUMN IF NOT EXISTS "order" INTEGER DEFAULT 0;
-  UPDATE paintings SET "order" = id WHERE "order" = 0;
-`).catch(err => console.log('Order column already exists or error:', err.message));
-
+  ALTER TABLE paintings ADD COLUMN IF NOT EXISTS "featured" BOOLEAN DEFAULT false;
+`).catch(err => console.log('Featured column already exists or error:', err.message));
 /**
  * Admin API Routes
  */
@@ -616,6 +636,17 @@ app.post('/api/admin/paintings' ,verifyToken, requireAdmin, async (req, res) => 
   try {
 
     const paintingData = req.body;
+
+     // Check featured limit
+    if (paintingData.featured) {
+      const featuredCount = await Painting.count({ where: { featured: true } });
+      if (featuredCount >= 3) {
+        return res.status(400).json({ 
+          error: 'Featured limit reached',
+          message: 'Only 3 paintings can be featured at once. Please unfeature another painting first.'
+        });
+      }
+    }
     
     // Get the highest order value and increment
     const maxOrder = await Painting.max('order') || 0;
@@ -633,6 +664,22 @@ app.put('/api/admin/paintings/:id' ,verifyToken, requireAdmin, async (req, res) 
   try {
     const paintingId = req.params.id;
     const updateData = req.body;
+
+        // Check featured limit if trying to feature a painting
+    if (updateData.featured) {
+      const featuredCount = await Painting.count({ 
+        where: { 
+          featured: true,
+          id: { [Op.ne]: paintingId } // Exclude current painting
+        } 
+      });
+      if (featuredCount >= 3) {
+        return res.status(400).json({ 
+          error: 'Featured limit reached',
+          message: 'Only 3 paintings can be featured at once. Please unfeature another painting first.'
+        });
+      }
+    }
     
     const [updatedRows] = await Painting.update(updateData, {
       where: { id: paintingId },

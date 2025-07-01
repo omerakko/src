@@ -258,11 +258,15 @@ async loadPaintings() {
     const soldBadge = !isavailable
     ? `<div class="sold-badge" title="Sold"></div>`
     : '';
+    const featuredBadge = painting.featured
+  ? `<div class="featured-badge" title="Featured">⭐</div>`
+  : '';
 
     element.innerHTML = `
       <img src="${imageUrl}" alt="${title}" class="gallery-image" loading="lazy" 
            onerror="this.src='/assets/images/placeholder.jpg'">
            ${soldBadge}
+           ${featuredBadge}
       <div class="gallery-caption">
         <h3 class="gallery-title">${title}</h3>
         <div class="gallery-details">
@@ -329,6 +333,7 @@ async loadPaintings() {
     document.getElementById('description').value = painting.description || '';
     document.getElementById('price').value = painting.price || '';
     document.getElementById('isavailable').value = painting.isavailable.toString();
+    document.getElementById('isfeatured').value = painting.featured ? 'true' : 'false';
 
     // Handle categories
     const categoryCheckboxes = document.querySelectorAll('input[name="categories"]');
@@ -368,6 +373,7 @@ async loadPaintings() {
       description: formData.get('description'),
       price: formData.get('price') ? parseFloat(formData.get('price')) : null,
       isavailable: formData.get('isavailable') === 'true',
+      featured: formData.get('isfeatured') === 'true',
       categories: categories
     };
 
