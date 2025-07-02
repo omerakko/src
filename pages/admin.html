@@ -107,7 +107,7 @@
   <!-- Existing Painting Modal -->
   <div class="modal" id="paintingModal">
     <div class="modal-content painting-form-modal">
-      <span class="close-modal" id="closePaintingModal">&times;</span>
+      <span class="close-modal" id="closePaintingModal">×</span>
       <h2 id="modalTitle">Add New Painting</h2>
       
       <form id="paintingForm" enctype="multipart/form-data">
@@ -153,6 +153,7 @@
           <textarea id="description" name="description" rows="3"></textarea>
         </div>
 
+        <!-- === UPDATE START === -->
         <div class="form-row">
           <div class="form-group">
             <label for="price">Price ($)</label>
@@ -165,15 +166,16 @@
               <option value="false">No</option>
             </select>
           </div>
-          <div class="form-group">
-            <label for="isfeatured">Featured on Homepage</label>
-            <select id="isfeatured" name="isfeatured">
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-            <small class="form-help">Only 3 paintings can be featured at once</small>
-          </div>
         </div>
+        <div class="form-group">
+          <label for="isfeatured">Featured on Homepage</label>
+          <select id="isfeatured" name="isfeatured">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+          <small class="form-help">Only 3 paintings can be featured at once</small>
+        </div>
+        <!-- === UPDATE END === -->
 
         <div class="form-buttons">
           <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
@@ -186,7 +188,7 @@
   <!-- Exhibition Modal -->
   <div class="modal" id="exhibitionModal">
     <div class="modal-content exhibition-form-modal">
-      <span class="close-modal" id="closeExhibitionModal">&times;</span>
+      <span class="close-modal" id="closeExhibitionModal">×</span>
       <h2 id="exhibitionModalTitle">Add New Exhibition</h2>
       
       <form id="exhibitionForm">
