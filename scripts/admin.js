@@ -768,14 +768,14 @@ createExhibitionElement(exhibition) {
       : '/assets/images/placeholder.jpg';
         
     const photoCount = exhibition.photos ? exhibition.photos.length : 0;
-    const displayDate = new Date(exhibition.date).toLocaleDateString();
+    const displayYear = new Date(exhibition.date).getFullYear();
     
     element.innerHTML = `
       <img src="${coverImage}" alt="${exhibition.title}" class="exhibition-cover" 
            onerror="this.src='/assets/images/placeholder.jpg'">
       <div class="exhibition-info">
         <h3>${exhibition.title}</h3>
-        <p class="exhibition-date">${displayDate}</p>
+        <p class="exhibition-date">${displayYear}</p>
         <p class="exhibition-location">${exhibition.location || 'No location specified'}</p>
         <p class="photo-count">${photoCount} photos</p>
       </div>

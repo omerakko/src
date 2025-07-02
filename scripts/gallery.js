@@ -89,11 +89,7 @@ class ExhibitionGallery {
         const section = document.createElement('div');
         section.className = 'exhibition-section';
         
-        const displayDate = new Date(exhibition.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+       const displayYear = new Date(exhibition.date).getFullYear();
         
         const photosHtml = exhibition.photos && exhibition.photos.length > 0
             ? exhibition.photos.map(photo => `
@@ -110,7 +106,7 @@ class ExhibitionGallery {
                 <div class="exhibition-meta">
                     <div class="meta-item">
                         <span>📅</span>
-                        <span>${displayDate}</span>
+                        <span>${displayYear}</span>
                     </div>
                     ${exhibition.location ? `
                         <div class="meta-item">
