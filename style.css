@@ -389,48 +389,163 @@ select {
     color: #888;
   }
   
-  /* Image Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  overflow: hidden; /* Changed from auto */
+  align-items: center;
+  justify-content: center;
+  /* Add these for better mobile support */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+  
+.modal-content {
+  position: relative;
+  max-width: 90vw; /* Use viewport units */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Add these for better centering */
+  margin: auto;
+  transform: translate3d(0, 0, 0); /* Hardware acceleration */
+}
+  
+.modal-image {
+  max-width: 100%;
+  max-height: 85vh; /* Reduced to leave room for caption */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Improve image rendering on mobile */
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+  
+.modal-caption {
+  color: white;
+  margin-top: 15px;
+  text-align: center;
+  padding: 0 20px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+  
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1001;
+  /* Make it more touch-friendly */
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s ease;
+}
+
+.close-modal:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* iPad and iPhone specific improvements */
+@media (max-width: 1024px) {
   .modal {
-    display: none;
+    padding: 10px;
+    /* Prevent scrolling issues on iOS */
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    overflow: auto;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
   }
   
   .modal-content {
-    position: relative;
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 95vw;
+    max-height: 90vh;
+    /* Better centering for tablets */
+    justify-self: center;
+    align-self: center;
   }
   
   .modal-image {
-    max-width: 100%;
     max-height: 80vh;
-    object-fit: contain;
-  }
-  
-  .modal-caption {
-    color: white;
-    margin-top: 20px;
-    text-align: center;
+    /* Ensure proper scaling */
+    max-width: 90vw;
   }
   
   .close-modal {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: #f1f1f1;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
+    top: 15px;
+    right: 15px;
+    font-size: 35px;
+    width: 45px;
+    height: 45px;
   }
+}
+
+/* Phone specific improvements */
+@media (max-width: 768px) {
+  .modal {
+    padding: 5px;
+  }
+  
+  .modal-content {
+    max-width: 98vw;
+    max-height: 95vh;
+    margin: 0;
+  }
+  
+  .modal-image {
+    max-height: 75vh;
+    max-width: 95vw;
+  }
+  
+  .modal-caption {
+    font-size: 14px;
+    margin-top: 10px;
+    padding: 0 15px;
+  }
+  
+  .close-modal {
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Landscape orientation fixes for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal-image {
+    max-height: 85vh;
+    max-width: 90vw;
+  }
+  
+  .modal-caption {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin: 0;
+  }
+}
   
   /* ==================== ABOUT PAGE ==================== */
   /* About Section */
