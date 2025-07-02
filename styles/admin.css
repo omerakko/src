@@ -117,3 +117,155 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Exhibition Admin Items */
+.admin-exhibition-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.admin-exhibition-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.admin-exhibition-item:hover .admin-item-controls {
+  opacity: 1;
+}
+
+.admin-exhibition-item .exhibition-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.admin-exhibition-item .exhibition-info {
+  padding: 15px;
+}
+
+.admin-exhibition-item .exhibition-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.admin-exhibition-item .exhibition-date,
+.admin-exhibition-item .exhibition-location,
+.admin-exhibition-item .photo-count {
+  margin: 4px 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.admin-exhibition-item .admin-item-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.exhibitions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+/* Make sure control buttons work for exhibitions too */
+.admin-exhibition-item .control-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.admin-exhibition-item .control-btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.admin-exhibition-item .edit-btn:hover {
+  color: #007bff;
+}
+
+.admin-exhibition-item .delete-btn:hover {
+  color: #dc3545;
+}
+
+
+/* Existing Photos Grid */
+.existing-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+.existing-photo-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.existing-photo-item img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  display: block;
+}
+
+.existing-photo-item .photo-remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.existing-photo-item:hover .photo-remove-btn {
+  opacity: 1;
+}
+
+.existing-photo-item .photo-remove-btn:hover {
+  background: #dc3545;
+  transform: scale(1.1);
+}
+
+.existing-photos-section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+  margin-top: 20px;
+}

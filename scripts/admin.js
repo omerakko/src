@@ -759,7 +759,7 @@ class ExhibitionAdmin {
     });
   }
   
-  createExhibitionElement(exhibition) {
+createExhibitionElement(exhibition) {
     const element = document.createElement('div');
     element.className = 'admin-exhibition-item';
     
@@ -776,57 +776,189 @@ class ExhibitionAdmin {
       <div class="exhibition-info">
         <h3>${exhibition.title}</h3>
         <p class="exhibition-date">${displayDate}</p>
+        <p class="exhibition-location">${exhibition.location || 'No location specified'}</p>
         <p class="photo-count">${photoCount} photos</p>
       </div>
       <div class="admin-item-controls">
-        <button class="control-btn edit-btn" title="Edit">✏</button>
-        <button class="control-btn delete-btn" title="Delete">🗑</button>
+        <button class="control-btn edit-btn" title="Edit Exhibition">✏</button>
+        <button class="control-btn delete-btn" title="Delete Exhibition">🗑</button>
       </div>
     `;
     
+    // FIXED: Use confirmDeleteExhibition instead of deleteExhibition directly
     const editBtn = element.querySelector('.edit-btn');
     const deleteBtn = element.querySelector('.delete-btn');
     
     if (editBtn) {
-      editBtn.addEventListener('click', () => this.openEditModal(exhibition));
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openEditModal(exhibition);
+      });
     }
     if (deleteBtn) {
-      deleteBtn.addEventListener('click', () => this.deleteExhibition(exhibition.id));
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.confirmDeleteExhibition(exhibition); // FIXED: Use confirmation
+      });
     }
     
     return element;
   }
-  
-  openAddModal() {
-    const titleEl = document.getElementById('exhibitionModalTitle');
-    if (titleEl) titleEl.textContent = 'Add New Exhibition';
-    
-    if (this.exhibitionForm) this.exhibitionForm.reset();
-    
-    const idEl = document.getElementById('exhibitionId');
-    if (idEl) idEl.value = '';
-    
-    if (this.exhibitionModal) this.exhibitionModal.style.display = 'flex';
+
+   // ADD: Loading and message methods (they were missing)
+  showLoading(show) {
+    if (this.loadingOverlay) {
+      this.loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
   }
   
-  openEditModal(exhibition) {
-    const titleEl = document.getElementById('exhibitionModalTitle');
-    if (titleEl) titleEl.textContent = 'Edit Exhibition';
-    
-    const idEl = document.getElementById('exhibitionId');
-    const titleInput = document.getElementById('exhibitionTitle');
-    const dateInput = document.getElementById('exhibitionDate');
-    const locationInput = document.getElementById('exhibitionLocation');
-    const descInput = document.getElementById('exhibitionDescription');
-    
-    if (idEl) idEl.value = exhibition.id;
-    if (titleInput) titleInput.value = exhibition.title;
-    if (dateInput) dateInput.value = exhibition.date.split('T')[0];
-    if (locationInput) locationInput.value = exhibition.location || '';
-    if (descInput) descInput.value = exhibition.description || '';
-    
-    if (this.exhibitionModal) this.exhibitionModal.style.display = 'flex';
+  showMessage(message, type = 'success') {
+    const messageEl = document.createElement('div');
+    messageEl.className = `message ${type}`;
+    messageEl.textContent = message;
+    messageEl.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      ${type === 'success' ? 'background-color: #28a745;' : ''}
+      ${type === 'error' ? 'background-color: #dc3545;' : ''}
+      ${type === 'info' ? 'background-color: #17a2b8;' : ''}
+    `;
+
+    document.body.appendChild(messageEl);
+
+    setTimeout(() => {
+      messageEl.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+      messageEl.style.transform = 'translateX(100%)';
+      setTimeout(() => messageEl.remove(), 300);
+    }, 3000);
   }
+
+  
+ openAddModal() {
+  const titleEl = document.getElementById('exhibitionModalTitle');
+  if (titleEl) titleEl.textContent = 'Add New Exhibition';
+  
+  if (this.exhibitionForm) this.exhibitionForm.reset();
+  
+  const idEl = document.getElementById('exhibitionId');
+  if (idEl) idEl.value = '';
+  
+  // Hide existing photos section for new exhibitions
+  const existingPhotosSection = document.getElementById('existingPhotosSection');
+  if (existingPhotosSection) existingPhotosSection.style.display = 'none';
+  
+  if (this.exhibitionModal) this.exhibitionModal.style.display = 'flex';
+}
+  
+openEditModal(exhibition) {
+  const titleEl = document.getElementById('exhibitionModalTitle');
+  if (titleEl) titleEl.textContent = 'Edit Exhibition';
+  
+  const idEl = document.getElementById('exhibitionId');
+  const titleInput = document.getElementById('exhibitionTitle');
+  const dateInput = document.getElementById('exhibitionDate');
+  const locationInput = document.getElementById('exhibitionLocation');
+  const descInput = document.getElementById('exhibitionDescription');
+  
+  if (idEl) idEl.value = exhibition.id;
+  if (titleInput) titleInput.value = exhibition.title;
+  if (dateInput) dateInput.value = exhibition.date.split('T')[0];
+  if (locationInput) locationInput.value = exhibition.location || '';
+  if (descInput) descInput.value = exhibition.description || '';
+  
+  // Display existing photos
+  this.displayExistingPhotos(exhibition.photos || []);
+  
+  if (this.exhibitionModal) this.exhibitionModal.style.display = 'flex';
+}
+
+// ADD THIS NEW METHOD
+displayExistingPhotos(photos) {
+  const existingPhotosSection = document.getElementById('existingPhotosSection');
+  const existingPhotosGrid = document.getElementById('existingPhotosGrid');
+  
+  if (!existingPhotosSection || !existingPhotosGrid) return;
+  
+  // Clear existing content
+  existingPhotosGrid.innerHTML = '';
+  
+  if (photos && photos.length > 0) {
+    existingPhotosSection.style.display = 'block';
+    
+    photos.forEach(photo => {
+      const photoItem = document.createElement('div');
+      photoItem.className = 'existing-photo-item';
+      photoItem.dataset.photoId = photo.id;
+      
+      photoItem.innerHTML = `
+        <img src="${photo.imageurl}" alt="${photo.title || 'Exhibition photo'}" 
+             onerror="this.src='/assets/images/placeholder.jpg'">
+        <button type="button" class="photo-remove-btn" title="Remove photo">×</button>
+      `;
+      
+      // Add remove functionality
+      const removeBtn = photoItem.querySelector('.photo-remove-btn');
+      removeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.confirmRemovePhoto(photo, photoItem);
+      });
+      
+      existingPhotosGrid.appendChild(photoItem);
+    });
+  } else {
+    existingPhotosSection.style.display = 'none';
+  }
+}
+
+// ADD THIS NEW METHOD
+confirmRemovePhoto(photo, photoElement) {
+  if (confirm(`Are you sure you want to remove this photo? This action cannot be undone.`)) {
+    this.removePhoto(photo.id, photoElement);
+  }
+}
+
+// ADD THIS NEW METHOD
+async removePhoto(photoId, photoElement) {
+  try {
+    const exhibitionId = document.getElementById('exhibitionId').value;
+    
+    const response = await this.adminAuth.authenticatedFetch(
+      `/api/admin/exhibitions/${exhibitionId}/photos/${photoId}`, 
+      { method: 'DELETE' }
+    );
+    
+    if (!response.ok) throw new Error('Failed to remove photo');
+    
+    // Remove the photo element from the UI
+    photoElement.remove();
+    
+    // Check if no photos left and hide the section
+    const remainingPhotos = document.querySelectorAll('.existing-photo-item');
+    if (remainingPhotos.length === 0) {
+      const existingPhotosSection = document.getElementById('existingPhotosSection');
+      if (existingPhotosSection) {
+        existingPhotosSection.style.display = 'none';
+      }
+    }
+    
+    this.showMessage('Photo removed successfully', 'success');
+  } catch (error) {
+    console.error('Error removing photo:', error);
+    this.showMessage('Failed to remove photo', 'error');
+  }
+}
+
   
   async handleFormSubmit(e) {
     e.preventDefault();
@@ -895,8 +1027,40 @@ class ExhibitionAdmin {
     if (!response.ok) throw new Error('Failed to upload photos');
   }
   
+   confirmDeleteExhibition(exhibition) {
+    // Get the modal elements fresh each time to avoid undefined references
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    const confirmBtn = document.getElementById('confirmDelete');
+    
+    if (!confirmModal || !confirmTitle || !confirmMessage || !confirmBtn) {
+      console.error('Confirmation modal elements not found');
+      // Fallback to browser confirm dialog
+      if (confirm(`Are you sure you want to delete "${exhibition.title}"? This will also delete all associated photos. This action cannot be undone.`)) {
+        this.deleteExhibition(exhibition.id);
+      }
+      return;
+    }
+    
+    confirmTitle.textContent = 'Delete Exhibition';
+    confirmMessage.textContent = 
+      `Are you sure you want to delete "${exhibition.title}"? This will also delete all associated photos. This action cannot be undone.`;
+    
+    // Remove any existing event listeners and add new one
+    confirmBtn.onclick = () => this.deleteExhibition(exhibition.id);
+    
+    confirmModal.style.display = 'flex';
+  }
+  
   async deleteExhibition(exhibitionId) {
-    if (!confirm('Are you sure you want to delete this exhibition? This will also delete all associated photos.')) return;
+    // Hide the confirmation modal
+    const confirmModal = document.getElementById('confirmModal');
+    if (confirmModal) {
+      confirmModal.style.display = 'none';
+    }
+    
+    this.showLoading(true);
     
     try {
       const response = await this.adminAuth.authenticatedFetch(`/api/admin/exhibitions/${exhibitionId}`, {
@@ -910,6 +1074,8 @@ class ExhibitionAdmin {
     } catch (error) {
       console.error('Error deleting exhibition:', error);
       this.showMessage('Failed to delete exhibition', 'error');
+    } finally {
+      this.showLoading(false);
     }
   }
   
@@ -993,10 +1159,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (section === 'exhibitions') {
           paintingsSection.style.display = 'none';
           exhibitionsSection.style.display = 'block';
-          // Load exhibitions when switching to exhibitions tab
+          // IMPORTANT: Load exhibitions when switching to exhibitions tab
           exhibitionAdmin.loadExhibitions();
         }
       });
     });
+    
+    // Load paintings by default on startup
+    paintingAdmin.loadPaintings();
   }
 });

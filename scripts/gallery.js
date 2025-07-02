@@ -1,7 +1,6 @@
 class ExhibitionGallery {
     constructor() {
         this.exhibitions = [];
-        this.currentView = 'masonry';
         this.currentSort = 'date_desc';
         
         this.initializeElements();
@@ -11,35 +10,30 @@ class ExhibitionGallery {
     
     initializeElements() {
         this.galleryContainer = document.getElementById('exhibitionsGallery');
-        this.exhibitionModal = document.getElementById('exhibitionModal');
-        this.closeModalBtn = document.getElementById('closeExhibitionModal');
+        this.imageModal = document.getElementById('imageModal');
+        this.closeImageModalBtn = document.getElementById('closeImageModal');
+        this.modalImage = document.getElementById('modalImage');
+        this.imageInfo = document.getElementById('imageInfo');
         this.loadingOverlay = document.getElementById('loadingOverlay');
         this.sortSelect = document.getElementById('sortBy');
-        
-        this.viewToggles = document.querySelectorAll('.toggle-btn');
     }
     
     bindEvents() {
-        // View toggle buttons
-        this.viewToggles.forEach(btn => {
-            btn.addEventListener('click', (e) => this.changeView(e.target.dataset.view));
-        });
-        
         // Sort change
         this.sortSelect.addEventListener('change', (e) => {
             this.currentSort = e.target.value;
             this.renderExhibitions();
         });
         
-        // Modal close events
-        this.closeModalBtn.addEventListener('click', () => this.closeModal());
-        this.exhibitionModal.addEventListener('click', (e) => {
-            if (e.target === this.exhibitionModal) this.closeModal();
+        // Image modal close events
+        this.closeImageModalBtn.addEventListener('click', () => this.closeImageModal());
+        this.imageModal.addEventListener('click', (e) => {
+            if (e.target === this.imageModal) this.closeImageModal();
         });
         
         // Keyboard events
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.closeModal();
+            if (e.key === 'Escape') this.closeImageModal();
         });
     }
     
@@ -64,13 +58,13 @@ class ExhibitionGallery {
         this.galleryContainer.innerHTML = '';
         
         sortedExhibitions.forEach((exhibition, index) => {
-            const exhibitionElement = this.createExhibitionElement(exhibition);
+            const exhibitionElement = this.createExhibitionSection(exhibition);
             this.galleryContainer.appendChild(exhibitionElement);
             
-            // Animate in with delay
+            // Animate photos in with staggered delay
             setTimeout(() => {
-                exhibitionElement.classList.add('show');
-            }, index * 100);
+                this.animatePhotosIn(exhibitionElement);
+            }, index * 200);
         });
     }
     
@@ -91,80 +85,9 @@ class ExhibitionGallery {
         });
     }
     
-    createExhibitionElement(exhibition) {
-        const element = document.createElement('div');
-        element.className = 'exhibition-item';
-        element.dataset.exhibitionId = exhibition.id;
-        
-        const coverImage = exhibition.photos && exhibition.photos.length > 0 
-            ? exhibition.photos[0].imageurl 
-            : '/assets/images/placeholder.jpg';
-            
-        const photoCount = exhibition.photos ? exhibition.photos.length : 0;
-        const displayDate = new Date(exhibition.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        
-        element.innerHTML = `
-            <img src="${coverImage}" alt="${exhibition.title}" class="exhibition-cover" 
-                 onerror="this.src='/assets/images/placeholder.jpg'">
-            <div class="exhibition-info">
-                <h3 class="exhibition-title">${exhibition.title}</h3>
-                <div class="exhibition-date">${displayDate}</div>
-                <p class="exhibition-description">${exhibition.description || 'No description available.'}</p>
-                <div class="exhibition-stats">
-                    <span class="photo-count">
-                        <span>📷</span>
-                        ${photoCount} photos
-                    </span>
-                    <button class="view-exhibition">View Exhibition</button>
-                </div>
-            </div>
-        `;
-        
-        // Add click event to open modal
-        element.addEventListener('click', () => this.openExhibitionModal(exhibition));
-        
-        return element;
-    }
-    
-    changeView(view) {
-        if (view === this.currentView) return;
-        
-        this.currentView = view;
-        
-        // Update toggle buttons
-        this.viewToggles.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === view);
-        });
-        
-        // Update gallery classes
-        this.galleryContainer.classList.remove('gallery-masonry', 'gallery-grid');
-        this.galleryContainer.classList.add(`gallery-${view}`);
-        
-        // Re-render with new layout
-        this.renderExhibitions();
-    }
-    
-    async openExhibitionModal(exhibition) {
-        try {
-            // Load full exhibition details with photos
-            const response = await fetch(`/api/exhibitions/${exhibition.id}`);
-            const fullExhibition = await response.json();
-            
-            this.renderExhibitionModal(fullExhibition);
-            this.exhibitionModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        } catch (error) {
-            console.error('Error loading exhibition details:', error);
-            this.showMessage('Failed to load exhibition details', 'error');
-        }
-    }
-    
-    renderExhibitionModal(exhibition) {
-        const detailContainer = document.getElementById('exhibitionDetail');
+    createExhibitionSection(exhibition) {
+        const section = document.createElement('div');
+        section.className = 'exhibition-section';
         
         const displayDate = new Date(exhibition.date).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -174,38 +97,71 @@ class ExhibitionGallery {
         
         const photosHtml = exhibition.photos && exhibition.photos.length > 0
             ? exhibition.photos.map(photo => `
-                <div class="photo-item">
+                <div class="photo-item" data-photo-url="${photo.imageurl}" data-photo-title="${photo.title || exhibition.title}">
                     <img src="${photo.imageurl}" alt="${photo.title || 'Exhibition photo'}" 
                          onerror="this.src='/assets/images/placeholder.jpg'">
                 </div>
             `).join('')
-            : '<p>No photos available for this exhibition.</p>';
+            : '<p style="text-align: center; color: #666; grid-column: 1/-1;">No photos available for this exhibition.</p>';
         
-        detailContainer.innerHTML = `
-            <h2>${exhibition.title}</h2>
-            <div class="exhibition-meta">
-                <div class="meta-item">
-                    <span class="meta-label">Date</span>
-                    <span class="meta-value">${displayDate}</span>
+        section.innerHTML = `
+            <div class="exhibition-header">
+                <h2>${exhibition.title}</h2>
+                <div class="exhibition-meta">
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span>${displayDate}</span>
+                    </div>
+                    ${exhibition.location ? `
+                        <div class="meta-item">
+                            <span>📍</span>
+                            <span>${exhibition.location}</span>
+                        </div>
+                    ` : ''}
+                    <div class="meta-item">
+                        <span>📷</span>
+                        <span>${exhibition.photos ? exhibition.photos.length : 0} photos</span>
+                    </div>
                 </div>
-                <div class="meta-item">
-                    <span class="meta-label">Location</span>
-                    <span class="meta-value">${exhibition.location || 'Not specified'}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Photos</span>
-                    <span class="meta-value">${exhibition.photos ? exhibition.photos.length : 0}</span>
-                </div>
+                ${exhibition.description ? `
+                    <p class="exhibition-description">${exhibition.description}</p>
+                ` : ''}
             </div>
-            ${exhibition.description ? `<p>${exhibition.description}</p>` : ''}
             <div class="exhibition-photos">
                 ${photosHtml}
             </div>
         `;
+        
+        // Add click events to photos
+        section.querySelectorAll('.photo-item').forEach(photoItem => {
+            photoItem.addEventListener('click', () => {
+                const photoUrl = photoItem.dataset.photoUrl;
+                const photoTitle = photoItem.dataset.photoTitle;
+                this.openImageModal(photoUrl, photoTitle);
+            });
+        });
+        
+        return section;
     }
     
-    closeModal() {
-        this.exhibitionModal.style.display = 'none';
+    animatePhotosIn(exhibitionElement) {
+        const photos = exhibitionElement.querySelectorAll('.photo-item');
+        photos.forEach((photo, index) => {
+            setTimeout(() => {
+                photo.classList.add('show');
+            }, index * 100);
+        });
+    }
+    
+    openImageModal(imageUrl, title) {
+        this.modalImage.src = imageUrl;
+        this.imageInfo.innerHTML = ''
+        this.imageModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    closeImageModal() {
+        this.imageModal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
     
@@ -214,6 +170,7 @@ class ExhibitionGallery {
     }
     
     showMessage(message, type = 'success') {
+        // Keep your existing showMessage method
         const messageEl = document.createElement('div');
         messageEl.className = `message ${type}`;
         messageEl.textContent = message;
