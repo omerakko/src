@@ -48,7 +48,7 @@ app.use('/api/admin/exhibitions', verifyToken, requireAdmin, require('./routes/a
 // then the browser takes over routing. Without this, a hard refresh on any
 // route other than "/" returns 404 from Express.
 // ---------------------------------------------------------------------------
-app.get('*', (_req, res) => {
+app.get(/.*/, (_req, res) => {
   res.sendFile(path.join(ANGULAR_DIST, 'index.html'));
 });
 
