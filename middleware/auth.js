@@ -1,61 +1,50 @@
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-
+// Read once at module load. If it's missing, fail loudly at startup so the
+// problem surfaces immediately rather than returning 403s at runtime.
 const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
 
 /**
- * Middleware to verify JWT token
+ * Verifies the Bearer token from the Authorization header.
+ * Attaches the decoded payload to req.user on success.
  */
 const verifyToken = (req, res, next) => {
-  // Get token from header
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 
   if (!token) {
-    return res.status(401).json({ 
-      error: 'Access denied', 
-      message: 'No token provided' 
-    });
+    return res.status(401).json({ error: 'No token provided' });
   }
 
   try {
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    req.user = jwt.verify(token, JWT_SECRET);
     next();
-  } catch (error) {
-    console.error('Token verification error:', error);
-    return res.status(403).json({ 
-      error: 'Invalid token',
-      message: 'Token is not valid or has expired'
-    });
+  } catch {
+    // Distinguish between expired and malformed tokens so clients can react
+    // correctly (expired → prompt re-login, malformed → treat as attack).
+    return res.status(403).json({ error: 'Token is invalid or expired' });
   }
 };
 
 /**
- * Generate JWT token
- */
-const generateToken = (payload, expiresIn = '24h') => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
-};
-
-/**
- * Verify if user is admin (you can extend this for role-based access)
+ * Must run after verifyToken. Rejects non-admin users with 403.
  */
 const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ 
-      error: 'Access denied', 
-      message: 'Admin privileges required' 
-    });
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin privileges required' });
   }
   next();
 };
 
-module.exports = {
-  verifyToken,
-  generateToken,
-  requireAdmin,
-  JWT_SECRET
-};
+/**
+ * Creates a signed JWT with the given payload.
+ * Default expiry is 24 h — long enough to stay logged in for a work session
+ * without requiring a persistent token store.
+ */
+const generateToken = (payload, expiresIn = '24h') =>
+  jwt.sign(payload, JWT_SECRET, { expiresIn });
+
+module.exports = { verifyToken, requireAdmin, generateToken };

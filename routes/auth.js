@@ -1,178 +1,84 @@
-
-
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-const express = require('express');
-const bcrypt = require('bcrypt');
+const express  = require('express');
+const bcrypt   = require('bcrypt');
 const { generateToken, verifyToken } = require('../middleware/auth');
+const asyncHandler = require('../lib/asyncHandler');
+
 const router = express.Router();
 
-// In production, store this in a database
-// For now, we'll use a simple in-memory admin user
-const ADMIN_CREDENTIALS = {
-  username: process.env.ADMIN_USERNAME,
-  // Default password is 'admin123' - CHANGE THIS IN PRODUCTION
+// Credentials are read from environment variables, not hardcoded.
+// The password is stored as a bcrypt hash so the plaintext never lives in
+// config. To generate a new hash: node generate-hash.js
+const ADMIN = {
+  username:     process.env.ADMIN_USERNAME,
   passwordHash: process.env.ADMIN_PASSWORD_HASH
 };
 
-/**
- * Login endpoint
- */
-router.post('/login', async (req, res) => {
-  try {
-    // Debug logs
-    console.log('--- LOGIN ATTEMPT ---');
-    console.log('Stored username:', ADMIN_CREDENTIALS.username);
-    console.log('Stored password hash:', ADMIN_CREDENTIALS.passwordHash);
-    console.log('Request body:', req.body);
+if (!ADMIN.username || !ADMIN.passwordHash) {
+  console.warn('[auth] ADMIN_USERNAME or ADMIN_PASSWORD_HASH is not set');
+}
 
-    const { username, password } = req.body;
+// POST /api/auth/login
+router.post('/login', asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
 
-    console.log('Received username:', username);
-    console.log('Received password:', password);
-    console.log('Username type:', typeof username);
-    console.log('Password type:', typeof password);
-
-    // Validate input
-    if (!username || !password) {
-      console.log('Missing credentials');
-      return res.status(400).json({
-        error: 'Missing credentials',
-        message: 'Username and password are required'
-      });
-    }
-
-    // Check username
-    console.log('Username comparison:', username, '===', ADMIN_CREDENTIALS.username, '?', username === ADMIN_CREDENTIALS.username);
-    if (username !== ADMIN_CREDENTIALS.username) {
-      console.log('Username mismatch');
-      return res.status(401).json({
-        error: 'Invalid credentials',
-        message: 'Username or password is incorrect'
-      });
-    }
-
-    // Check password
-    console.log('About to compare password...');
-    console.log('Password to compare:', password);
-    console.log('Hash to compare against:', ADMIN_CREDENTIALS.passwordHash);
-    
-    const isValidPassword = await bcrypt.compare(password, ADMIN_CREDENTIALS.passwordHash);
-    console.log('Password comparison result:', isValidPassword);
-    
-    if (!isValidPassword) {
-      console.log('Password mismatch');
-      return res.status(401).json({
-        error: 'Invalid credentials',
-        message: 'Username or password is incorrect'
-      });
-    }
-
-    console.log('Login successful!');
-
-    // Generate JWT token
-    const token = generateToken({
-      username: username,
-      role: 'admin',
-      loginTime: new Date().toISOString()
-    });
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        username: username,
-        role: 'admin'
-      },
-      message: 'Login successful'
-    });
-
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      error: 'Server error',
-      message: 'An error occurred during login'
-    });
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
   }
+
+  // Check username first, then password. Both checks use the same generic
+  // error message so attackers can't enumerate valid usernames.
+  const usernameMatch = username === ADMIN.username;
+  const passwordMatch = usernameMatch && await bcrypt.compare(password, ADMIN.passwordHash);
+
+  if (!usernameMatch || !passwordMatch) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  const token = generateToken({ username, role: 'admin' });
+  res.json({ token, user: { username, role: 'admin' } });
+}));
+
+// POST /api/auth/logout  — JWT is stateless, so logout is client-side.
+// This endpoint exists so the Angular interceptor can call it without errors.
+router.post('/logout', verifyToken, (_req, res) => {
+  res.json({ success: true });
 });
 
-/**
- * Logout endpoint (client-side token removal, but we can track server-side)
- */
-router.post('/logout', verifyToken, (req, res) => {
-  // In a more complex setup, you might want to blacklist the token
-  res.json({
-    success: true,
-    message: 'Logged out successfully'
-  });
-});
-
-/**
- * Check if user is authenticated
- */
+// GET /api/auth/verify
 router.get('/verify', verifyToken, (req, res) => {
+  res.json({ user: { username: req.user.username, role: req.user.role } });
+});
+
+// POST /api/auth/change-password
+// Note: this updates the in-memory ADMIN object for the current process only.
+// A proper solution would persist the new hash to the database or .env file.
+// For a single-admin setup this is acceptable — the operator updates .env manually.
+router.post('/change-password', verifyToken, asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Both currentPassword and newPassword are required' });
+  }
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'New password must be at least 8 characters' });
+  }
+
+  const valid = await bcrypt.compare(currentPassword, ADMIN.passwordHash);
+  if (!valid) {
+    return res.status(401).json({ error: 'Current password is incorrect' });
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 12);
+
+  // Update in-memory (survives until next restart). Operator must also update
+  // ADMIN_PASSWORD_HASH in .env for the change to persist across restarts.
+  ADMIN.passwordHash = newHash;
+
   res.json({
     success: true,
-    user: {
-      username: req.user.username,
-      role: req.user.role
-    },
-    message: 'Token is valid'
+    message: 'Password changed. Update ADMIN_PASSWORD_HASH in your .env file to persist this change.',
+    newHash
   });
-});
-
-/**
- * Change password endpoint
- */
-router.post('/change-password', verifyToken, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        error: 'Missing data',
-        message: 'Current password and new password are required'
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        error: 'Invalid password',
-        message: 'New password must be at least 6 characters long'
-      });
-    }
-
-    // Verify current password
-    const isValidPassword = await bcrypt.compare(currentPassword, ADMIN_CREDENTIALS.passwordHash);
-    if (!isValidPassword) {
-      return res.status(401).json({
-        error: 'Invalid password',
-        message: 'Current password is incorrect'
-      });
-    }
-
-    // Hash new password
-    const saltRounds = 10;
-    const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
-
-    // In production, you'd update this in the database
-    // For now, we'll just return a success message
-    console.log('New password hash (save this):', newPasswordHash);
-
-    res.json({
-      success: true,
-      message: 'Password changed successfully. Please update your environment variables with the new hash.',
-      newPasswordHash: newPasswordHash
-    });
-
-  } catch (error) {
-    console.error('Change password error:', error);
-    res.status(500).json({
-      error: 'Server error',
-      message: 'An error occurred while changing password'
-    });
-  }
-});
+}));
 
 module.exports = router;
