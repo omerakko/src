@@ -71,10 +71,10 @@
 
 /* ── Reorder grid & cards ───────────────────────────────────── */
 .gallery-grid.reorder-active {
+  /* Subtle tint signals "edit mode" without shifting layout.        */
+  /* No negative margins — those extend beyond the viewport edge.   */
   background: rgba(74, 128, 245, 0.025);
   border-radius: 10px;
-  padding: 10px;
-  margin: -10px;
   transition: background 0.3s;
 }
 
@@ -151,6 +151,50 @@
   display: block;
 }
 
+/* ── Long-press "choosing" pulse (touch only) ───────────────── */
+.reorder-card.sort-choosing {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(74, 128, 245, 0.25);
+  outline: 2px solid rgba(74, 128, 245, 0.5);
+  transition: transform 0.15s, box-shadow 0.15s, outline 0.15s;
+}
+
+/* ── Mobile / tablet responsive reorder ────────────────────── */
+@media (hover: none) {
+  /* Touch device: grip handle always visible, no hover needed */
+  .reorder-card .grip-handle {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
+@media (max-width: 600px) {
+  /* 2-column grid on phones: bigger cards, easier to grab, see full order at a glance */
+  .gallery-grid.reorder-active {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .order-badge { width: 30px; height: 30px; font-size: 13px; }
+  .grip-handle { width: 34px; height: 34px; }
+  .edit-banner { font-size: 12px; padding: 9px 12px; }
+
+  .undo-toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    transform: none;
+    border-radius: 16px;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .gallery-grid.reorder-active {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 /* ── Undo toast ─────────────────────────────────────────────── */
 .undo-toast {
   position: fixed;
@@ -187,4 +231,14 @@
 @keyframes toastUp {
   from { opacity: 0; transform: translateX(-50%) translateY(14px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* On mobile the toast is left/right anchored (no translateX), so use a separate keyframe */
+@keyframes toastUpMobile {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .undo-toast { animation-name: toastUpMobile; }
 }

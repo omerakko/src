@@ -75,14 +75,30 @@ export class PaintingsAdminComponent implements OnInit, OnDestroy {
     if (!el) return;
 
     this.sortable = Sortable.create(el, {
-      animation:         220,
-      easing:            'cubic-bezier(0.2, 0.8, 0.2, 1)',
-      ghostClass:        'sort-ghost',
-      dragClass:         'sort-drag',
-      forceFallback:     true,          // JS-driven clone so we can style it
-      fallbackClass:     'sort-fallback',
-      fallbackTolerance: 6,             // ignore tiny jitters; prevents drag on click
-      onStart: () => { this.saveState = 'idle'; this.showUndo = false; },
+      animation:            220,
+      easing:               'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      ghostClass:           'sort-ghost',
+      dragClass:            'sort-drag',
+      forceFallback:        true,
+      fallbackClass:        'sort-fallback',
+      fallbackTolerance:    6,
+      // On touch: require a 250ms hold before drag starts.
+      // This lets the user scroll past cards without accidentally grabbing one.
+      delay:                250,
+      delayOnTouchOnly:     true,
+      touchStartThreshold:  4,
+      onChoose: (evt: SortableEvent) => {
+        // Visual "about to drag" feedback during the long-press delay on touch.
+        (evt.item as HTMLElement).classList.add('sort-choosing');
+      },
+      onUnchoose: (evt: SortableEvent) => {
+        (evt.item as HTMLElement).classList.remove('sort-choosing');
+      },
+      onStart: (evt: SortableEvent) => {
+        (evt.item as HTMLElement).classList.remove('sort-choosing');
+        this.saveState = 'idle';
+        this.showUndo  = false;
+      },
       onEnd: (evt: SortableEvent) => {
         if (evt.oldIndex === evt.newIndex) return;
         this.snapshotOrder = [...this.paintings];
