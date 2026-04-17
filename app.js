@@ -21,11 +21,14 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // ---------------------------------------------------------------------------
-// Static files — scoped to /assets only.
-// The old code served the entire project root (__dirname), which exposed
-// source files, .env, node_modules, etc. to anyone who guessed the path.
+// Static files
+// /assets  — painting images and other uploaded media.
+// /        — Angular production build. The SPA's own assets (JS, CSS) live here.
 // ---------------------------------------------------------------------------
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+const ANGULAR_DIST = path.join(__dirname, 'frontend', 'dist', 'nilufer-orel-portfolio', 'browser');
+app.use(express.static(ANGULAR_DIST));
 
 // ---------------------------------------------------------------------------
 // Route mounting
@@ -38,6 +41,16 @@ app.use('/api/exhibitions', require('./routes/exhibitions'));
 // those routers is automatically guarded — no risk of forgetting a middleware.
 app.use('/api/admin/paintings',   verifyToken, requireAdmin, require('./routes/admin/paintings'));
 app.use('/api/admin/exhibitions', verifyToken, requireAdmin, require('./routes/admin/exhibitions'));
+
+// ---------------------------------------------------------------------------
+// Angular catch-all — must come AFTER all /api routes.
+// Angular is a client-side router: the server only ever delivers index.html,
+// then the browser takes over routing. Without this, a hard refresh on any
+// route other than "/" returns 404 from Express.
+// ---------------------------------------------------------------------------
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(ANGULAR_DIST, 'index.html'));
+});
 
 // ---------------------------------------------------------------------------
 // Centralized error handler
