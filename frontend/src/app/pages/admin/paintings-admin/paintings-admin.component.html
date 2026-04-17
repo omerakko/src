@@ -1,18 +1,50 @@
-<div class="admin-controls">
-  <div class="control-buttons">
-    <button class="btn-primary" (click)="openAddForm()">
-      <span class="btn-icon">+</span> Add Painting
-    </button>
-    <button class="btn-secondary" [class.active]="reorderMode" (click)="reorderMode = !reorderMode">
-      <span class="btn-icon">⇅</span> {{ reorderMode ? 'Done Reordering' : 'Reorder' }}
-    </button>
-  </div>
+<!-- ── Toolbar ────────────────────────────────────────────────── -->
+<div class="toolbar">
+  <button class="btn-primary" (click)="openAddForm()" [disabled]="reorderMode">
+    <span class="btn-icon">+</span> Add Painting
+  </button>
 
-  <div class="gallery-grid" [class.reorder-mode]="reorderMode"
-    cdkDropList (cdkDropListDropped)="onDrop($event)">
+  <button class="btn-reorder" [class.active]="reorderMode" (click)="toggleReorderMode()">
+    @if (reorderMode) {
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M1.5 1.5l10 10M11.5 1.5l-10 10"/>
+      </svg>
+      Done
+    } @else {
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+        <circle cx="4" cy="2.5"  r="1.2"/><circle cx="10" cy="2.5"  r="1.2"/>
+        <circle cx="4" cy="7"    r="1.2"/><circle cx="10" cy="7"    r="1.2"/>
+        <circle cx="4" cy="11.5" r="1.2"/><circle cx="10" cy="11.5" r="1.2"/>
+      </svg>
+      Reorder
+    }
+  </button>
+
+  <!-- Auto-save indicator — only visible in reorder mode -->
+  @if (reorderMode) {
+    <span class="save-indicator" [class.saving]="saveState === 'saving'" [class.saved]="saveState === 'saved'">
+      @if (saveState === 'saving') { Saving… }
+      @if (saveState === 'saved')  { Saved ✓  }
+    </span>
+  }
+</div>
+
+<!-- ── Edit-mode banner ──────────────────────────────────────── -->
+@if (reorderMode) {
+  <div class="edit-banner">
+    <span class="edit-dot"></span>
+    Drag any painting to reorder. <strong>#1 appears first in the gallery.</strong>
+  </div>
+}
+
+<!-- ── Gallery grid ──────────────────────────────────────────── -->
+<!-- SortableJS is initialised on #reorderGrid via ViewChild in the component. -->
+<!-- In browse mode, no drag capability exists at all.                         -->
+
+@if (!reorderMode) {
+  <div class="gallery-grid">
     @for (painting of paintings; track painting.id) {
-      <div class="admin-gallery-item" [class.reorder-mode]="reorderMode"
-        cdkDrag [cdkDragDisabled]="!reorderMode">
+      <div class="admin-gallery-item">
         <div class="image-aspect-ratio-container">
           <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image">
           @if (!painting.isavailable) {
@@ -26,28 +58,55 @@
             <span>{{ painting.isavailable ? 'Available' : 'Sold' }}</span>
           </div>
         </div>
-
-        @if (reorderMode) {
-          <div class="drag-handle" style="display:flex">⠿</div>
-        } @else {
-          <div class="admin-item-controls">
-            <button class="control-btn"
-              [style.background]="painting.featured ? 'gold' : 'rgba(0,0,0,0.7)'"
-              style="color:white"
-              title="{{ painting.featured ? 'Remove from featured' : 'Add to featured' }}"
-              (click)="$event.stopPropagation(); toggleFeatured(painting)">★</button>
-            <button class="control-btn edit-btn" title="Edit" (click)="$event.stopPropagation(); openEditForm(painting)">✏</button>
-            <button class="control-btn delete-btn" title="Delete" (click)="$event.stopPropagation(); confirmDelete(painting.id)">🗑</button>
-          </div>
-        }
+        <div class="admin-item-controls">
+          <button class="control-btn"
+            [style.background]="painting.featured ? 'gold' : 'rgba(0,0,0,0.7)'"
+            style="color:white"
+            title="{{ painting.featured ? 'Remove from featured' : 'Add to featured' }}"
+            (click)="$event.stopPropagation(); toggleFeatured(painting)">★</button>
+          <button class="control-btn edit-btn" title="Edit"
+            (click)="$event.stopPropagation(); openEditForm(painting)">✏</button>
+          <button class="control-btn delete-btn" title="Delete"
+            (click)="$event.stopPropagation(); confirmDelete(painting.id)">🗑</button>
+        </div>
       </div>
     } @empty {
-      <p style="grid-column:1/-1;text-align:center;color:#888;padding:40px 0;">No paintings yet. Click "Add Painting" to get started.</p>
+      <p style="grid-column:1/-1;text-align:center;color:#888;padding:40px 0;">
+        No paintings yet. Click "Add Painting" to get started.
+      </p>
     }
   </div>
-</div>
+}
 
-<!-- Add/Edit Form Modal -->
+@if (reorderMode) {
+  <div class="gallery-grid reorder-active" #reorderGrid>
+    @for (painting of paintings; track painting.id; let i = $index) {
+      <div class="admin-gallery-item reorder-card">
+
+        <!-- Number badge -->
+        <span class="order-badge">{{ i + 1 }}</span>
+
+        <!-- Grip handle — visible on hover, signals "grab here" -->
+        <div class="grip-handle" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
+            <circle cx="3.5" cy="2.5"  r="1.2"/><circle cx="9.5" cy="2.5"  r="1.2"/>
+            <circle cx="3.5" cy="6.5"  r="1.2"/><circle cx="9.5" cy="6.5"  r="1.2"/>
+            <circle cx="3.5" cy="10.5" r="1.2"/><circle cx="9.5" cy="10.5" r="1.2"/>
+          </svg>
+        </div>
+
+        <div class="image-aspect-ratio-container">
+          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image">
+        </div>
+        <div class="reorder-card-footer">
+          <span class="reorder-card-title">{{ painting.title }}</span>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- ── Add/Edit Form Modal ─────────────────────────────────────── -->
 @if (showForm) {
   <div class="modal" style="display:flex" (click)="showForm = false">
     <div class="modal-content painting-form-modal" style="background:white;border-radius:12px;" (click)="$event.stopPropagation()">
@@ -112,7 +171,7 @@
   </div>
 }
 
-<!-- Confirm Delete -->
+<!-- ── Confirm Delete ──────────────────────────────────────────── -->
 @if (showConfirmDelete) {
   <div class="modal" style="display:flex">
     <div class="modal-content confirm-modal" style="background:white;border-radius:12px;">
@@ -126,9 +185,17 @@
   </div>
 }
 
-<!-- Toast Message -->
+<!-- ── Toast messages ─────────────────────────────────────────── -->
 @if (message) {
   <div class="message" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
     {{ message }}
+  </div>
+}
+
+<!-- ── Undo toast ─────────────────────────────────────────────── -->
+@if (showUndo) {
+  <div class="undo-toast">
+    <span>Reordered</span>
+    <button (click)="undoReorder()">Undo</button>
   </div>
 }

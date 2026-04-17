@@ -1,1 +1,190 @@
 :host { display: block; }
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-reorder {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.btn-reorder:hover  { border-color: #4a80f5; color: #4a80f5; }
+.btn-reorder.active { border-color: #4a80f5; background: #ebf2ff; color: #4a80f5; }
+
+/* Save-state indicator */
+.save-indicator {
+  font-size: 13px;
+  color: #aaa;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+.save-indicator.saving { color: #888; }
+.save-indicator.saved  { color: #2e7d32; font-weight: 500; }
+
+/* ── Edit-mode banner ───────────────────────────────────────── */
+.edit-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  background: #f0f4ff;
+  border-left: 3px solid #4a80f5;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  color: #555;
+  animation: bannerIn 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.edit-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #4a80f5;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes bannerIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Reorder grid & cards ───────────────────────────────────── */
+.gallery-grid.reorder-active {
+  background: rgba(74, 128, 245, 0.025);
+  border-radius: 10px;
+  padding: 10px;
+  margin: -10px;
+  transition: background 0.3s;
+}
+
+.reorder-card {
+  cursor: grab;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  /* Reorder cards hide the sold badge for less visual noise */
+  overflow: hidden;
+}
+
+.reorder-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+}
+
+.reorder-card:active { cursor: grabbing; }
+
+/* Order badge */
+.order-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+/* Grip handle — hidden until hover */
+.grip-handle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
+  transition: opacity 0.15s;
+}
+.reorder-card:hover .grip-handle { opacity: 1; }
+
+/* Card footer in reorder mode */
+.reorder-card-footer {
+  padding: 7px 10px;
+  background: #f9f9f9;
+}
+.reorder-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* ── Undo toast ─────────────────────────────────────────────── */
+.undo-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 12px 12px 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 28px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+  z-index: 9999;
+  animation: toastUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.undo-toast button {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.28);
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.undo-toast button:hover { background: rgba(255,255,255,0.22); }
+
+@keyframes toastUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
