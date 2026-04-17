@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Painting, PaintingsResponse, FeaturedResponse } from '../models/painting.model';
 
 @Injectable({ providedIn: 'root' })
@@ -28,11 +28,13 @@ export class PaintingService {
   }
 
   create(data: FormData): Observable<Painting> {
-    return this.http.post<Painting>('/api/admin/paintings', data);
+    return this.http.post<{ painting: Painting }>('/api/admin/paintings', data)
+      .pipe(map((res: { painting: Painting }) => res.painting));
   }
 
   update(id: number, data: Partial<Painting>): Observable<Painting> {
-    return this.http.put<Painting>(`/api/admin/paintings/${id}`, data);
+    return this.http.put<{ painting: Painting }>(`/api/admin/paintings/${id}`, data)
+      .pipe(map((res: { painting: Painting }) => res.painting));
   }
 
   uploadImage(id: number, formData: FormData): Observable<unknown> {
