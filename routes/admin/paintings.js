@@ -29,19 +29,34 @@ router.get('/all', asyncHandler(async (req, res) => {
 
 // ---------------------------------------------------------------------------
 // POST /api/admin/paintings  — create a new painting
+//
+// The Angular client sends a FormData request so it can include the image in
+// one round-trip. Multer parses the file; text fields land on req.body but
+// all as strings — coerce them back before passing to Sequelize.
 // ---------------------------------------------------------------------------
-router.post('/', asyncHandler(async (req, res) => {
-  const data = req.body;
+router.post('/', upload.single('image'), asyncHandler(async (req, res) => {
+  const data = { ...req.body };
+
+  // FormData serialises every value as a string.
+  if (data.featured  !== undefined) data.featured   = data.featured   === 'true';
+  if (data.isavailable !== undefined) data.isavailable = data.isavailable === 'true';
+  if (data.year      !== undefined) data.year       = parseInt(data.year, 10);
+  if (data.price     !== undefined && data.price !== '') data.price = parseFloat(data.price);
+  if (data.categories) {
+    try { data.categories = JSON.parse(data.categories); } catch { data.categories = []; }
+  }
 
   if (data.featured) {
     await assertFeaturedSlotAvailable();
   }
 
-  // Place the new painting at the top of the list.
   const maxOrder = (await Painting.max('order')) || 0;
   data.order = maxOrder + 1;
 
-  // Sequelize validates the model fields before hitting the DB.
+  if (req.file) {
+    data.imageurl = `/assets/images/${req.file.filename}`;
+  }
+
   const painting = await Painting.create(data);
   res.status(201).json({ painting });
 }));
