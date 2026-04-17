@@ -84,9 +84,9 @@ export class PaintingsAdminComponent implements OnInit, OnDestroy {
       fallbackTolerance:    6,
       // On touch: require a 250ms hold before drag starts.
       // This lets the user scroll past cards without accidentally grabbing one.
-      delay:                250,
+      delay:                150,
       delayOnTouchOnly:     true,
-      touchStartThreshold:  4,
+      touchStartThreshold:  3,
       onChoose: (evt: SortableEvent) => {
         // Visual "about to drag" feedback during the long-press delay on touch.
         (evt.item as HTMLElement).classList.add('sort-choosing');
