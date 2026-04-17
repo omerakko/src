@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h1 class="page-title">Admin Dashboard</h1>
+</div>
+
+<div class="admin-sections">
+  <div class="section-buttons">
+    <button class="section-btn" [class.active]="activeTab === 'paintings'" (click)="activeTab = 'paintings'">
+      <span class="btn-icon">🎨</span> Paintings
+    </button>
+    <button class="section-btn" [class.active]="activeTab === 'exhibitions'" (click)="activeTab = 'exhibitions'">
+      <span class="btn-icon">🖼️</span> Exhibitions
+    </button>
+  </div>
+</div>
+
+<div class="admin-content-section">
+  @if (activeTab === 'paintings') {
+    <app-paintings-admin></app-paintings-admin>
+  }
+  @if (activeTab === 'exhibitions') {
+    <app-exhibitions-admin></app-exhibitions-admin>
+  }
+</div>

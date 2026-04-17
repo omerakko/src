@@ -1,0 +1,15 @@
+<nav [class.scrolled]="scrolled">
+  <div class="nav-container">
+    <a routerLink="/" class="logo">Nilufer Orel</a>
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/paintings" routerLinkActive="active">Paintings</a>
+      <a routerLink="/exhibitions" routerLinkActive="active">Exhibitions</a>
+      <a routerLink="/about" routerLinkActive="active">About</a>
+      @if (isAdmin) {
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+        <button class="logout-btn" (click)="auth.logout()">⏏ Logout</button>
+      }
+    </div>
+  </div>
+</nav>

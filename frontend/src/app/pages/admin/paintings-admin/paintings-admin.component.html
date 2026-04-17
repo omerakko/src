@@ -1,0 +1,134 @@
+<div class="admin-controls">
+  <div class="control-buttons">
+    <button class="btn-primary" (click)="openAddForm()">
+      <span class="btn-icon">+</span> Add Painting
+    </button>
+    <button class="btn-secondary" [class.active]="reorderMode" (click)="reorderMode = !reorderMode">
+      <span class="btn-icon">⇅</span> {{ reorderMode ? 'Done Reordering' : 'Reorder' }}
+    </button>
+  </div>
+
+  <div class="gallery-grid" [class.reorder-mode]="reorderMode"
+    cdkDropList (cdkDropListDropped)="onDrop($event)">
+    @for (painting of paintings; track painting.id) {
+      <div class="admin-gallery-item" [class.reorder-mode]="reorderMode"
+        cdkDrag [cdkDragDisabled]="!reorderMode">
+        <div class="image-aspect-ratio-container">
+          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image">
+          @if (!painting.isavailable) {
+            <div class="sold-badge" title="Sold"></div>
+          }
+        </div>
+        <div style="padding:10px;background:#f9f9f9;">
+          <h3 class="gallery-title" style="font-size:14px;margin:0 0 4px;">{{ painting.title }}</h3>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;">
+            <span>{{ painting.year }}</span>
+            <span>{{ painting.isavailable ? 'Available' : 'Sold' }}</span>
+          </div>
+        </div>
+
+        @if (reorderMode) {
+          <div class="drag-handle" style="display:flex">⠿</div>
+        } @else {
+          <div class="admin-item-controls">
+            <button class="control-btn"
+              [style.background]="painting.featured ? 'gold' : 'rgba(0,0,0,0.7)'"
+              style="color:white"
+              title="{{ painting.featured ? 'Remove from featured' : 'Add to featured' }}"
+              (click)="$event.stopPropagation(); toggleFeatured(painting)">★</button>
+            <button class="control-btn edit-btn" title="Edit" (click)="$event.stopPropagation(); openEditForm(painting)">✏</button>
+            <button class="control-btn delete-btn" title="Delete" (click)="$event.stopPropagation(); confirmDelete(painting.id)">🗑</button>
+          </div>
+        }
+      </div>
+    } @empty {
+      <p style="grid-column:1/-1;text-align:center;color:#888;padding:40px 0;">No paintings yet. Click "Add Painting" to get started.</p>
+    }
+  </div>
+</div>
+
+<!-- Add/Edit Form Modal -->
+@if (showForm) {
+  <div class="modal" style="display:flex" (click)="showForm = false">
+    <div class="modal-content painting-form-modal" style="background:white;border-radius:12px;" (click)="$event.stopPropagation()">
+      <h2 style="margin-top:0;">{{ editingId ? 'Edit Painting' : 'Add Painting' }}</h2>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Title *</label>
+          <input formControlName="title" type="text">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Medium</label>
+            <input formControlName="medium" type="text">
+          </div>
+          <div class="form-group">
+            <label>Year *</label>
+            <input formControlName="year" type="number">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Price (€)</label>
+          <input formControlName="price" type="number">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea formControlName="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Categories</label>
+          <div class="checkbox-group">
+            @for (cat of categories; track cat) {
+              <label>
+                <input type="checkbox" [checked]="isCategorySelected(cat)" (change)="toggleCategory(cat)">
+                {{ cat }}
+              </label>
+            }
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
+            <input type="checkbox" formControlName="isavailable" style="width:18px;height:18px;">
+            Available for sale
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <input type="file" accept="image/*" (change)="onImageSelected($event)">
+          @if (imagePreviewUrl) {
+            <div class="current-image">
+              <img [src]="imagePreviewUrl" alt="Preview">
+            </div>
+          }
+        </div>
+        <div class="form-buttons">
+          <button type="button" class="btn-secondary" (click)="showForm = false">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="loading || form.invalid">
+            {{ loading ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Confirm Delete -->
+@if (showConfirmDelete) {
+  <div class="modal" style="display:flex">
+    <div class="modal-content confirm-modal" style="background:white;border-radius:12px;">
+      <h3>Delete Painting?</h3>
+      <p>This action cannot be undone.</p>
+      <div class="form-buttons" style="justify-content:center;">
+        <button class="btn-secondary" (click)="showConfirmDelete = null">Cancel</button>
+        <button class="btn-danger" (click)="deletePainting()">Delete</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Toast Message -->
+@if (message) {
+  <div class="message" [class.success]="messageType === 'success'" [class.error]="messageType === 'error'">
+    {{ message }}
+  </div>
+}

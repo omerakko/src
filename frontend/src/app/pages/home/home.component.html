@@ -1,0 +1,32 @@
+<section class="hero">
+  <img src="assets/banner/test.jpeg" alt="Featured painting" class="hero-image">
+  <div class="hero-content">
+    <h1 class="hero-title">Nilufer Orel</h1>
+    <p class="hero-subtitle">Outsider artist expressing unfiltered emotion and inner worlds through raw, intuitive creation.</p>
+    <a routerLink="/paintings" class="hero-button">View Paintings</a>
+  </div>
+</section>
+
+<section class="featured-work">
+  <h2 class="section-title">Featured Works</h2>
+  <div class="featured-grid">
+    @for (painting of featuredPaintings; track painting.id) {
+      <div class="featured-item" (click)="openModal(painting)">
+        <img [src]="painting.imageurl" [alt]="painting.title" class="featured-image">
+        <div class="featured-caption">
+          <h3 class="featured-title">{{ painting.title }}</h3>
+          <p class="featured-year">{{ painting.year }}</p>
+        </div>
+      </div>
+    } @empty {
+      <p style="text-align:center;color:#888;">No featured paintings selected yet.</p>
+    }
+  </div>
+</section>
+
+<app-image-modal
+  [imageUrl]="modalImage"
+  [caption]="modalCaption"
+  [visible]="modalVisible"
+  (close)="closeModal()">
+</app-image-modal>

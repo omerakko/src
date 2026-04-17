@@ -1,0 +1,62 @@
+<div class="page-header">
+  <h1 class="page-title">Exhibitions</h1>
+</div>
+
+<div class="gallery-controls">
+  <div class="sort-controls">
+    <select (change)="onSortChange($any($event.target).value)">
+      <option value="date-desc">Date (Newest)</option>
+      <option value="date-asc">Date (Oldest)</option>
+      <option value="title-asc">Title A–Z</option>
+      <option value="title-desc">Title Z–A</option>
+    </select>
+  </div>
+</div>
+
+<div class="exhibitions-container">
+  @for (exhibition of exhibitions; track exhibition.id) {
+    <div class="exhibition-section">
+      <div class="exhibition-header">
+        <h2>{{ exhibition.title }}</h2>
+        <div class="exhibition-meta">
+          @if (exhibition.date) {
+            <div class="meta-item">
+              <span class="meta-icon">📅</span>
+              <span class="meta-label">Date</span>
+              <span class="meta-value">{{ exhibition.date | date:'mediumDate' }}</span>
+            </div>
+          }
+          @if (exhibition.location) {
+            <div class="meta-item">
+              <span class="meta-icon">📍</span>
+              <span class="meta-label">Location</span>
+              <span class="meta-value">{{ exhibition.location }}</span>
+            </div>
+          }
+        </div>
+        @if (exhibition.description) {
+          <p class="exhibition-description">{{ exhibition.description }}</p>
+        }
+      </div>
+
+      @if (exhibition.photos?.length) {
+        <div class="exhibition-photos">
+          @for (photo of exhibition.photos; track photo.id) {
+            <div class="photo-item" (click)="openPhoto(photo)">
+              <img [src]="photo.imageurl" [alt]="photo.title || exhibition.title">
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @empty {
+    <p style="text-align:center;color:#888;padding:60px 0;">No exhibitions found.</p>
+  }
+</div>
+
+<app-image-modal
+  [imageUrl]="modalImage"
+  [caption]="modalCaption"
+  [visible]="modalVisible"
+  (close)="closeModal()">
+</app-image-modal>

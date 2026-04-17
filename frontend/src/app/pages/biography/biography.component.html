@@ -1,0 +1,85 @@
+<section class="about-container">
+  <div class="about-header">
+    <h1 class="about-title">About the Artist</h1>
+  </div>
+
+  <div class="artist-bio">
+    <img src="assets/images/artistPhoto.jpg" alt="Artist portrait" class="artist-image">
+    <div class="bio-content">
+      <h2>Biography</h2>
+      <p>Nilüfer Örel, Türk bir sanatçıdır. Şeref Bigalı'dan çeşitli resim dersleri aldı. Romanya'da yaşadığı dört yıl boyunca, Bükreş'te kurduğu atölyede Rumen ve Fransız sanatçılarla çalıştı. 2019'dan beri Bodrum'da bir köyde ormanlık bir alanda yaşıyor, güneş enerjisi ve doğrudan kaynak suyu kullanarak, vahşi yaşamı komşu olarak benimsemiş durumda. Şu anda, denizde yaşarken deneyimlediği dalgalar ve mavi deniz tutkusu ve bitmek bilmeyen yelken arzusu ile kendi dünyasını ve doğayı farklı tekniklerle harmanlayarak dönüştürüyor. Nilüfer'in tutkusu, 2023'te düzenlenen Bodrum Sanat Fuarı ve Denizbank Sanat Galerisi gibi çeşitli sergiler aracılığıyla izleyicisine ulaştı. 2024 yılında Merqezart Bodrum'da "Hayatımın Katmanları" başlıklı ilk kişisel sanat sergisini açtı.</p>
+      <p>Nilufer Örel is a Turkish artist. She took various painting lessons from Seref Bigali. During the period when she lived in Romania for 4 years, she worked with Romanian and French artists at the workshop she established in Bucharest. Since 2019, she has been living in a forest area in Bodrum / Turkiye in a village, using solar electricity and direct spring water source and nearby the wildlife as her neighborhood. For the time being she transforms her passion for waves and blue sea, and her never-ending desire for sailing, which she experienced while living on the sea, by blending her own world and nature with different techniques. Nilufer's passion reached her audience throughout several exhibitions such as Bodrum Art fair and Denizbank Art Gallery held in 2023. She exposed her first individual art exposition in Merqezart Bodrum in 2024, titled "Layers of my life".</p>
+      <p>Nilüfer Örel est un peintre Turque. Elle a pris plusieurs cours de peinture avec Şeref Bigalı. Pendant la période où elle a vécu en Roumanie pendant 4 ans, elle a travaillé avec des artistes roumains et français dans l'atelier qu'elle a établi à Bucarest. Depuis 2019, elle vit dans une zone forestière à Bodrum, en Turquie, dans un village, utilisant l'électricité solaire et une source d'eau directe. Actuellement, elle transforme sa passion pour les vagues et la mer bleue, ainsi que son désir incessant de naviguer, en mélangeant son propre monde et la nature avec différentes techniques. Elle a exposé sa première exposition d'art individuelle à Merqezart Bodrum en 2024, intitulée "Les couches de ma vie".</p>
+    </div>
+  </div>
+
+  <div class="artist-statement">
+    <h2>Artist Statement</h2>
+    <p>Feeling the moment, only the present counts — I create art that invites stillness, presence, and a renewed sense of wonder in the now. Each piece is a reminder to pause, feel, and truly see.</p>
+  </div>
+
+  <!-- Exhibitions CV -->
+  <div class="expandable-section">
+    <div class="section-header" (click)="exhibitionsExpanded = !exhibitionsExpanded">
+      <h2>Exhibitions</h2>
+      <span class="expand-icon" [class.expanded]="exhibitionsExpanded">+</span>
+    </div>
+    <div class="section-content" [class.expanded]="exhibitionsExpanded">
+      <div class="cv-category">
+        <div class="cv-item"><p class="cv-year">2026</p><p class="cv-description">Bienal Izmir, Izmir, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2025</p><p class="cv-description">Brooklyn Awita Gallery, New York, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2025</p><p class="cv-description">Kethüda Hammam, Istanbul, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2025</p><p class="cv-description">Marmaris International Art and Design Symposium, Marmaris, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2024</p><p class="cv-description">Bodrum Art Fairs Herodot Cultural Centre, Bodrum, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2024</p><p class="cv-description">Istanbul art and antique fair Lütfu Kırdar Exhibition Centre, Istanbul, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2024</p><p class="cv-description">American Hospital Alzheimer Foundation, Bodrum, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2024</p><p class="cv-description">Oasis Art Gallery, Bodrum, Group Exhibition</p></div>
+        <div class="cv-item"><p class="cv-year">2023</p><p class="cv-description">Bodrum Art Fair Herodot Cultural Centre, Bodrum, Solo Stand</p></div>
+        <div class="cv-item"><p class="cv-year">2023</p><p class="cv-description">Merqez Art Gallery Bodrum Marina Yacht Club, Bodrum, Solo Stand</p></div>
+        <div class="cv-item"><p class="cv-year">2023</p><p class="cv-description">DenizBank Art Gallery, Istanbul, Group Exhibition</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Techniques -->
+  <div class="expandable-section">
+    <div class="section-header" (click)="techniquesExpanded = !techniquesExpanded">
+      <h2>Artistic Techniques</h2>
+      <span class="expand-icon" [class.expanded]="techniquesExpanded">+</span>
+    </div>
+    <div class="section-content" [class.expanded]="techniquesExpanded">
+      <div class="techniques-grid">
+        <div class="technique-item">
+          <div class="technique-title">Linocut</div>
+          <div class="technique-description">Linocut printmaking technique creating bold, expressive prints with rich textures and striking contrasts.</div>
+        </div>
+        <div class="technique-item">
+          <div class="technique-title">Layered Acrylic Work</div>
+          <div class="technique-description">Layered acrylic work building depth and complexity through multiple transparent and opaque layers.</div>
+        </div>
+        <div class="technique-item">
+          <div class="technique-title">Acrylic Paintings</div>
+          <div class="technique-description">Acrylic paintings exploring vibrant colors and dynamic compositions with quick-drying versatility.</div>
+        </div>
+        <div class="technique-item">
+          <div class="technique-title">Pastel</div>
+          <div class="technique-description">Soft pastel works capturing delicate color transitions and atmospheric effects with pure pigment.</div>
+        </div>
+        <div class="technique-item">
+          <div class="technique-title">Mixed Media Canvas</div>
+          <div class="technique-description">Canvas works combining various materials and techniques to create rich, textural compositions.</div>
+        </div>
+        <div class="technique-item">
+          <div class="technique-title">Mixed Media on Wood</div>
+          <div class="technique-description">Wood-based mixed media pieces incorporating natural textures with contemporary artistic elements.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-section">
+    <h2>Contact</h2>
+    <p>For inquiries about artwork, commissions, or exhibitions, please get in touch.</p>
+    <a href="mailto:orel.nilufer@gmail.com" class="contact-button">Email Me</a>
+  </div>
+</section>

@@ -1,0 +1,51 @@
+<div class="page-header">
+  <h1 class="page-title">Paintings</h1>
+  <p class="page-description">Explore the full collection of works.</p>
+</div>
+
+<div class="gallery-container">
+  <div class="gallery-categories">
+    @for (cat of categories; track cat) {
+      <button class="category-button" [class.active]="selectedCategory === cat" (click)="selectCategory(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  <div class="gallery-grid">
+    @for (painting of paintings; track painting.id) {
+      <div class="gallery-item" (click)="openModal(painting)">
+        <div class="image-aspect-ratio-container">
+          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image">
+          @if (!painting.isavailable) {
+            <div class="sold-badge" title="Sold"></div>
+          }
+        </div>
+        <div class="gallery-caption">
+          <h3 class="gallery-title">{{ painting.title }}</h3>
+          <div class="gallery-details">
+            <span>{{ painting.medium }}</span>
+            <span>{{ painting.year }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <div style="text-align:center;padding:40px;">
+      <div class="spinner" style="margin:0 auto;"></div>
+    </div>
+  }
+
+  @if (!loading && paintings.length === 0) {
+    <p style="text-align:center;color:#888;padding:60px 0;">No paintings found.</p>
+  }
+</div>
+
+<app-image-modal
+  [imageUrl]="modalImage"
+  [caption]="modalCaption"
+  [visible]="modalVisible"
+  (close)="closeModal()">
+</app-image-modal>
