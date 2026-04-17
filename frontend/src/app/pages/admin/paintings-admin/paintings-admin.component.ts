@@ -79,14 +79,10 @@ export class PaintingsAdminComponent implements OnInit, OnDestroy {
       easing:               'cubic-bezier(0.2, 0.8, 0.2, 1)',
       ghostClass:           'sort-ghost',
       dragClass:            'sort-drag',
+      handle:               '.grip-handle',
       forceFallback:        true,
       fallbackClass:        'sort-fallback',
       fallbackTolerance:    6,
-      // On touch: require a 250ms hold before drag starts.
-      // This lets the user scroll past cards without accidentally grabbing one.
-      delay:                150,
-      delayOnTouchOnly:     true,
-      touchStartThreshold:  3,
       onChoose: (evt: SortableEvent) => {
         // Visual "about to drag" feedback during the long-press delay on touch.
         (evt.item as HTMLElement).classList.add('sort-choosing');
