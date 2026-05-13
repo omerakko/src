@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@an
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Sortable, { SortableEvent } from 'sortablejs';
+import imageCompression from 'browser-image-compression';
 import { PaintingService } from '../../../services/painting.service';
 import { Painting } from '../../../models/painting.model';
 
@@ -163,13 +164,25 @@ export class PaintingsAdminComponent implements OnInit, OnDestroy {
     this.showForm = true;
   }
 
-  onImageSelected(event: Event) {
+  async onImageSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    this.selectedImageFile = file;
+
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+        fileType: 'image/webp',
+      });
+      this.selectedImageFile = new File([compressed], compressed.name, { type: compressed.type });
+    } catch {
+      this.selectedImageFile = file;
+    }
+
     const reader = new FileReader();
     reader.onload = () => (this.imagePreviewUrl = reader.result as string);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(this.selectedImageFile!);
   }
 
   isCategorySelected(cat: string): boolean {
