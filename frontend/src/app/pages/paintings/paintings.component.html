@@ -16,7 +16,7 @@
     @for (painting of paintings; track painting.id) {
       <div class="gallery-item" (click)="openModal(painting)">
         <div class="image-aspect-ratio-container">
-          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image">
+          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image" loading="lazy" decoding="async">
           @if (!painting.isavailable) {
             <div class="sold-badge" title="Sold"></div>
           }

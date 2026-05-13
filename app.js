@@ -4,12 +4,16 @@
  * Deliberately separated from server.js so the app can be imported in tests
  * without binding a port. This is the standard Express pattern for testability.
  */
-const express = require('express');
-const path    = require('path');
+const express     = require('express');
+const path        = require('path');
+const compression = require('compression');
 
 const { verifyToken, requireAdmin } = require('./middleware/auth');
 
 const app = express();
+
+// Gzip/Brotli compress all text responses (JS, CSS, HTML, JSON).
+app.use(compression());
 
 // ---------------------------------------------------------------------------
 // Body parsing
@@ -25,10 +29,25 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // /assets  — painting images and other uploaded media.
 // /        — Angular production build. The SPA's own assets (JS, CSS) live here.
 // ---------------------------------------------------------------------------
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+// Images: 30-day cache (filenames don't change between uploads).
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  maxAge: '30d',
+  immutable: false
+}));
 
 const ANGULAR_DIST = path.join(__dirname, 'frontend', 'dist', 'nilufer-orel-portfolio', 'browser');
-app.use(express.static(ANGULAR_DIST));
+
+// Angular JS/CSS bundles have content hashes in filenames → safe to cache 1 year.
+// index.html must never be cached so the browser always fetches the latest shell.
+app.use(express.static(ANGULAR_DIST, {
+  maxAge: '1y',
+  immutable: true,
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('index.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 
 // ---------------------------------------------------------------------------
 // Route mounting

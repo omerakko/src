@@ -1,5 +1,5 @@
 <section class="hero">
-  <img src="assets/banner/test.jpeg" alt="Featured painting" class="hero-image">
+  <img src="assets/banner/test.jpeg" alt="Nilüfer Örel – Ressam, Bodrum" class="hero-image" fetchpriority="high" decoding="sync">
   <div class="hero-content">
     <h1 class="hero-title">Nilufer Orel</h1>
     <p class="hero-subtitle">Outsider artist expressing unfiltered emotion and inner worlds through raw, intuitive creation.</p>
@@ -12,7 +12,7 @@
   <div class="featured-grid">
     @for (painting of featuredPaintings; track painting.id) {
       <div class="featured-item" (click)="openModal(painting)">
-        <img [src]="painting.imageurl" [alt]="painting.title" class="featured-image">
+        <img [src]="painting.imageurl" [alt]="painting.title" class="featured-image" loading="lazy" decoding="async">
         <div class="featured-caption">
           <h3 class="featured-title">{{ painting.title }}</h3>
           <p class="featured-year">{{ painting.year }}</p>

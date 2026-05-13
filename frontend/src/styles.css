@@ -212,6 +212,7 @@ footer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr));
   gap: 30px;
+  min-height: 440px;
 }
 
 .featured-item {
