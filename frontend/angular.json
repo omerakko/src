@@ -38,6 +38,11 @@
                 "glob": "robots.txt",
                 "input": "src",
                 "output": "/"
+              },
+              {
+                "glob": "google230b7bca15af88cb.html",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": ["src/styles.css"],

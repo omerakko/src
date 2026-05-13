@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { ExhibitionService } from '../../services/exhibition.service';
 import { Exhibition, ExhibitionPhoto } from '../../models/exhibition.model';
 import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
@@ -13,16 +14,22 @@ import { ImageModalComponent } from '../../components/image-modal/image-modal.co
 })
 export class ExhibitionsComponent implements OnInit {
   private exhibitionService = inject(ExhibitionService);
+  private titleService      = inject(Title);
+  private meta              = inject(Meta);
+  private document          = inject(DOCUMENT);
 
   exhibitions: Exhibition[] = [];
-  sortBy = 'date';
+  sortBy    = 'date';
   sortOrder = 'desc';
 
-  modalImage = '';
+  modalImage   = '';
   modalCaption = '';
   modalVisible = false;
 
   ngOnInit() {
+    this.titleService.setTitle('Sergiler | Exhibitions – Nilüfer Örel, Bodrum');
+    this.meta.updateTag({ name: 'description', content: 'Nilüfer Örel\'in Bodrum, İstanbul ve uluslararası sergileri. Bodrum Sanat Fuarı, Merqezart ve diğer sergiler. Exhibition history by Turkish painter.' });
+    this.setCanonical('https://orelnilufer.com/exhibitions');
     this.loadExhibitions();
   }
 
@@ -34,16 +41,26 @@ export class ExhibitionsComponent implements OnInit {
 
   onSortChange(value: string) {
     const [sortBy, sortOrder] = value.split('-');
-    this.sortBy = sortBy;
+    this.sortBy    = sortBy;
     this.sortOrder = sortOrder;
     this.loadExhibitions();
   }
 
   openPhoto(photo: ExhibitionPhoto) {
-    this.modalImage = photo.imageurl;
+    this.modalImage   = photo.imageurl;
     this.modalCaption = photo.title || '';
     this.modalVisible = true;
   }
 
   closeModal() { this.modalVisible = false; }
+
+  private setCanonical(url: string) {
+    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = this.document.createElement('link');
+      link.rel = 'canonical';
+      this.document.head.appendChild(link);
+    }
+    link.href = url;
+  }
 }
