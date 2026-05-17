@@ -1,0 +1,4 @@
+/
+/paintings
+/exhibitions
+/about
