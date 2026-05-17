@@ -1,12 +1,14 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private http       = inject(HttpClient);
+  private router     = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   private readonly tokenKey = 'adminToken';
 
   private loggedIn$ = new BehaviorSubject<boolean>(this.hasValidToken());
@@ -20,25 +22,31 @@ export class AuthService {
   }
 
   getToken(): string | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
     return localStorage.getItem(this.tokenKey);
   }
 
   login(username: string, password: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>('/api/auth/login', { username, password }).pipe(
       tap(res => {
-        localStorage.setItem(this.tokenKey, res.token);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem(this.tokenKey, res.token);
+        }
         this.loggedIn$.next(true);
       })
     );
   }
 
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.tokenKey);
+    }
     this.loggedIn$.next(false);
     this.router.navigate(['/login']);
   }
 
   private hasValidToken(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
     const token = localStorage.getItem(this.tokenKey);
     if (!token) return false;
     try {
