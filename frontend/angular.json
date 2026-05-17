@@ -46,13 +46,7 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "prerender": {
-              "routesFile": "routes.txt",
-              "discoverRoutes": false
-            },
-            "ssr": false
+            "scripts": []
           },
           "configurations": {
             "production": {
