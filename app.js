@@ -29,6 +29,9 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // /assets  — painting images and other uploaded media.
 // /        — Angular production build. The SPA's own assets (JS, CSS) live here.
 // ---------------------------------------------------------------------------
+// Dynamic sitemaps — must be before express.static so they take priority.
+app.use('/', require('./routes/sitemap'));
+
 // Images: 30-day cache (filenames don't change between uploads).
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
   maxAge: '30d',
