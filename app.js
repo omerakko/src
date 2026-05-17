@@ -6,6 +6,7 @@
  */
 const express     = require('express');
 const path        = require('path');
+const fs          = require('fs');
 const compression = require('compression');
 
 const { verifyToken, requireAdmin } = require('./middleware/auth');
@@ -66,12 +67,17 @@ app.use('/api/admin/exhibitions', verifyToken, requireAdmin, require('./routes/a
 
 // ---------------------------------------------------------------------------
 // Angular catch-all — must come AFTER all /api routes.
-// Angular is a client-side router: the server only ever delivers index.html,
-// then the browser takes over routing. Without this, a hard refresh on any
-// route other than "/" returns 404 from Express.
+// With prerendering enabled, Angular renames index.html → index.csr.html and
+// generates a new prerendered index.html for the home route. The catch-all
+// must serve index.csr.html so non-prerendered routes (admin, login) still
+// get the Angular shell and can hydrate client-side.
 // ---------------------------------------------------------------------------
+const FALLBACK_HTML = fs.existsSync(path.join(ANGULAR_DIST, 'index.csr.html'))
+  ? 'index.csr.html'
+  : 'index.html';
+
 app.get(/.*/, (_req, res) => {
-  res.sendFile(path.join(ANGULAR_DIST, 'index.html'));
+  res.sendFile(path.join(ANGULAR_DIST, FALLBACK_HTML));
 });
 
 // ---------------------------------------------------------------------------
