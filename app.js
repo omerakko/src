@@ -66,6 +66,21 @@ app.use('/api/admin/paintings',   verifyToken, requireAdmin, require('./routes/a
 app.use('/api/admin/exhibitions', verifyToken, requireAdmin, require('./routes/admin/exhibitions'));
 
 // ---------------------------------------------------------------------------
+// Legacy URL redirects — 301 so Google transfers link equity to the new URLs.
+// These are old static-site paths that Google still has indexed.
+// ---------------------------------------------------------------------------
+const LEGACY_REDIRECTS = {
+  '/index.html':            '/',
+  '/pages/biography.html':  '/about',
+  '/pages/gallery.html':    '/paintings',
+  '/pages/paintings.htm':   '/paintings',
+  '/pages/paintings.html':  '/paintings',
+};
+app.get(Object.keys(LEGACY_REDIRECTS), (req, res) => {
+  res.redirect(301, LEGACY_REDIRECTS[req.path]);
+});
+
+// ---------------------------------------------------------------------------
 // Angular catch-all — must come AFTER all /api routes.
 // With prerendering enabled, Angular renames index.html → index.csr.html and
 // generates a new prerendered index.html for the home route. The catch-all
