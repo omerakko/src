@@ -171,6 +171,14 @@ footer {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
+.hero-location {
+  display: block;
+  font-size: 22px;
+  font-weight: 300;
+  opacity: 0.85;
+  letter-spacing: 0.03em;
+}
+
 .hero-subtitle {
   font-size: 24px;
   color: #fff;
