@@ -19,7 +19,7 @@
         } @else {
           <div class="card-cover-placeholder">No photos yet</div>
         }
-        @if (exhibition.photos?.length > 1) {
+        @if ((exhibition.photos?.length ?? 0) > 1) {
           <span class="photo-count-badge">{{ exhibition.photos.length }} photos</span>
         }
       </div>
