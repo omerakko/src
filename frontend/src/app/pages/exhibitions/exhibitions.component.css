@@ -1,1 +1,177 @@
 :host { display: block; }
+
+.page-header {
+  max-width: 1200px;
+  margin: 100px auto 40px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title {
+  font-size: 42px;
+  font-weight: 300;
+  margin: 0;
+  color: #222;
+}
+
+.sort-controls select {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #555;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* ---- Card grid ---- */
+.exhibitions-grid {
+  max-width: 1200px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.exhibition-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.exhibition-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+}
+
+/* ---- Cover photo ---- */
+.card-cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #f0ede8;
+}
+
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.exhibition-card:hover .card-cover img {
+  transform: scale(1.04);
+}
+
+.card-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.photo-count-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* ---- Card body ---- */
+.card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #777;
+}
+
+.card-meta-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.card-excerpt {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-cta {
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b7355;
+  letter-spacing: 0.03em;
+  transition: gap 0.2s;
+}
+
+.exhibition-card:hover .card-cta {
+  text-decoration: underline;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  padding: 60px 0;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .exhibitions-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .page-title { font-size: 32px; }
+}
+
+@media (max-width: 560px) {
+  .exhibitions-grid { grid-template-columns: 1fr; gap: 20px; }
+  .page-header { margin-top: 80px; }
+}

@@ -40,4 +40,8 @@ export class ExhibitionService {
   deletePhoto(exhibitionId: number, photoId: number): Observable<unknown> {
     return this.http.delete(`/api/admin/exhibitions/${exhibitionId}/photos/${photoId}`);
   }
+
+  getById(id: number): Observable<Exhibition> {
+    return this.http.get<Exhibition>(`/api/exhibitions/${id}`);
+  }
 }

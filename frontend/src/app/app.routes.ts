@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/exhibitions/exhibitions.component').then(m => m.ExhibitionsComponent)
   },
   {
+    path: 'exhibitions/:id',
+    loadComponent: () => import('./pages/exhibitions/exhibition-detail/exhibition-detail.component').then(m => m.ExhibitionDetailComponent)
+  },
+  {
     path: 'about',
     loadComponent: () => import('./pages/biography/biography.component').then(m => m.BiographyComponent)
   },
