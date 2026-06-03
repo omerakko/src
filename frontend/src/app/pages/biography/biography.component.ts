@@ -18,8 +18,8 @@ export class BiographyComponent implements OnInit {
   techniquesExpanded  = false;
 
   ngOnInit() {
-    this.titleService.setTitle('Sanatçı Hakkında | Nilüfer Örel – Ressam, Bodrum & Milas, Muğla');
-    this.meta.updateTag({ name: 'description', content: 'Bodrum ve Milas, Muğla\'da yaşayan ressam Nilüfer Örel hakkında. Biyografi, sergiler ve sanatsal teknikler. Turkish painter based in Bodrum & Milas, Muğla.' });
+    this.titleService.setTitle('Sanatçı Hakkında | Nilüfer Örel – Ressam, Bodrum & Muğla');
+    this.meta.updateTag({ name: 'description', content: 'Bodrum, Muğla\'da yaşayan ressam Nilüfer Örel hakkında. Biyografi, sergiler ve sanatsal teknikler. Turkish painter based in Bodrum, Muğla.' });
     this.setCanonical('https://orelnilufer.com/about');
   }
 
