@@ -25,8 +25,8 @@ export class HomeComponent implements OnInit {
   modalVisible = false;
 
   ngOnInit() {
-    this.titleService.setTitle('Nilüfer Örel – Ressam | Bodrum, Milas & Muğla');
-    this.meta.updateTag({ name: 'description', content: 'Bodrum ve Milas, Muğla\'da yaşayan Türk ressam Nilüfer Örel\'in özgün tabloları ve sergileri. Turkish painter based in Bodrum & Milas, Muğla.' });
+    this.titleService.setTitle('Nilüfer Örel – Ressam | Bodrum, Muğla');
+    this.meta.updateTag({ name: 'description', content: 'Bodrum, Muğla\'da yaşayan Türk ressam Nilüfer Örel\'in özgün tabloları ve sergileri. Turkish painter based in Bodrum, Muğla.' });
     this.setCanonical('https://orelnilufer.com/');
 
     this.paintingService.getFeatured().subscribe(res => {
