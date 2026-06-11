@@ -165,6 +165,33 @@
   padding: 60px 0;
 }
 
+/* ---- Divider ---- */
+.section-divider {
+  max-width: 1200px;
+  margin: 60px auto 48px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.section-divider-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+  white-space: nowrap;
+}
+
 /* ---- Exhibition History CV ---- */
 .cv-section {
   max-width: 1200px;
