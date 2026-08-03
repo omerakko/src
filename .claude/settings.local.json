@@ -8,7 +8,8 @@
       "Read(//c/Users/omera/Downloads/**)",
       "Read(//c/Users/omera/Desktop/**)",
       "Read(//c/Users/omera/Pictures/**)",
-      "Bash(cp \"c:\\\\Users\\\\omera\\\\Downloads\\\\WhatsApp Image 2026-06-02 at 19.39.48.jpeg\" \"c:\\\\Users\\\\omera\\\\Desktop\\\\portolio_niluferOrel\\\\src\\\\frontend\\\\src\\\\assets\\\\images\\\\artistPhoto.jpg\")"
+      "Bash(cp \"c:\\\\Users\\\\omera\\\\Downloads\\\\WhatsApp Image 2026-06-02 at 19.39.48.jpeg\" \"c:\\\\Users\\\\omera\\\\Desktop\\\\portolio_niluferOrel\\\\src\\\\frontend\\\\src\\\\assets\\\\images\\\\artistPhoto.jpg\")",
+      "WebSearch"
     ],
     "additionalDirectories": [
       "c:\\Users\\omera\\Downloads"
