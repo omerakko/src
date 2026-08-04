@@ -1,34 +1,32 @@
-<div class="page-header">
-  <h1 class="page-title">Paintings</h1>
-  <p class="page-description">Explore the full collection of works.</p>
-</div>
+<header class="masthead">
+  <div class="masthead-inner">
+    <h1 class="masthead-title">Paintings</h1>
+    <p class="masthead-statement">Explore the full collection of works.</p>
+  </div>
+</header>
 
 <div class="gallery-container">
-  <div class="gallery-categories">
-    @for (cat of categories; track cat) {
-      <button class="category-button" [class.active]="selectedCategory === cat" (click)="selectCategory(cat)">
-        {{ cat }}
-      </button>
-    }
-  </div>
-
   <div class="gallery-grid">
     @for (painting of paintings; track painting.id) {
-      <div class="gallery-item" (click)="openModal(painting)">
-        <div class="image-aspect-ratio-container">
-          <img [src]="painting.imageurl" [alt]="painting.title" class="gallery-image" loading="lazy" decoding="async">
+      <figure
+        class="gallery-item"
+        [style.flex-grow]="aspect(painting)"
+        [style.flex-basis.px]="aspect(painting) * rowBase"
+        (click)="openModal(painting)">
+        <div class="artwork-media" [style.padding-bottom.%]="100 / aspect(painting)">
+          <img [src]="painting.imageurl" [alt]="painting.title" class="artwork-img" loading="lazy" decoding="async">
           @if (!painting.isavailable) {
             <div class="sold-badge" title="Sold"></div>
           }
         </div>
-        <div class="gallery-caption">
-          <h3 class="gallery-title">{{ painting.title }}</h3>
-          <div class="gallery-details">
-            <span>{{ painting.medium }}</span>
-            <span>{{ painting.year }}</span>
-          </div>
-        </div>
-      </div>
+        <figcaption class="artwork-info">
+          <h3 class="artwork-name">{{ painting.title }}</h3>
+          <p class="artwork-line">
+            @if (painting.medium) { <span>{{ painting.medium }}</span> }
+            @if (painting.year)   { <span>{{ painting.year }}</span> }
+          </p>
+        </figcaption>
+      </figure>
     }
   </div>
 

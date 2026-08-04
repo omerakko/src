@@ -1,1 +1,169 @@
-:host { display: block; }
+:host {
+  display: block;
+
+  /* One shared measure for masthead + grid so the hairline, the title
+     and the work all sit on the same edges. Scales into large screens
+     instead of stranding ~500px of empty margin either side. */
+  --measure: min(2040px, 93vw);
+
+}
+
+/* ==================================================================
+   MASTHEAD
+   Left-aligned title and statement over a hairline rule. Replaces the
+   centred grey .page-header panel — this element no longer carries
+   that class, so the global rules in styles.css don't reach it.
+   Top padding clears the fixed <nav>.
+   ================================================================== */
+.masthead {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 140px 28px 0;
+}
+
+.masthead-inner {
+  padding-bottom: 40px;
+  border-bottom: 1px solid #e6e3df; /* the hairline */
+}
+
+.masthead-title {
+  margin: 0;
+  font-size: clamp(44px, 6vw, 76px);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+}
+
+.masthead-statement {
+  margin: 20px 0 0;
+  max-width: 34ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #6b6b6b;
+}
+
+/* ==================================================================
+   GALLERY — justified rows
+   A fixed grid forces every work into the same box, so either it gets
+   cropped or short pieces leave a void beneath them. Instead, rows are
+   justified: each work is laid out at its true aspect ratio, and every
+   row stretches to fill the measure exactly.
+
+   The mechanism is the flex ratio pair set inline by the template.
+   For each work, flex-basis = aspect x rowBase and flex-grow = aspect.
+   Within a row the final width lands at aspect x (rowBase + share of
+   free space), so dividing back out by aspect gives every work in that
+   row an identical height — which is what "justified" means. The row
+   height is an outcome of the composition rather than a fixed number,
+   so it differs row to row.
+
+   These rules override the global .gallery-* defaults in styles.css,
+   which stay put because the admin grid still uses them. Angular's
+   view encapsulation makes these selectors more specific, so no
+   !important is needed here.
+   ================================================================== */
+.gallery-container {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 64px 28px 100px;
+}
+
+.gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 56px 32px;
+}
+
+/* flex-grow and flex-basis come from the template, per work */
+.gallery-item {
+  min-width: 0; /* let a wide piece shrink into its row rather than overflow */
+  margin: 0;
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.gallery-item:hover { transform: none; }
+
+/* Without this, the final row stretches its few works to span the full
+   measure and they tower over everything above. An invisible last item
+   with enormous flex-grow swallows the leftover space instead. */
+.gallery-grid::after {
+  content: "";
+  flex-grow: 1000000;
+}
+
+.artwork-media {
+  position: relative;          /* anchors the global .sold-badge */
+  height: 0;                   /* padding-bottom (inline) sets the ratio */
+  overflow: hidden;
+  /* Deliberately no background. The box is cut to each work's own ratio,
+     so there is nothing to letterbox — any fill would only ever show as a
+     band while the image loads, or behind a row whose dimensions are
+     unknown. Both read as a mount around the work, which is exactly what
+     a gallery wall doesn't have. */
+}
+
+.artwork-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The box already matches the file's true ratio, so contain and cover
+     are equivalent here. contain is the safer default for any row whose
+     dimensions are unknown and falls back to 4:3. */
+  object-fit: contain;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery-item:hover .artwork-img { transform: scale(1.02); }
+
+/* Caption sits below the work and stays put. The old version slid up
+   on hover, which meant touch devices never saw it at all. */
+.artwork-info { padding-top: 16px; }
+
+.artwork-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: #1a1a1a;
+}
+
+.artwork-line {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.artwork-line span:not(:last-child)::after {
+  content: "·";
+  margin: 0 8px;
+  color: #cfcfcf;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .masthead { padding: 150px 20px 0; }
+  .masthead-inner { padding-bottom: 32px; }
+  .gallery-container { padding: 48px 20px 80px; }
+  .gallery-grid { gap: 52px 32px; }
+}
+
+@media (max-width: 700px) {
+  /* Single column, full width. Justification stops meaning anything once
+     only one work fits per row.
+     !important is needed here specifically to beat the inline flex-basis
+     the template sets per work — inline styles outrank stylesheet rules
+     regardless of specificity. */
+  .gallery-grid { gap: 44px; }
+
+  .gallery-item {
+    flex-basis: 100% !important;
+    flex-grow: 0 !important;
+  }
+
+  .gallery-grid::after { display: none; }
+}

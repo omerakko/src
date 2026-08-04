@@ -8,6 +8,13 @@ const Painting = sequelize.define('Painting', {
   medium:      { type: DataTypes.STRING,  allowNull: true },
   year:        { type: DataTypes.STRING,  allowNull: false },
   imageurl:    { type: DataTypes.STRING,  allowNull: true },
+  // Pixel dimensions of the uploaded file, read from its header at upload
+  // time. The gallery needs each work's aspect ratio *before* the image
+  // loads in order to lay out justified rows without the page reflowing.
+  // Nullable: older rows predate this, and an unrecognised format still has
+  // to save.
+  imagewidth:  { type: DataTypes.INTEGER, allowNull: true },
+  imageheight: { type: DataTypes.INTEGER, allowNull: true },
   // PostgreSQL native array column. Using GIN index below for O(1) containment checks.
   categories:  { type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] },
   description: { type: DataTypes.TEXT,    defaultValue: '' },

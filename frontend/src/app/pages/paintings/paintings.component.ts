@@ -31,6 +31,27 @@ export class PaintingsComponent implements OnInit {
   modalCaption = '';
   modalVisible = false;
 
+  /**
+   * Target row height in px, before justification. Each work gets a
+   * flex-basis of aspect x rowBase, so this really controls how many pieces
+   * land per row — flexbox then stretches each row to fill the measure
+   * exactly, and the final height falls out of that.
+   */
+  readonly rowBase = 380;
+
+  /**
+   * Width-to-height ratio of a work, driving its share of the row.
+   *
+   * Falls back to 4:3 when dimensions are missing so the layout still
+   * composes; those rows will letterbox slightly rather than crop.
+   */
+  aspect(painting: Painting): number {
+    if (painting.imagewidth && painting.imageheight) {
+      return painting.imagewidth / painting.imageheight;
+    }
+    return 4 / 3;
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Tablolar | Nilüfer Örel – Ressam, Bodrum');
     this.meta.updateTag({ name: 'description', content: 'Nilüfer Örel\'in özgün tablolarını keşfedin. Yağlıboya, akrilik ve karma teknik eserler. Original paintings by Turkish artist based in Bodrum.' });

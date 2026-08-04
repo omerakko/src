@@ -3,6 +3,7 @@ const { Op }     = require('sequelize');
 const sequelize  = require('../../db');
 const { Painting } = require('../../models');
 const { upload, deleteImageFile } = require('../../lib/fileStorage');
+const { readImageSize } = require('../../lib/imageSize');
 const asyncHandler = require('../../lib/asyncHandler');
 
 const router = express.Router();
@@ -55,6 +56,7 @@ router.post('/', upload.single('image'), asyncHandler(async (req, res) => {
 
   if (req.file) {
     data.imageurl = `/assets/images/${req.file.filename}`;
+    Object.assign(data, await imageDimensions(req.file.path));
   }
 
   const painting = await Painting.create(data);
@@ -112,7 +114,12 @@ router.post('/:id/image', upload.single('image'), asyncHandler(async (req, res) 
   const oldUrl  = painting.imageurl;
   const imageUrl = `/assets/images/${req.file.filename}`;
 
-  await painting.update({ imageurl: imageUrl });
+  // Overwrite dimensions too — a replacement image rarely has the same
+  // proportions, and a stale ratio would misplace the work in the grid.
+  await painting.update({
+    imageurl: imageUrl,
+    ...await imageDimensions(req.file.path)
+  });
 
   // Clean up the previous image file after the DB update succeeds.
   await deleteImageFile(oldUrl);
@@ -161,6 +168,22 @@ router.post('/reorder', asyncHandler(async (req, res) => {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * Reads pixel dimensions off an uploaded file, shaped for a Sequelize update.
+ *
+ * Never throws: an unreadable or unrecognised header yields nulls so the
+ * painting still saves. The gallery falls back to a default ratio for rows
+ * missing dimensions, so the cost of a miss is cosmetic, not a failed upload.
+ */
+async function imageDimensions(filePath) {
+  const size = await readImageSize(filePath);
+  if (!size) {
+    console.warn(`[paintings] Could not read image dimensions from ${filePath}`);
+    return { imagewidth: null, imageheight: null };
+  }
+  return { imagewidth: size.width, imageheight: size.height };
+}
 
 /**
  * Throws a 400 HTTP error if 3 paintings are already featured.

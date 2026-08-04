@@ -4,6 +4,11 @@ export interface Painting {
   medium: string;
   year: number;
   imageurl: string;
+  // Pixel dimensions recorded at upload. Optional because rows created
+  // before the columns existed, or with an unreadable header, have none —
+  // the gallery falls back to a default ratio for those.
+  imagewidth?: number | null;
+  imageheight?: number | null;
   categories: string[];
   description?: string;
   price?: number;
