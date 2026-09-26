@@ -135,7 +135,7 @@
 .artwork-line {
   margin: 5px 0 0;
   font-size: 14px;
-  color: #8a8a8a;
+  color: #666;
 }
 
 .artwork-line span:not(:last-child)::after {

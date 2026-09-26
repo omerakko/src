@@ -11,8 +11,8 @@
   line-height: 1.75;
 }
 .home-intro-links a {
-  color: #8b7355;
+  color: #74603f;
   text-decoration: none;
   border-bottom: 1px solid #d9cfc1;
 }
-.home-intro-links a:hover { border-bottom-color: #8b7355; }
+.home-intro-links a:hover { border-bottom-color: #74603f; }

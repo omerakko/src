@@ -82,7 +82,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #bbb;
+  color: #666;
   font-size: 14px;
 }
 
@@ -149,7 +149,7 @@
   margin-top: auto;
   font-size: 13px;
   font-weight: 600;
-  color: #8b7355;
+  color: #74603f;
   letter-spacing: 0.03em;
   transition: gap 0.2s;
 }
@@ -161,7 +161,7 @@
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  color: #888;
+  color: #666;
   padding: 60px 0;
 }
 
@@ -188,7 +188,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #aaa;
+  color: #6b6b6b;
   white-space: nowrap;
 }
 
@@ -218,7 +218,7 @@
 .cv-year-label {
   font-size: 22px;
   font-weight: 600;
-  color: #8b7355;
+  color: #74603f;
   padding-top: 2px;
 }
 
@@ -249,13 +249,13 @@
   display: block;
   margin-top: 4px;
   font-size: 13px;
-  color: #999;
+  color: #666;
   font-weight: 400;
 }
 
 .cv-type {
   font-size: 13px;
-  color: #888;
+  color: #666;
   text-align: center;
   background: #f5f5f5;
   padding: 3px 10px;
@@ -265,13 +265,13 @@
 
 .cv-type.solo {
   background: #f5f0e8;
-  color: #8b7355;
+  color: #74603f;
   font-weight: 600;
 }
 
 .cv-location {
   font-size: 13px;
-  color: #999;
+  color: #666;
   text-align: right;
 }
 

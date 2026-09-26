@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaintingService } from '../../services/painting.service';
 import { ARTIST_ID, SeoService } from '../../services/seo.service';
@@ -21,11 +21,16 @@ export class PaintingsComponent implements OnInit {
   paintings: Painting[] = [];
   categories: string[] = ['All'];
   selectedCategory = 'All';
+  loading = false;
 
-  currentPage  = 1;
-  readonly perPage = 6;
-  hasNextPage  = false;
-  loading      = false;
+  /**
+   * The whole collection is fetched in one request rather than paged in on
+   * scroll. Appending works to a justified flex grid re-lays out its last
+   * row (every item in it changes height), which scored a CLS of 3.5 over a
+   * full scroll. Images are lazy-loaded, so the page weight is unchanged, and
+   * search engines get every work in the HTML instead of the first six.
+   */
+  readonly pageSize = 250;
 
   modalImage   = '';
   modalCaption = '';
@@ -68,43 +73,32 @@ export class PaintingsComponent implements OnInit {
     this.paintingService.getCategories().subscribe(cats => {
       this.categories = ['All', ...cats];
     });
-    this.loadPaintings(true);
+    this.loadPaintings();
   }
 
   selectCategory(category: string) {
     if (this.selectedCategory === category) return;
     this.selectedCategory = category;
-    this.currentPage = 1;
-    this.paintings   = [];
-    this.loadPaintings(true);
+    this.paintings = [];
+    this.loadPaintings();
   }
 
-  loadPaintings(reset = false) {
+  loadPaintings() {
     if (this.loading) return;
     this.loading = true;
 
     this.paintingService.getPaintings({
-      page:     this.currentPage,
-      perPage:  this.perPage,
+      page:     1,
+      perPage:  this.pageSize,
       category: this.selectedCategory
     }).subscribe({
       next: res => {
-        this.paintings  = reset ? res.paintings : [...this.paintings, ...res.paintings];
-        this.hasNextPage = res.hasNextPage;
-        this.loading    = false;
-        if (reset) this.injectPaintingsSchema(this.paintings);
+        this.paintings = res.paintings;
+        this.loading   = false;
+        this.injectPaintingsSchema(this.paintings);
       },
       error: () => { this.loading = false; }
     });
-  }
-
-  @HostListener('window:scroll')
-  onScroll() {
-    if (this.loading || !this.hasNextPage) return;
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 300) {
-      this.currentPage++;
-      this.loadPaintings();
-    }
   }
 
   openModal(painting: Painting) {

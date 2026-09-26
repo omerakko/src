@@ -11,7 +11,7 @@ const router = express.Router();
 // ---------------------------------------------------------------------------
 router.get('/', asyncHandler(async (req, res) => {
   const page      = Math.max(1, parseInt(req.query.page) || 1);
-  const perPage   = Math.min(parseInt(req.query.perPage) || 6, 50); // hard cap at 50
+  const perPage   = Math.min(parseInt(req.query.perPage) || 6, 250); // hard cap; the public gallery loads every work in one request
   const { category, year, search, sortBy = 'order', minPrice, maxPrice } = req.query;
   const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
 
