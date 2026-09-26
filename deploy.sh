@@ -44,7 +44,10 @@ set -euo pipefail
 cd '$REMOTE_DIR'
 before=\$(git rev-parse HEAD)
 sudo -n git pull --ff-only origin main
-if ! git diff --quiet "\$before" HEAD -- package.json package-lock.json; then
+# Reinstall when the lockfile changed, or when the pull touched node_modules
+# (it was tracked in git until Sep 2026; pulling that removal deletes files
+# from disk, so they must be put back from the lockfile).
+if ! git diff --quiet "\$before" HEAD -- package.json package-lock.json node_modules; then
   echo "Dependencies changed — installing"
   sudo -n npm ci --omit=dev
 fi
