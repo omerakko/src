@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# deploy.sh — Ship the current main branch to production (OVH VPS).
+#
+#   1. Build the Angular frontend locally (dist/ is gitignored, so it is uploaded separately)
+#   2. Push main to GitHub
+#   3. On the server: git pull, reinstall deps if package files changed,
+#      swap in the new frontend build, pm2 restart
+#   4. Smoke-test the live site
+#
+# Requires the "nilufer-prod" host alias in ~/.ssh/config (key-based auth).
+# Usage (Git Bash, from src/):  ./deploy.sh
+set -euo pipefail
+
+SSH_HOST="nilufer-prod"
+REMOTE_DIR="/var/www/Portfolio_NiluferOrel/src"
+DIST_PARENT="frontend/dist/nilufer-orel-portfolio"
+SITE_URL="https://orelnilufer.com"
+
+cd "$(dirname "$0")"
+step() { printf '\n==> %s\n' "$*"; }
+
+step "Pre-flight checks"
+branch=$(git rev-parse --abbrev-ref HEAD)
+[ "$branch" = "main" ] || { echo "Not on main (on '$branch'). Aborting."; exit 1; }
+[ -z "$(git status --porcelain)" ] || { echo "Uncommitted changes — commit them first."; git status --short; exit 1; }
+ssh -o BatchMode=yes -o ConnectTimeout=10 "$SSH_HOST" true \
+  || { echo "Cannot SSH to $SSH_HOST without a password. See the deploy setup notes."; exit 1; }
+
+step "Building frontend"
+(cd frontend && npm run build)
+
+step "Pushing main to GitHub"
+git push origin main
+
+step "Uploading frontend build"
+tar -C "$DIST_PARENT" -czf - browser \
+  | ssh "$SSH_HOST" "rm -rf '$REMOTE_DIR/$DIST_PARENT/browser.new' && mkdir -p '$REMOTE_DIR/$DIST_PARENT/browser.new' \
+      && tar -xzf - -C '$REMOTE_DIR/$DIST_PARENT/browser.new' --strip-components=1"
+
+step "Updating server"
+ssh "$SSH_HOST" bash -s <<EOF
+set -euo pipefail
+cd '$REMOTE_DIR'
+before=\$(git rev-parse HEAD)
+sudo -n git pull --ff-only origin main
+if ! git diff --quiet "\$before" HEAD -- package.json package-lock.json; then
+  echo "Dependencies changed — installing"
+  sudo -n npm ci --omit=dev
+fi
+cd '$DIST_PARENT'
+rm -rf browser.prev
+[ -d browser ] && mv browser browser.prev
+mv browser.new browser
+pm2 restart all
+echo "Server now at \$(git -C '$REMOTE_DIR' log -1 --oneline)"
+EOF
+
+step "Smoke test"
+sleep 3
+code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/")
+api=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/api/paintings" || true)
+echo "$SITE_URL/ -> $code   /api/paintings -> $api"
+[ "$code" = "200" ] || { echo "Site is not returning 200! Previous frontend kept at browser.prev on the server."; exit 1; }
+
+step "Deployed $(git log -1 --oneline)"

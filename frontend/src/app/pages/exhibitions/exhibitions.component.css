@@ -245,6 +245,14 @@
   font-weight: 500;
 }
 
+.cv-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #999;
+  font-weight: 400;
+}
+
 .cv-type {
   font-size: 13px;
   color: #888;
