@@ -37,8 +37,9 @@ export class HomeComponent implements OnInit {
       type: 'profile'
     });
 
-    this.paintingService.getFeatured().subscribe(res => {
-      this.featuredPaintings = res.paintings;
+    this.paintingService.getFeatured().subscribe({
+      next:  res => { this.featuredPaintings = res.paintings; },
+      error: ()  => this.seo.markRenderError()
     });
   }
 

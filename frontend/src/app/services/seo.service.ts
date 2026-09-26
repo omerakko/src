@@ -49,6 +49,16 @@ export class SeoService {
     this.setCanonical(url);
   }
 
+  /**
+   * Flags that a data request failed while this page was rendering. The
+   * server checks for the tag: such a render is never cached and is sent
+   * with a 503 so crawlers retry later instead of indexing an empty page.
+   * In the browser the tag is inert.
+   */
+  markRenderError() {
+    this.meta.updateTag({ name: 'x-render-error', content: '1' });
+  }
+
   /** Inserts (or replaces) a JSON-LD block identified by `id`. */
   setJsonLd(id: string, data: object) {
     this.removeJsonLd(id);

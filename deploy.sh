@@ -71,7 +71,14 @@ echo "$SITE_URL/ -> $code   /api/paintings -> $api   /sitemap.xml -> $map"
 
 # Server-rendered pages carry the painting grid in the HTML itself; an empty
 # shell means SSR fell back to client rendering and Google sees no artworks.
-if curl -s "$SITE_URL/paintings" | grep -q 'class="artwork-img"'; then
+# The first render after a restart can take a few seconds (bundle load, DB
+# warm-up), so give it a few tries.
+ssr_ok=""
+for attempt in 1 2 3 4 5 6; do
+  if curl -s "$SITE_URL/paintings" | grep -q 'class="artwork-img"'; then ssr_ok=1; break; fi
+  echo "  server still warming up (attempt $attempt)…"; sleep 5
+done
+if [ -n "$ssr_ok" ]; then
   echo "SSR OK: /paintings contains rendered artworks"
 else
   echo "SSR CHECK FAILED: /paintings has no rendered artworks — check 'pm2 logs' on the server."; exit 1

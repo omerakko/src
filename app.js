@@ -129,11 +129,18 @@ app.get(/.*/, async (req, res) => {
     return res.sendFile(ssr.CSR_SHELL, NO_CACHE);
   }
   try {
-    const [status, html] = await Promise.all([
+    const [status, page] = await Promise.all([
       pageStatus(req.path),
       ssr.renderPage(req.path, `http://127.0.0.1:${process.env.PORT || 3000}`)
     ]);
-    res.status(status).set('Cache-Control', 'no-cache').type('html').send(html);
+    if (page.failed) {
+      // Data was missing while rendering: tell crawlers to come back rather
+      // than index a page with no works on it. Visitors still get the page,
+      // and the browser refetches the data on its own.
+      console.warn('[ssr] rendered without data (API error), answering 503 for', req.path);
+      return res.status(503).set({ 'Cache-Control': 'no-store', 'Retry-After': '30' }).type('html').send(page.html);
+    }
+    res.status(status).set('Cache-Control', 'no-cache').type('html').send(page.html);
   } catch (err) {
     console.error('[ssr] falling back to client rendering for', req.path, err);
     res.sendFile(ssr.CSR_SHELL, NO_CACHE);

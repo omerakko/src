@@ -35,9 +35,12 @@ export class ExhibitionsComponent implements OnInit {
   }
 
   loadExhibitions() {
-    this.exhibitionService.getAll(this.sortBy, this.sortOrder).subscribe(res => {
-      this.exhibitions = res.exhibitions;
-      this.injectSchema(res.exhibitions);
+    this.exhibitionService.getAll(this.sortBy, this.sortOrder).subscribe({
+      next: res => {
+        this.exhibitions = res.exhibitions;
+        this.injectSchema(res.exhibitions);
+      },
+      error: () => this.seo.markRenderError()
     });
   }
 

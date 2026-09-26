@@ -97,7 +97,7 @@ export class PaintingsComponent implements OnInit {
         this.loading   = false;
         this.injectPaintingsSchema(this.paintings);
       },
-      error: () => { this.loading = false; }
+      error: () => { this.loading = false; this.seo.markRenderError(); }
     });
   }
 

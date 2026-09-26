@@ -36,8 +36,11 @@ export class ExhibitionDetailComponent implements OnInit {
         this.exhibition = ex;
         this.applySeo(ex);
       },
-      error: () => {
+      error: err => {
         this.notFound = true;
+        // A 404 is a real "no such exhibition"; anything else is the API
+        // failing, which must not be cached or indexed as "not found".
+        if (err?.status !== 404) this.seo.markRenderError();
         this.seo.setPage({
           title: 'Exhibition not found | Nilüfer Örel',
           description: 'This exhibition page does not exist.',
