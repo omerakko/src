@@ -7,7 +7,7 @@
 
 <div class="gallery-container">
   <div class="gallery-grid">
-    @for (painting of paintings; track painting.id) {
+    @for (painting of paintings; track painting.id; let i = $index) {
       <figure
         class="gallery-item"
         [style.flex-grow]="aspect(painting)"
@@ -15,7 +15,7 @@
         (click)="openModal(painting)">
         <div class="artwork-media" [style.padding-bottom.%]="100 / aspect(painting)">
           <img [src]="imageUrl(painting.imageurl, 960)" [attr.srcset]="imageSrcset(painting.imageurl)" sizes="(max-width: 700px) 100vw, 60vw"
-               [alt]="artworkAlt(painting)" class="artwork-img" loading="lazy" decoding="async">
+               [alt]="artworkAlt(painting)" class="artwork-img" [attr.loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 2 ? 'high' : null" decoding="async">
           @if (!painting.isavailable) {
             <div class="sold-badge" title="Sold"></div>
           }
