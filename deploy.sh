@@ -53,6 +53,8 @@ rm -rf '$DIST_NAME.prev'
 [ -d '$DIST_NAME' ] && mv '$DIST_NAME' '$DIST_NAME.prev'
 mv '$DIST_NAME.new' '$DIST_NAME'
 pm2 restart all
+# Pre-generate resized image variants for anything new; skips existing ones.
+cd '$REMOTE_DIR' && nohup node scripts/warm-image-cache.js > /tmp/warm-image-cache.log 2>&1 &
 echo "Server now at \$(git -C '$REMOTE_DIR' log -1 --oneline)"
 EOF
 

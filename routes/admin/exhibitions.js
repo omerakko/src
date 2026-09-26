@@ -2,6 +2,7 @@ const express    = require('express');
 const sequelize  = require('../../db');
 const { Exhibition, ExhibitionPhoto } = require('../../models');
 const { upload, deleteImageFile } = require('../../lib/fileStorage');
+const { warmUploads } = require('../../lib/imageVariants');
 const asyncHandler = require('../../lib/asyncHandler');
 
 const router = express.Router();
@@ -69,7 +70,7 @@ router.delete('/:id', asyncHandler(async (req, res) => {
 // ---------------------------------------------------------------------------
 // POST /api/admin/exhibitions/:id/photos  — upload up to 10 photos
 // ---------------------------------------------------------------------------
-router.post('/:id/photos', upload.array('photos', 10), asyncHandler(async (req, res) => {
+router.post('/:id/photos', upload.array('photos', 10), warmUploads, asyncHandler(async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No photo files provided' });
   }

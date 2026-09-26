@@ -2,7 +2,7 @@
   <div class="modal" style="display:flex" (click)="close.emit()">
     <span class="close-modal" (click)="close.emit()">&times;</span>
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <img [src]="imageUrl" [alt]="caption" class="modal-image">
+      <img [src]="src" [attr.srcset]="srcset" sizes="100vw" [alt]="caption" class="modal-image">
       @if (caption) {
         <div class="modal-caption">{{ caption }}</div>
       }

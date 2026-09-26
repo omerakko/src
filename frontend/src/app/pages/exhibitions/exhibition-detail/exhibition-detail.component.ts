@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ExhibitionService } from '../../../services/exhibition.service';
 import { ARTIST_ID, SeoService } from '../../../services/seo.service';
 import { Exhibition, ExhibitionPhoto } from '../../../models/exhibition.model';
+import { imageSrcset, imageUrl } from '../../../models/image-url';
 import { ImageModalComponent } from '../../../components/image-modal/image-modal.component';
 
 @Component({
@@ -24,6 +25,9 @@ export class ExhibitionDetailComponent implements OnInit {
   modalImage   = '';
   modalCaption = '';
   modalVisible = false;
+
+  readonly imageUrl    = imageUrl;
+  readonly imageSrcset = imageSrcset;
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

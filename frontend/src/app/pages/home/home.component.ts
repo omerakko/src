@@ -5,6 +5,7 @@ import { PaintingService } from '../../services/painting.service';
 import { SeoService } from '../../services/seo.service';
 import { Painting } from '../../models/painting.model';
 import { artworkAlt, artworkTitle } from '../../models/artwork';
+import { imageSrcset, imageUrl } from '../../models/image-url';
 import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
 
 @Component({
@@ -25,6 +26,8 @@ export class HomeComponent implements OnInit {
 
   readonly artworkAlt   = artworkAlt;
   readonly artworkTitle = artworkTitle;
+  readonly imageUrl     = imageUrl;
+  readonly imageSrcset  = imageSrcset;
 
   ngOnInit() {
     this.seo.setPage({

@@ -78,9 +78,14 @@ export class SeoService {
     });
   }
 
+  /**
+   * Absolute URL for meta tags and JSON-LD. Older upload names contain
+   * spaces, which are not valid in a URL there; encode unless the value is
+   * already percent-encoded.
+   */
   absolute(url: string): string {
-    if (/^https?:\/\//.test(url)) return url;
-    return SITE_URL + (url.startsWith('/') ? url : `/${url}`);
+    const full = /^https?:\/\//.test(url) ? url : SITE_URL + (url.startsWith('/') ? url : `/${url}`);
+    return full.includes('%') ? full : encodeURI(full);
   }
 
   canonicalUrl(path: string): string {

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ExhibitionService } from '../../services/exhibition.service';
 import { ARTIST_ID, SeoService } from '../../services/seo.service';
 import { Exhibition } from '../../models/exhibition.model';
+import { imageSrcset, imageUrl } from '../../models/image-url';
 
 @Component({
   selector: 'app-exhibitions',
@@ -19,6 +20,9 @@ export class ExhibitionsComponent implements OnInit {
   exhibitions: Exhibition[] = [];
   sortBy    = 'date';
   sortOrder = 'desc';
+
+  readonly imageUrl    = imageUrl;
+  readonly imageSrcset = imageSrcset;
 
   ngOnInit() {
     this.seo.setPage({

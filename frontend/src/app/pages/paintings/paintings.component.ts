@@ -4,6 +4,7 @@ import { PaintingService } from '../../services/painting.service';
 import { ARTIST_ID, SeoService } from '../../services/seo.service';
 import { Painting } from '../../models/painting.model';
 import { artworkAlt, artworkTitle } from '../../models/artwork';
+import { imageSrcset, imageUrl } from '../../models/image-url';
 import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
 
 @Component({
@@ -32,6 +33,8 @@ export class PaintingsComponent implements OnInit {
 
   readonly artworkAlt   = artworkAlt;
   readonly artworkTitle = artworkTitle;
+  readonly imageUrl     = imageUrl;
+  readonly imageSrcset  = imageSrcset;
 
   /**
    * Target row height in px, before justification. Each work gets a

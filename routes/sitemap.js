@@ -95,7 +95,7 @@ router.get('/sitemap-images.xml', async (_req, res) => {
       .filter(p => p.imageurl)
       .map(p => `
     <image:image>
-      <image:loc>${BASE}${escXml(p.imageurl)}</image:loc>
+      <image:loc>${BASE}${escXml(encodePath(p.imageurl))}</image:loc>
       <image:title>${escXml(artworkTitle(p.title))}${p.medium ? ` — ${escXml(p.medium)}` : ''}, ${escXml(String(p.year))} — painting by Nilüfer Örel</image:title>
       <image:caption>Original painting by Turkish contemporary artist Nilüfer Örel, Bodrum, Türkiye</image:caption>
     </image:image>`).join('');
@@ -114,7 +114,7 @@ router.get('/sitemap-images.xml', async (_req, res) => {
       const where = ex.location ? `, ${escXml(ex.location)}` : '';
       const photoImages = photos.map(ph => `
     <image:image>
-      <image:loc>${BASE}${escXml(ph.imageurl)}</image:loc>
+      <image:loc>${BASE}${escXml(encodePath(ph.imageurl))}</image:loc>
       <image:title>${escXml(ph.title || ex.title)} — Nilüfer Örel</image:title>
       <image:caption>${escXml(ex.title)}${where} — exhibition with paintings by Nilüfer Örel</image:caption>
     </image:image>`).join('');
@@ -146,6 +146,11 @@ ${urls.join('\n')}
 function artworkTitle(title) {
   const t = String(title ?? '').trim().replace(/^["'“”„]+|["'“”„]+$/g, '').trim();
   return t && !/^[.\s]+$/.test(t) ? t : 'Untitled';
+}
+
+// Older upload names contain spaces, which are invalid in a sitemap <loc>.
+function encodePath(p) {
+  return p.includes('%') ? p : encodeURI(p);
 }
 
 function newest(a, b) {

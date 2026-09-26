@@ -14,7 +14,8 @@
         [style.flex-basis.px]="aspect(painting) * rowBase"
         (click)="openModal(painting)">
         <div class="artwork-media" [style.padding-bottom.%]="100 / aspect(painting)">
-          <img [src]="painting.imageurl" [alt]="artworkAlt(painting)" class="artwork-img" loading="lazy" decoding="async">
+          <img [src]="imageUrl(painting.imageurl, 960)" [attr.srcset]="imageSrcset(painting.imageurl)" sizes="(max-width: 700px) 100vw, 60vw"
+               [alt]="artworkAlt(painting)" class="artwork-img" loading="lazy" decoding="async">
           @if (!painting.isavailable) {
             <div class="sold-badge" title="Sold"></div>
           }

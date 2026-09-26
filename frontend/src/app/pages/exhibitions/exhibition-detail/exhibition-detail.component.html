@@ -38,7 +38,8 @@
       <section class="detail-photos">
         @for (photo of exhibition.photos; track photo.id) {
           <div class="detail-photo" (click)="openPhoto(photo)">
-            <img [src]="photo.imageurl" [alt]="(photo.title || exhibition.title) + ' — exhibition with paintings by Nilüfer Örel'" loading="lazy">
+            <img [src]="imageUrl(photo.imageurl, 960)" [attr.srcset]="imageSrcset(photo.imageurl)" sizes="(max-width: 420px) 100vw, (max-width: 900px) 50vw, 340px"
+                 [alt]="(photo.title || exhibition.title) + ' — exhibition with paintings by Nilüfer Örel'" loading="lazy">
             @if (photo.title) {
               <div class="photo-caption">{{ photo.title }}</div>
             }

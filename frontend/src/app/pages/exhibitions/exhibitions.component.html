@@ -121,7 +121,8 @@
     <a class="exhibition-card" [routerLink]="['/exhibitions', exhibition.id]">
       <div class="card-cover">
         @if (exhibition.photos?.length) {
-          <img [src]="exhibition.photos[0].imageurl" [alt]="exhibition.title + ' — exhibition with paintings by Nilüfer Örel'" loading="lazy">
+          <img [src]="imageUrl(exhibition.photos[0].imageurl, 960)" [attr.srcset]="imageSrcset(exhibition.photos[0].imageurl)" sizes="(max-width: 900px) 100vw, 400px"
+               [alt]="exhibition.title + ' — exhibition with paintings by Nilüfer Örel'" loading="lazy">
         } @else {
           <div class="card-cover-placeholder">No photos yet</div>
         }

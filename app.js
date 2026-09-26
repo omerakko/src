@@ -61,6 +61,9 @@ app.get(Object.keys(LEGACY_REDIRECTS), (req, res) => {
 // express.static so they take priority over any file in the build.
 app.use('/', require('./routes/sitemap'));
 
+// Resized WebP variants: /img/<width>/images/<file> (see lib/imageVariants.js).
+app.use('/', require('./routes/images'));
+
 // Images: 30-day cache (filenames don't change between uploads).
 // Files uploaded before extensions were added get their Content-Type from the
 // file header; without it Google Images won't index them.

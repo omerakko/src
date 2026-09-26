@@ -4,6 +4,7 @@ const sequelize  = require('../../db');
 const { Painting } = require('../../models');
 const { upload, deleteImageFile } = require('../../lib/fileStorage');
 const { readImageSize } = require('../../lib/imageSize');
+const { warmUploads } = require('../../lib/imageVariants');
 const asyncHandler = require('../../lib/asyncHandler');
 
 const router = express.Router();
@@ -35,7 +36,7 @@ router.get('/all', asyncHandler(async (req, res) => {
 // one round-trip. Multer parses the file; text fields land on req.body but
 // all as strings — coerce them back before passing to Sequelize.
 // ---------------------------------------------------------------------------
-router.post('/', upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/', upload.single('image'), warmUploads, asyncHandler(async (req, res) => {
   const data = { ...req.body };
 
   // FormData serialises every value as a string.
@@ -105,7 +106,7 @@ router.delete('/:id', asyncHandler(async (req, res) => {
 // ---------------------------------------------------------------------------
 // POST /api/admin/paintings/:id/image  — upload / replace painting image
 // ---------------------------------------------------------------------------
-router.post('/:id/image', upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/:id/image', upload.single('image'), warmUploads, asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image file provided' });
 
   const painting = await Painting.findByPk(req.params.id);
