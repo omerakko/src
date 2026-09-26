@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { ExhibitionService } from '../../../services/exhibition.service';
+import { ARTIST_ID, SeoService } from '../../../services/seo.service';
 import { Exhibition, ExhibitionPhoto } from '../../../models/exhibition.model';
 import { ImageModalComponent } from '../../../components/image-modal/image-modal.component';
 
@@ -16,9 +16,7 @@ import { ImageModalComponent } from '../../../components/image-modal/image-modal
 export class ExhibitionDetailComponent implements OnInit {
   private route             = inject(ActivatedRoute);
   private exhibitionService = inject(ExhibitionService);
-  private titleService      = inject(Title);
-  private meta              = inject(Meta);
-  private document          = inject(DOCUMENT);
+  private seo               = inject(SeoService);
 
   exhibition: Exhibition | null = null;
   notFound = false;
@@ -32,11 +30,53 @@ export class ExhibitionDetailComponent implements OnInit {
     this.exhibitionService.getById(id).subscribe({
       next: ex => {
         this.exhibition = ex;
-        this.titleService.setTitle(`${ex.title} | Nilüfer Örel`);
-        this.meta.updateTag({ name: 'description', content: ex.description ?? `${ex.title} – exhibition by Nilüfer Örel, ${ex.location ?? 'Bodrum'}.` });
-        this.setCanonical(`https://orelnilufer.com/exhibitions/${id}`);
+        this.applySeo(ex);
       },
-      error: () => { this.notFound = true; }
+      error: () => {
+        this.notFound = true;
+        this.seo.setPage({
+          title: 'Exhibition not found | Nilüfer Örel',
+          description: 'This exhibition page does not exist.',
+          path: '/exhibitions'
+        });
+      }
+    });
+  }
+
+  private applySeo(ex: Exhibition) {
+    const year     = ex.date ? new Date(ex.date).getUTCFullYear() : undefined;
+    const where    = ex.location ? ex.location.replace(/\s*\/\s*/g, ', ') : 'Türkiye';
+    const cover    = ex.photos?.[0]?.imageurl;
+    const path     = `/exhibitions/${ex.id}`;
+    const summary  = (ex.description || '').replace(/\s+/g, ' ').trim();
+    const description = summary
+      ? `${ex.title}${year ? ` (${year})` : ''}, ${where} — exhibition with paintings by Nilüfer Örel. ${summary}`.slice(0, 300)
+      : `${ex.title}${year ? ` (${year})` : ''} in ${where}: exhibition with paintings by Turkish contemporary artist Nilüfer Örel.`;
+
+    this.seo.setPage({
+      title: `${ex.title}${year ? ` (${year})` : ''} – Nilüfer Örel | Exhibition, ${where}`,
+      description,
+      path,
+      image: cover,
+      type: 'article'
+    });
+    this.seo.setBreadcrumbs([
+      { name: 'Exhibitions', path: '/exhibitions' },
+      { name: ex.title, path }
+    ]);
+    this.seo.setJsonLd('schema-exhibition', {
+      '@context': 'https://schema.org',
+      '@type': 'ExhibitionEvent',
+      'name': ex.title,
+      'url': this.seo.canonicalUrl(path),
+      ...(ex.date ? { 'startDate': ex.date.slice(0, 10) } : {}),
+      'location': { '@type': 'Place', 'name': where },
+      ...(summary ? { 'description': summary } : {}),
+      ...(cover ? { 'image': (ex.photos || []).map(p => this.seo.absolute(p.imageurl)) } : {}),
+      'performer': { '@id': ARTIST_ID },
+      'organizer': { '@id': ARTIST_ID },
+      'eventStatus': 'https://schema.org/EventScheduled',
+      'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode'
     });
   }
 
@@ -47,14 +87,4 @@ export class ExhibitionDetailComponent implements OnInit {
   }
 
   closeModal() { this.modalVisible = false; }
-
-  private setCanonical(url: string) {
-    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!link) {
-      link = this.document.createElement('link');
-      link.rel = 'canonical';
-      this.document.head.appendChild(link);
-    }
-    link.href = url;
-  }
 }

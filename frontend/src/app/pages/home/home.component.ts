@@ -1,9 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { PaintingService } from '../../services/painting.service';
+import { SeoService } from '../../services/seo.service';
 import { Painting } from '../../models/painting.model';
+import { artworkAlt, artworkTitle } from '../../models/artwork';
 import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
 
 @Component({
@@ -15,38 +16,32 @@ import { ImageModalComponent } from '../../components/image-modal/image-modal.co
 })
 export class HomeComponent implements OnInit {
   private paintingService = inject(PaintingService);
-  private titleService   = inject(Title);
-  private meta           = inject(Meta);
-  private document       = inject(DOCUMENT);
+  private seo             = inject(SeoService);
 
   featuredPaintings: Painting[] = [];
   modalImage   = '';
   modalCaption = '';
   modalVisible = false;
 
+  readonly artworkAlt   = artworkAlt;
+  readonly artworkTitle = artworkTitle;
+
   ngOnInit() {
-    this.titleService.setTitle('Nilüfer Örel – Ressam | Bodrum, Muğla');
-    this.meta.updateTag({ name: 'description', content: 'Bodrum, Muğla\'da yaşayan Türk ressam Nilüfer Örel\'in özgün tabloları ve sergileri. Turkish painter based in Bodrum, Muğla.' });
-    this.setCanonical('https://orelnilufer.com/');
+    this.seo.setPage({
+      title: 'Nilüfer Örel – Contemporary Painter, Bodrum, Türkiye | Ressam',
+      description: 'Nilüfer Örel is a Turkish contemporary painter based in Bodrum, Muğla, working in mixed media, acrylic and oil. Original paintings, exhibitions and contact for galleries and collectors. Bodrum\'da yaşayan ressam Nilüfer Örel\'in özgün tabloları ve sergileri.',
+      path: '/',
+      type: 'profile'
+    });
 
     this.paintingService.getFeatured().subscribe(res => {
       this.featuredPaintings = res.paintings;
     });
   }
 
-  private setCanonical(url: string) {
-    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!link) {
-      link = this.document.createElement('link');
-      link.rel = 'canonical';
-      this.document.head.appendChild(link);
-    }
-    link.href = url;
-  }
-
   openModal(painting: Painting) {
     this.modalImage   = painting.imageurl;
-    this.modalCaption = `${painting.title} — ${painting.year}`;
+    this.modalCaption = `${artworkTitle(painting)} — ${painting.year}`;
     this.modalVisible = true;
   }
 

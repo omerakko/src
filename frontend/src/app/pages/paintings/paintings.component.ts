@@ -1,8 +1,9 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { Title, Meta } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 import { PaintingService } from '../../services/painting.service';
+import { ARTIST_ID, SeoService } from '../../services/seo.service';
 import { Painting } from '../../models/painting.model';
+import { artworkAlt, artworkTitle } from '../../models/artwork';
 import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
 
 @Component({
@@ -14,9 +15,7 @@ import { ImageModalComponent } from '../../components/image-modal/image-modal.co
 })
 export class PaintingsComponent implements OnInit {
   private paintingService = inject(PaintingService);
-  private titleService    = inject(Title);
-  private meta            = inject(Meta);
-  private document        = inject(DOCUMENT);
+  private seo             = inject(SeoService);
 
   paintings: Painting[] = [];
   categories: string[] = ['All'];
@@ -30,6 +29,9 @@ export class PaintingsComponent implements OnInit {
   modalImage   = '';
   modalCaption = '';
   modalVisible = false;
+
+  readonly artworkAlt   = artworkAlt;
+  readonly artworkTitle = artworkTitle;
 
   /**
    * Target row height in px, before justification. Each work gets a
@@ -53,9 +55,12 @@ export class PaintingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Tablolar | Nilüfer Örel – Ressam, Bodrum');
-    this.meta.updateTag({ name: 'description', content: 'Nilüfer Örel\'in özgün tablolarını keşfedin. Yağlıboya, akrilik ve karma teknik eserler. Original paintings by Turkish artist based in Bodrum.' });
-    this.setCanonical('https://orelnilufer.com/paintings');
+    this.seo.setPage({
+      title: 'Paintings by Nilüfer Örel – Mixed Media & Acrylic Works | Tablolar',
+      description: 'Original paintings by Turkish contemporary artist Nilüfer Örel: mixed media, acrylic, pastel and oil on canvas, made in Bodrum. Nilüfer Örel\'in özgün tabloları: karma teknik, akrilik ve yağlıboya eserler.',
+      path: '/paintings'
+    });
+    this.seo.setBreadcrumbs([{ name: 'Paintings', path: '/paintings' }]);
 
     this.paintingService.getCategories().subscribe(cats => {
       this.categories = ['All', ...cats];
@@ -101,51 +106,34 @@ export class PaintingsComponent implements OnInit {
 
   openModal(painting: Painting) {
     this.modalImage   = painting.imageurl;
-    this.modalCaption = `${painting.title} — ${painting.medium}, ${painting.year}`;
+    this.modalCaption = `${artworkTitle(painting)} — ${painting.medium}, ${painting.year}`;
     this.modalVisible = true;
   }
 
   closeModal() { this.modalVisible = false; }
 
-  private setCanonical(url: string) {
-    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!link) {
-      link = this.document.createElement('link');
-      link.rel = 'canonical';
-      this.document.head.appendChild(link);
-    }
-    link.href = url;
-  }
-
   private injectPaintingsSchema(paintings: Painting[]) {
-    const existing = this.document.getElementById('schema-paintings');
-    if (existing) existing.remove();
-
-    const schema = {
+    this.seo.setJsonLd('schema-paintings', {
       '@context': 'https://schema.org',
       '@graph': paintings.map(p => ({
         '@type': 'VisualArtwork',
-        'name': p.title,
-        'creator': { '@type': 'Person', 'name': 'Nilüfer Örel', 'url': 'https://orelnilufer.com' },
-        'artMedium': p.medium || 'Mixed Media',
+        'name': artworkTitle(p),
+        'artform': 'Painting',
+        'creator': { '@id': ARTIST_ID },
+        'artMedium': p.medium || 'Mixed media',
         'dateCreated': String(p.year),
-        'locationCreated': { '@type': 'Place', 'name': 'Bodrum, Muğla, Turkey' },
-        'image': `https://orelnilufer.com${p.imageurl}`,
-        ...(p.isavailable ? {
-          'offers': {
-            '@type': 'Offer',
-            'availability': 'https://schema.org/InStock',
-            'priceCurrency': 'EUR',
-            ...(p.price ? { 'price': p.price } : {})
-          }
-        } : { 'offers': { '@type': 'Offer', 'availability': 'https://schema.org/SoldOut' } })
+        'locationCreated': { '@type': 'Place', 'name': 'Bodrum, Muğla, Türkiye' },
+        'image': this.seo.absolute(p.imageurl),
+        ...(p.description ? { 'description': p.description } : {}),
+        'offers': p.isavailable
+          ? {
+              '@type': 'Offer',
+              'availability': 'https://schema.org/InStock',
+              'priceCurrency': 'EUR',
+              ...(p.price ? { 'price': p.price } : {})
+            }
+          : { '@type': 'Offer', 'availability': 'https://schema.org/SoldOut' }
       }))
-    };
-
-    const script = this.document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id   = 'schema-paintings';
-    script.text = JSON.stringify(schema);
-    this.document.head.appendChild(script);
+    });
   }
 }

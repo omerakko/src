@@ -1,7 +1,7 @@
 <header class="masthead">
   <div class="masthead-inner">
     <h1 class="masthead-title">Paintings</h1>
-    <p class="masthead-statement">Explore the full collection of works.</p>
+    <p class="masthead-statement">Original mixed media, acrylic and oil works by Nilüfer Örel — explore the full collection.</p>
   </div>
 </header>
 
@@ -14,13 +14,13 @@
         [style.flex-basis.px]="aspect(painting) * rowBase"
         (click)="openModal(painting)">
         <div class="artwork-media" [style.padding-bottom.%]="100 / aspect(painting)">
-          <img [src]="painting.imageurl" [alt]="painting.title" class="artwork-img" loading="lazy" decoding="async">
+          <img [src]="painting.imageurl" [alt]="artworkAlt(painting)" class="artwork-img" loading="lazy" decoding="async">
           @if (!painting.isavailable) {
             <div class="sold-badge" title="Sold"></div>
           }
         </div>
         <figcaption class="artwork-info">
-          <h3 class="artwork-name">{{ painting.title }}</h3>
+          <h3 class="artwork-name">{{ artworkTitle(painting) }}</h3>
           <p class="artwork-line">
             @if (painting.medium) { <span>{{ painting.medium }}</span> }
             @if (painting.year)   { <span>{{ painting.year }}</span> }

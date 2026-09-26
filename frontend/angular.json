@@ -30,16 +30,6 @@
                 "output": "assets"
               },
               {
-                "glob": "sitemap.xml",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "robots.txt",
-                "input": "src",
-                "output": "/"
-              },
-              {
                 "glob": "google230b7bca15af88cb.html",
                 "input": "src",
                 "output": "/"
@@ -48,9 +38,8 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "server": "src/main.server.ts",
-            "prerender": {
-              "routesFile": "routes.txt",
-              "discoverRoutes": false
+            "ssr": {
+              "entry": "src/server.ts"
             }
           },
           "configurations": {

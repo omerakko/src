@@ -1,67 +1,79 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Nilüfer Örel – Ressam | Bodrum, Muğla</title>
+  <title>Nilüfer Örel – Contemporary Painter, Bodrum, Türkiye | Ressam</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Primary SEO -->
-  <meta name="description" content="Nilüfer Örel, Bodrum Muğla'ta yaşayan ve çalışan Türk ressam. Yağlıboya, sulu boya ve karma teknik özgün tablolar. Turkish painter based in Bodrum, Muğla.">
-  <meta name="keywords" content="ressam bodrum, ressam Muğla, painter bodrum turkey, nilüfer örel, nilufer orel, yağlıboya tablo, bodrum sanat, muğla ressam, turkish painter, original paintings">
+  <!-- Defaults; every page overrides these through SeoService -->
+  <meta name="description" content="Nilüfer Örel is a Turkish contemporary painter based in Bodrum, Muğla, working in mixed media, acrylic and oil. Original paintings, exhibitions and contact for galleries and collectors. Bodrum'da yaşayan ressam Nilüfer Örel'in özgün tabloları ve sergileri.">
   <meta name="author" content="Nilüfer Örel">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://orelnilufer.com/">
 
   <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://orelnilufer.com/">
-  <meta property="og:title" content="Nilüfer Örel – Ressam | Bodrum, Muğla">
-  <meta property="og:description" content="Bodrum ve Muğla'ta çalışan Türk ressam Nilüfer Örel'in özgün tabloları ve sergileri. Original paintings by Turkish artist Nilüfer Örel.">
+  <meta property="og:title" content="Nilüfer Örel – Contemporary Painter, Bodrum, Türkiye | Ressam">
+  <meta property="og:description" content="Original paintings and exhibitions by Turkish contemporary artist Nilüfer Örel, based in Bodrum. Bodrum'da yaşayan ressam Nilüfer Örel'in özgün tabloları.">
   <meta property="og:image" content="https://orelnilufer.com/assets/images/image-1776261242741-933586901">
-  <meta property="og:locale" content="tr_TR">
-  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="tr_TR">
   <meta property="og:site_name" content="Nilüfer Örel">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nilüfer Örel – Ressam | Bodrum, Muğla">
-  <meta name="twitter:description" content="Bodrum ve Muğla'ta çalışan Türk ressam. Original paintings by Turkish artist based in Bodrum.">
+  <meta name="twitter:title" content="Nilüfer Örel – Contemporary Painter, Bodrum, Türkiye | Ressam">
+  <meta name="twitter:description" content="Original paintings and exhibitions by Turkish contemporary artist Nilüfer Örel, based in Bodrum.">
   <meta name="twitter:image" content="https://orelnilufer.com/assets/images/image-1776261242741-933586901">
 
-  <!-- Schema.org structured data -->
+  <!-- Schema.org: who the artist is and what this site is. Present on every
+       page so Google ties all of them to the same Person entity. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Nilüfer Örel",
-    "alternateName": "Nilufer Orel",
-    "jobTitle": "Ressam / Painter",
-    "url": "https://orelnilufer.com",
-    "image": "https://orelnilufer.com/assets/images/image-1776261242741-933586901",
-    "description": "Bodrum ve Muğla'ta yaşayan ve çalışan Türk ressam. Turkish painter based in Bodrum, Muğla.",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Bodrum",
-      "addressRegion": "Muğla",
-      "addressCountry": "TR"
-    },
-    "areaServed": [
-      { "@type": "City", "name": "Bodrum" },
-      { "@type": "City", "name": "Muğla" },
-      { "@type": "AdministrativeArea", "name": "Muğla" }
-    ],
-    "knowsAbout": ["Yağlıboya", "Sulu Boya", "Karma Teknik", "Oil Painting", "Watercolour", "Fine Art"],
-    "sameAs": []
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://orelnilufer.com/#artist",
+        "name": "Nilüfer Örel",
+        "alternateName": ["Nilufer Orel", "Nilüfer Örel Ressam"],
+        "givenName": "Nilüfer",
+        "familyName": "Örel",
+        "jobTitle": "Painter",
+        "description": "Turkish contemporary painter based in Bodrum, Muğla, working in mixed media, acrylic, pastel and linocut. Bodrum, Muğla'da yaşayan ve çalışan Türk ressam.",
+        "url": "https://orelnilufer.com/",
+        "image": "https://orelnilufer.com/assets/images/artistPhoto.jpg",
+        "email": "mailto:orel.nilufer@gmail.com",
+        "nationality": { "@type": "Country", "name": "Türkiye" },
+        "homeLocation": {
+          "@type": "Place",
+          "name": "Bodrum, Muğla, Türkiye",
+          "address": { "@type": "PostalAddress", "addressLocality": "Bodrum", "addressRegion": "Muğla", "addressCountry": "TR" }
+        },
+        "hasOccupation": { "@type": "Occupation", "name": "Painter" },
+        "knowsAbout": ["Contemporary painting", "Mixed media", "Acrylic painting", "Pastel", "Linocut", "Oil painting", "Yağlıboya", "Karma teknik"],
+        "knowsLanguage": ["tr", "en", "fr"],
+        "sameAs": ["https://www.instagram.com/nilufer.orel/"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://orelnilufer.com/#website",
+        "url": "https://orelnilufer.com/",
+        "name": "Nilüfer Örel",
+        "inLanguage": ["en", "tr"],
+        "about": { "@id": "https://orelnilufer.com/#artist" },
+        "publisher": { "@id": "https://orelnilufer.com/#artist" }
+      }
+    ]
   }
   </script>
-
-  <!-- Preload hero image so browser fetches it immediately, not after JS bootstraps -->
-  <link rel="preload" as="image" href="assets/banner/test.jpeg">
 
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <!-- Google Analytics -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YMWKCGP5PF"></script>
   <script>
     window.dataLayer = window.dataLayer || [];

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { Title, Meta } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-biography',
@@ -10,26 +10,19 @@ import { Title, Meta } from '@angular/platform-browser';
   styleUrl: './biography.component.css'
 })
 export class BiographyComponent implements OnInit {
-  private titleService = inject(Title);
-  private meta         = inject(Meta);
-  private document     = inject(DOCUMENT);
+  private seo = inject(SeoService);
 
   exhibitionsExpanded = false;
   techniquesExpanded  = false;
 
   ngOnInit() {
-    this.titleService.setTitle('Sanatçı Hakkında | Nilüfer Örel – Ressam, Bodrum & Muğla');
-    this.meta.updateTag({ name: 'description', content: 'Bodrum, Muğla\'da yaşayan ressam Nilüfer Örel hakkında. Biyografi, sergiler ve sanatsal teknikler. Turkish painter based in Bodrum, Muğla.' });
-    this.setCanonical('https://orelnilufer.com/about');
-  }
-
-  private setCanonical(url: string) {
-    let link = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!link) {
-      link = this.document.createElement('link');
-      link.rel = 'canonical';
-      this.document.head.appendChild(link);
-    }
-    link.href = url;
+    this.seo.setPage({
+      title: 'About Nilüfer Örel – Turkish Painter Based in Bodrum | Biyografi',
+      description: 'Biography and artist statement of Nilüfer Örel, Turkish contemporary painter living in Bodrum, Muğla. Studied with Şeref Bigalı, worked in Bucharest, exhibits in Türkiye and abroad. Ressam Nilüfer Örel hakkında: biyografi, sergiler ve teknikler.',
+      path: '/about',
+      image: '/assets/images/artistPhoto.jpg',
+      type: 'profile'
+    });
+    this.seo.setBreadcrumbs([{ name: 'About', path: '/about' }]);
   }
 }

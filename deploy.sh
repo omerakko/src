@@ -13,7 +13,8 @@ set -euo pipefail
 
 SSH_HOST="nilufer-prod"
 REMOTE_DIR="/var/www/Portfolio_NiluferOrel/src"
-DIST_PARENT="frontend/dist/nilufer-orel-portfolio"
+DIST_DIR="frontend/dist"
+DIST_NAME="nilufer-orel-portfolio"   # contains browser/ (static files) and server/ (SSR bundle)
 SITE_URL="https://orelnilufer.com"
 
 cd "$(dirname "$0")"
@@ -33,9 +34,9 @@ step "Pushing main to GitHub"
 git push origin main
 
 step "Uploading frontend build"
-tar -C "$DIST_PARENT" -czf - browser \
-  | ssh "$SSH_HOST" "rm -rf '$REMOTE_DIR/$DIST_PARENT/browser.new' && mkdir -p '$REMOTE_DIR/$DIST_PARENT/browser.new' \
-      && tar -xzf - -C '$REMOTE_DIR/$DIST_PARENT/browser.new' --strip-components=1"
+tar -C "$DIST_DIR" -czf - "$DIST_NAME" \
+  | ssh "$SSH_HOST" "rm -rf '$REMOTE_DIR/$DIST_DIR/$DIST_NAME.new' && mkdir -p '$REMOTE_DIR/$DIST_DIR/$DIST_NAME.new' \
+      && tar -xzf - -C '$REMOTE_DIR/$DIST_DIR/$DIST_NAME.new' --strip-components=1"
 
 step "Updating server"
 ssh "$SSH_HOST" bash -s <<EOF
@@ -47,10 +48,10 @@ if ! git diff --quiet "\$before" HEAD -- package.json package-lock.json; then
   echo "Dependencies changed — installing"
   sudo -n npm ci --omit=dev
 fi
-cd '$DIST_PARENT'
-rm -rf browser.prev
-[ -d browser ] && mv browser browser.prev
-mv browser.new browser
+cd '$DIST_DIR'
+rm -rf '$DIST_NAME.prev'
+[ -d '$DIST_NAME' ] && mv '$DIST_NAME' '$DIST_NAME.prev'
+mv '$DIST_NAME.new' '$DIST_NAME'
 pm2 restart all
 echo "Server now at \$(git -C '$REMOTE_DIR' log -1 --oneline)"
 EOF
@@ -59,7 +60,16 @@ step "Smoke test"
 sleep 3
 code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/")
 api=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/api/paintings" || true)
-echo "$SITE_URL/ -> $code   /api/paintings -> $api"
-[ "$code" = "200" ] || { echo "Site is not returning 200! Previous frontend kept at browser.prev on the server."; exit 1; }
+map=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/sitemap.xml" || true)
+echo "$SITE_URL/ -> $code   /api/paintings -> $api   /sitemap.xml -> $map"
+[ "$code" = "200" ] || { echo "Site is not returning 200! Previous build kept at $DIST_NAME.prev on the server."; exit 1; }
+
+# Server-rendered pages carry the painting grid in the HTML itself; an empty
+# shell means SSR fell back to client rendering and Google sees no artworks.
+if curl -s "$SITE_URL/paintings" | grep -q 'class="artwork-img"'; then
+  echo "SSR OK: /paintings contains rendered artworks"
+else
+  echo "SSR CHECK FAILED: /paintings has no rendered artworks — check 'pm2 logs' on the server."; exit 1
+fi
 
 step "Deployed $(git log -1 --oneline)"

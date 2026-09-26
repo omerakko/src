@@ -6,10 +6,12 @@
  */
 const express     = require('express');
 const path        = require('path');
-const fs          = require('fs');
 const compression = require('compression');
 
 const { verifyToken, requireAdmin } = require('./middleware/auth');
+const { sniffImageMime } = require('./lib/imageMime');
+const ssr = require('./lib/ssr');
+const { Exhibition } = require('./models');
 
 const app = express();
 
@@ -30,24 +32,57 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // /assets  — painting images and other uploaded media.
 // /        — Angular production build. The SPA's own assets (JS, CSS) live here.
 // ---------------------------------------------------------------------------
-// Dynamic sitemaps — must be before express.static so they take priority.
+// One URL per page: /paintings/ → /paintings. Search engines otherwise index
+// both spellings and split their signals between them.
+app.use((req, res, next) => {
+  if (req.method === 'GET' && req.path.length > 1 && req.path.endsWith('/') && !req.path.startsWith('/api/')) {
+    const clean = req.path.replace(/\/+$/, '') || '/';
+    return res.redirect(301, clean + req.url.slice(req.path.length));
+  }
+  next();
+});
+
+// Legacy URL redirects — 301 so Google transfers link equity to the new URLs.
+// These are old static-site paths that Google still has indexed. Registered
+// before express.static: /index.html exists in the build and would otherwise
+// be served as an empty shell instead of redirecting.
+const LEGACY_REDIRECTS = {
+  '/index.html':            '/',
+  '/pages/biography.html':  '/about',
+  '/pages/gallery.html':    '/paintings',
+  '/pages/paintings.htm':   '/paintings',
+  '/pages/paintings.html':  '/paintings',
+};
+app.get(Object.keys(LEGACY_REDIRECTS), (req, res) => {
+  res.redirect(301, LEGACY_REDIRECTS[req.path]);
+});
+
+// robots.txt and sitemaps are generated from the database — mounted before
+// express.static so they take priority over any file in the build.
 app.use('/', require('./routes/sitemap'));
 
 // Images: 30-day cache (filenames don't change between uploads).
+// Files uploaded before extensions were added get their Content-Type from the
+// file header; without it Google Images won't index them.
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
   maxAge: '30d',
-  immutable: false
+  immutable: false,
+  setHeaders(res, filePath) {
+    if (path.extname(filePath)) return;
+    const mime = sniffImageMime(filePath);
+    if (mime) res.setHeader('Content-Type', mime);
+  }
 }));
 
-const ANGULAR_DIST = path.join(__dirname, 'frontend', 'dist', 'nilufer-orel-portfolio', 'browser');
-
 // Angular JS/CSS bundles have content hashes in filenames → safe to cache 1 year.
-// index.html must never be cached so the browser always fetches the latest shell.
-app.use(express.static(ANGULAR_DIST, {
+// index: false — pages are rendered by the SSR catch-all below, never served
+// as a static file.
+app.use(express.static(ssr.BROWSER_DIR, {
   maxAge: '1y',
   immutable: true,
+  index: false,
   setHeaders(res, filePath) {
-    if (filePath.endsWith('index.html')) {
+    if (filePath.endsWith('.html')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
   }
@@ -60,40 +95,58 @@ app.use('/api/auth',        require('./routes/auth'));
 app.use('/api/paintings',   require('./routes/paintings'));
 app.use('/api/exhibitions', require('./routes/exhibitions'));
 
+// Any successful admin write changes what the public pages show, so drop the
+// rendered-HTML cache once the response has gone out.
+app.use('/api/admin', (req, res, next) => {
+  if (req.method !== 'GET') {
+    res.on('finish', () => { if (res.statusCode < 400) ssr.clearCache(); });
+  }
+  next();
+});
+
 // Admin routes are protected at the mount point so every sub-route inside
 // those routers is automatically guarded — no risk of forgetting a middleware.
 app.use('/api/admin/paintings',   verifyToken, requireAdmin, require('./routes/admin/paintings'));
 app.use('/api/admin/exhibitions', verifyToken, requireAdmin, require('./routes/admin/exhibitions'));
 
 // ---------------------------------------------------------------------------
-// Legacy URL redirects — 301 so Google transfers link equity to the new URLs.
-// These are old static-site paths that Google still has indexed.
-// ---------------------------------------------------------------------------
-const LEGACY_REDIRECTS = {
-  '/index.html':            '/',
-  '/pages/biography.html':  '/about',
-  '/pages/gallery.html':    '/paintings',
-  '/pages/paintings.htm':   '/paintings',
-  '/pages/paintings.html':  '/paintings',
-};
-app.get(Object.keys(LEGACY_REDIRECTS), (req, res) => {
-  res.redirect(301, LEGACY_REDIRECTS[req.path]);
-});
-
-// ---------------------------------------------------------------------------
 // Angular catch-all — must come AFTER all /api routes.
-// With prerendering enabled, Angular renames index.html → index.csr.html and
-// generates a new prerendered index.html for the home route. The catch-all
-// must serve index.csr.html so non-prerendered routes (admin, login) still
-// get the Angular shell and can hydrate client-side.
+//
+// Public pages are rendered on the server (lib/ssr.js) so crawlers receive
+// finished HTML: painting images, exhibition titles, canonical URLs and
+// structured data — not an empty shell that only fills in once JS runs.
+// Admin and login are browser-only and get the plain shell. If rendering ever
+// fails the shell is served too, so the site degrades to how it worked before.
 // ---------------------------------------------------------------------------
-const FALLBACK_HTML = fs.existsSync(path.join(ANGULAR_DIST, 'index.csr.html'))
-  ? 'index.csr.html'
-  : 'index.html';
+const CSR_ONLY = /^\/(admin|login)(\/|$)/;
+const NO_CACHE = { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' } };
 
-app.get(/.*/, (_req, res) => {
-  res.sendFile(path.join(ANGULAR_DIST, FALLBACK_HTML));
+app.get(/.*/, async (req, res) => {
+  if (CSR_ONLY.test(req.path) || !ssr.ssrAvailable()) {
+    return res.sendFile(ssr.CSR_SHELL, NO_CACHE);
+  }
+  try {
+    const [status, html] = await Promise.all([
+      pageStatus(req.path),
+      ssr.renderPage(req.path, `http://127.0.0.1:${process.env.PORT || 3000}`)
+    ]);
+    res.status(status).set('Cache-Control', 'no-cache').type('html').send(html);
+  } catch (err) {
+    console.error('[ssr] falling back to client rendering for', req.path, err);
+    res.sendFile(ssr.CSR_SHELL, NO_CACHE);
+  }
 });
+
+// The Angular router silently redirects unknown paths to the home page. Serve
+// those with a 404 so search engines drop them instead of indexing the home
+// page under a second URL.
+const STATIC_PAGES = new Set(['/', '/paintings', '/exhibitions', '/about']);
+async function pageStatus(pagePath) {
+  if (STATIC_PAGES.has(pagePath)) return 200;
+  const m = pagePath.match(/^\/exhibitions\/(\d+)$/);
+  if (m) return (await Exhibition.count({ where: { id: m[1] } })) ? 200 : 404;
+  return 404;
+}
 
 // ---------------------------------------------------------------------------
 // Centralized error handler

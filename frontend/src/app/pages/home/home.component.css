@@ -1,1 +1,18 @@
 :host { display: block; }
+
+/* ---- Intro / About the artist ---- */
+.home-intro {
+  max-width: 760px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+  text-align: center;
+  color: #444;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.home-intro-links a {
+  color: #8b7355;
+  text-decoration: none;
+  border-bottom: 1px solid #d9cfc1;
+}
+.home-intro-links a:hover { border-bottom-color: #8b7355; }

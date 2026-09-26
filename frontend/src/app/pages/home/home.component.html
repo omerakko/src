@@ -1,7 +1,7 @@
 <section class="hero">
-  <img src="assets/banner/test.jpeg" alt="Nilüfer Örel – Ressam, Bodrum" class="hero-image" fetchpriority="high" decoding="sync">
+  <img src="assets/banner/test.jpeg" alt="Painting by Nilüfer Örel, contemporary painter based in Bodrum, Türkiye" class="hero-image" fetchpriority="high" decoding="sync">
   <div class="hero-content">
-    <h1 class="hero-title">Nilüfer Örel<span class="hero-location"> – Ressam | Bodrum, Muğla</span></h1>
+    <h1 class="hero-title">Nilüfer Örel<span class="hero-location"> – Painter · Ressam | Bodrum, Türkiye</span></h1>
     <p class="hero-subtitle">Outsider artist expressing unfiltered emotion and inner worlds through raw, intuitive creation.</p>
     <a routerLink="/paintings" class="hero-button">View Paintings</a>
   </div>
@@ -12,9 +12,9 @@
   <div class="featured-grid">
     @for (painting of featuredPaintings; track painting.id) {
       <div class="featured-item" (click)="openModal(painting)">
-        <img [src]="painting.imageurl" [alt]="painting.title" class="featured-image" loading="lazy" decoding="async">
+        <img [src]="painting.imageurl" [alt]="artworkAlt(painting)" class="featured-image" loading="lazy" decoding="async">
         <div class="featured-caption">
-          <h3 class="featured-title">{{ painting.title }}</h3>
+          <h3 class="featured-title">{{ artworkTitle(painting) }}</h3>
           <p class="featured-year">{{ painting.year }}</p>
         </div>
       </div>
@@ -22,6 +22,21 @@
       <p style="text-align:center;color:#888;">No featured paintings selected yet.</p>
     }
   </div>
+</section>
+
+<section class="home-intro">
+  <h2 class="section-title">About the Artist</h2>
+  <p>
+    Nilüfer Örel is a Turkish contemporary painter living and working in a forest village near Bodrum, Muğla.
+    Her mixed-media, acrylic and pastel works grow out of the sea, the forest and the animals around her,
+    and have been shown at the Bodrum Art Fair, DenizBank Art Gallery, the International İzmir Art Biennial
+    and Awita Gallery in New York.
+  </p>
+  <p class="home-intro-links">
+    <a routerLink="/about">Read the biography</a> ·
+    <a routerLink="/exhibitions">See all exhibitions</a> ·
+    <a href="mailto:orel.nilufer@gmail.com">Contact for commissions and gallery enquiries</a>
+  </p>
 </section>
 
 <app-image-modal
