@@ -74,7 +74,7 @@ echo "$SITE_URL/ -> $code   /api/paintings -> $api   /sitemap.xml -> $map"
 # The first render after a restart can take a few seconds (bundle load, DB
 # warm-up), so give it a few tries.
 ssr_ok=""
-for attempt in 1 2 3 4 5 6; do
+for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
   if curl -s "$SITE_URL/paintings" | grep -q 'class="artwork-img"'; then ssr_ok=1; break; fi
   echo "  server still warming up (attempt $attempt)…"; sleep 5
 done
