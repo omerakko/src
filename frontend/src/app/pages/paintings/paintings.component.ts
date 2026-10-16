@@ -1,26 +1,27 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { PaintingService } from '../../services/painting.service';
 import { ARTIST_ID, SeoService } from '../../services/seo.service';
+import { I18nService } from '../../i18n/i18n.service';
+import { StringKey } from '../../i18n/strings';
 import { Painting } from '../../models/painting.model';
-import { artworkAlt, artworkTitle } from '../../models/artwork';
+import { artworkAlt, artworkMeta, artworkPath, displayTitle, parseMedium, techniqueLabel } from '../../models/artwork';
 import { imageSrcset, imageUrl } from '../../models/image-url';
-import { ImageModalComponent } from '../../components/image-modal/image-modal.component';
 
 @Component({
   selector: 'app-paintings',
   standalone: true,
-  imports: [CommonModule, ImageModalComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './paintings.component.html',
   styleUrl: './paintings.component.css'
 })
 export class PaintingsComponent implements OnInit {
   private paintingService = inject(PaintingService);
   private seo             = inject(SeoService);
+  private i18n            = inject(I18nService);
 
   paintings: Painting[] = [];
-  categories: string[] = ['All'];
-  selectedCategory = 'All';
   loading = false;
 
   /**
@@ -32,14 +33,8 @@ export class PaintingsComponent implements OnInit {
    */
   readonly pageSize = 250;
 
-  modalImage   = '';
-  modalCaption = '';
-  modalVisible = false;
-
-  readonly artworkAlt   = artworkAlt;
-  readonly artworkTitle = artworkTitle;
-  readonly imageUrl     = imageUrl;
-  readonly imageSrcset  = imageSrcset;
+  readonly imageUrl    = imageUrl;
+  readonly imageSrcset = imageSrcset;
 
   /**
    * Target row height in px, before justification. Each work gets a
@@ -48,6 +43,12 @@ export class PaintingsComponent implements OnInit {
    * exactly, and the final height falls out of that.
    */
   readonly rowBase = 380;
+
+  t(key: StringKey) { return this.i18n.t(key); }
+  title(p: Painting) { return displayTitle(p, this.i18n.lang()); }
+  meta(p: Painting)  { return artworkMeta(p, this.i18n.lang()); }
+  alt(p: Painting)   { return artworkAlt(p, this.i18n.lang()); }
+  link(p: Painting)  { return this.i18n.link(artworkPath(p)); }
 
   /**
    * Width-to-height ratio of a work, driving its share of the row.
@@ -64,22 +65,11 @@ export class PaintingsComponent implements OnInit {
 
   ngOnInit() {
     this.seo.setPage({
-      title: 'Paintings by Nilüfer Örel – Mixed Media & Acrylic Works | Tablolar',
-      description: 'Original paintings by Turkish contemporary artist Nilüfer Örel: mixed media, acrylic, pastel and oil on canvas, made in Bodrum. Nilüfer Örel\'in özgün tabloları: karma teknik, akrilik ve yağlıboya eserler.',
+      title: this.t('paintings.seoTitle'),
+      description: this.t('paintings.seoDesc'),
       path: '/paintings'
     });
-    this.seo.setBreadcrumbs([{ name: 'Paintings', path: '/paintings' }]);
-
-    this.paintingService.getCategories().subscribe(cats => {
-      this.categories = ['All', ...cats];
-    });
-    this.loadPaintings();
-  }
-
-  selectCategory(category: string) {
-    if (this.selectedCategory === category) return;
-    this.selectedCategory = category;
-    this.paintings = [];
+    this.seo.setBreadcrumbs([{ name: this.t('nav.paintings'), path: '/paintings' }]);
     this.loadPaintings();
   }
 
@@ -87,11 +77,7 @@ export class PaintingsComponent implements OnInit {
     if (this.loading) return;
     this.loading = true;
 
-    this.paintingService.getPaintings({
-      page:     1,
-      perPage:  this.pageSize,
-      category: this.selectedCategory
-    }).subscribe({
+    this.paintingService.getPaintings({ page: 1, perPage: this.pageSize }).subscribe({
       next: res => {
         this.paintings = res.paintings;
         this.loading   = false;
@@ -101,35 +87,27 @@ export class PaintingsComponent implements OnInit {
     });
   }
 
-  openModal(painting: Painting) {
-    this.modalImage   = painting.imageurl;
-    this.modalCaption = `${artworkTitle(painting)} — ${painting.medium}, ${painting.year}`;
-    this.modalVisible = true;
-  }
-
-  closeModal() { this.modalVisible = false; }
-
+  /** The list page names each work and points to its own page. */
   private injectPaintingsSchema(paintings: Painting[]) {
+    const lang = this.i18n.lang();
     this.seo.setJsonLd('schema-paintings', {
       '@context': 'https://schema.org',
-      '@graph': paintings.map(p => ({
-        '@type': 'VisualArtwork',
-        'name': artworkTitle(p),
-        'artform': 'Painting',
-        'creator': { '@id': ARTIST_ID },
-        'artMedium': p.medium || 'Mixed media',
-        'dateCreated': String(p.year),
-        'locationCreated': { '@type': 'Place', 'name': 'Bodrum, Muğla, Türkiye' },
-        'image': this.seo.absolute(p.imageurl),
-        ...(p.description ? { 'description': p.description } : {}),
-        'offers': p.isavailable
-          ? {
-              '@type': 'Offer',
-              'availability': 'https://schema.org/InStock',
-              'priceCurrency': 'EUR',
-              ...(p.price ? { 'price': p.price } : {})
-            }
-          : { '@type': 'Offer', 'availability': 'https://schema.org/SoldOut' }
+      '@type': 'ItemList',
+      'name': this.t('paintings.seoTitle'),
+      'itemListElement': paintings.map((p, i) => ({
+        '@type': 'ListItem',
+        'position': i + 1,
+        'url': this.seo.canonicalUrl(this.link(p)),
+        'item': {
+          '@type': 'VisualArtwork',
+          'name': this.title(p),
+          'url': this.seo.canonicalUrl(this.link(p)),
+          'artform': 'Painting',
+          'creator': { '@id': ARTIST_ID },
+          'artMedium': techniqueLabel(parseMedium(p.medium).technique, lang) || 'Mixed media',
+          'dateCreated': String(p.year),
+          'image': this.seo.absolute(p.imageurl)
+        }
       }))
     });
   }

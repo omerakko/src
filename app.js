@@ -11,7 +11,8 @@ const compression = require('compression');
 const { verifyToken, requireAdmin } = require('./middleware/auth');
 const { sniffImageMime } = require('./lib/imageMime');
 const ssr = require('./lib/ssr');
-const { Exhibition } = require('./models');
+const { Exhibition, Painting } = require('./models');
+const { artworkSlug } = require('./lib/artwork');
 
 const app = express();
 
@@ -129,10 +130,14 @@ app.get(/.*/, async (req, res) => {
     return res.sendFile(ssr.CSR_SHELL, NO_CACHE);
   }
   try {
-    const [status, page] = await Promise.all([
-      pageStatus(req.path),
-      ssr.renderPage(req.path, `http://127.0.0.1:${process.env.PORT || 3000}`)
-    ]);
+    // A painting URL with an outdated or partial slug (/paintings/222) gets a
+    // 301 to its canonical address before anything is rendered.
+    const check = await pageStatus(req.path);
+    if (check.redirect) {
+      return res.redirect(301, check.redirect + req.url.slice(req.path.length));
+    }
+    const status = check.status;
+    const page = await ssr.renderPage(req.path, `http://127.0.0.1:${process.env.PORT || 3000}`);
     if (page.failed) {
       // Data was missing while rendering: tell crawlers to come back rather
       // than index a page with no works on it. Visitors still get the page,
@@ -150,12 +155,28 @@ app.get(/.*/, async (req, res) => {
 // The Angular router silently redirects unknown paths to the home page. Serve
 // those with a 404 so search engines drop them instead of indexing the home
 // page under a second URL.
+//
+// Every page exists in English at the root and in Turkish and French under
+// /tr and /fr, with the same path after the prefix.
 const STATIC_PAGES = new Set(['/', '/paintings', '/exhibitions', '/about']);
-async function pageStatus(pagePath) {
-  if (STATIC_PAGES.has(pagePath)) return 200;
-  const m = pagePath.match(/^\/exhibitions\/(\d+)$/);
-  if (m) return (await Exhibition.count({ where: { id: m[1] } })) ? 200 : 404;
-  return 404;
+async function pageStatus(fullPath) {
+  const lm = fullPath.match(/^\/(tr|fr)(?=\/|$)(.*)$/);
+  const prefix = lm ? `/${lm[1]}` : '';
+  const pagePath = lm ? (lm[2] || '/') : fullPath;
+
+  if (STATIC_PAGES.has(pagePath)) return { status: 200 };
+
+  const ex = pagePath.match(/^\/exhibitions\/(\d+)$/);
+  if (ex) return { status: (await Exhibition.count({ where: { id: ex[1] } })) ? 200 : 404 };
+
+  const pm = pagePath.match(/^\/paintings\/(\d+)(?:-[a-z0-9-]*)?$/);
+  if (pm) {
+    const painting = await Painting.findByPk(pm[1], { attributes: ['id', 'title', 'year'] });
+    if (!painting) return { status: 404 };
+    const canonical = `/paintings/${artworkSlug(painting)}`;
+    return pagePath === canonical ? { status: 200 } : { status: 301, redirect: prefix + canonical };
+  }
+  return { status: 404 };
 }
 
 // ---------------------------------------------------------------------------

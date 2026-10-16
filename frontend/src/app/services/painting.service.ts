@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Painting, PaintingsResponse, FeaturedResponse } from '../models/painting.model';
+import { Painting, PaintingsResponse, FeaturedResponse, PaintingDetail } from '../models/painting.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaintingService {
@@ -17,6 +17,11 @@ export class PaintingService {
     if (params.perPage) p = p.set('perPage', params.perPage);
     if (params.category && params.category !== 'All') p = p.set('category', params.category);
     return this.http.get<PaintingsResponse>('/api/paintings', { params: p });
+  }
+
+  /** One painting with its previous/next neighbours and a few more works. */
+  getById(id: number): Observable<PaintingDetail> {
+    return this.http.get<PaintingDetail>(`/api/paintings/${id}`);
   }
 
   getCategories(): Observable<string[]> {

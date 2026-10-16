@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { I18nService, LANGS, LOCALES, localizedPath } from '../i18n/i18n.service';
 
 export const SITE_URL      = 'https://orelnilufer.com';
 export const SITE_NAME     = 'Nilüfer Örel';
@@ -28,10 +29,18 @@ export class SeoService {
   private doc   = inject(DOCUMENT);
   private title = inject(Title);
   private meta  = inject(Meta);
+  private i18n  = inject(I18nService);
 
+  /**
+   * `page.path` is language-neutral ('/paintings'); the canonical URL, the
+   * hreflang alternates and og:locale follow the current page language.
+   */
   setPage(page: PageMeta) {
-    const url   = this.canonicalUrl(page.path);
+    const lang  = this.i18n.lang();
+    const url   = this.canonicalUrl(localizedPath(lang, page.path));
     const image = this.absolute(page.image ?? DEFAULT_IMAGE);
+    this.setAlternates(page.path);
+    this.meta.updateTag({ property: 'og:locale', content: LOCALES[lang] });
 
     this.title.setTitle(page.title);
     this.meta.updateTag({ name: 'description', content: page.description });
@@ -73,9 +82,28 @@ export class SeoService {
     this.doc.getElementById(id)?.remove();
   }
 
-  /** Breadcrumb trail for sub-pages; the home crumb is added automatically. */
+  /** <link rel="alternate" hreflang> for every language, plus x-default (English). */
+  private setAlternates(path: string) {
+    this.doc.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach(l => l.remove());
+    const add = (hreflang: string, href: string) => {
+      const link = this.doc.createElement('link');
+      link.rel = 'alternate';
+      link.setAttribute('hreflang', hreflang);
+      link.href = href;
+      this.doc.head.appendChild(link);
+    };
+    for (const l of LANGS) add(l, this.canonicalUrl(localizedPath(l, path)));
+    add('x-default', this.canonicalUrl(path));
+  }
+
+  /**
+   * Breadcrumb trail for sub-pages; the home crumb is added automatically.
+   * Paths are language-neutral and names already in the page language.
+   */
   setBreadcrumbs(items: { name: string; path: string }[]) {
-    const crumbs = [{ name: 'Home', path: '/' }, ...items];
+    const lang = this.i18n.lang();
+    const crumbs = [{ name: this.i18n.t('crumb.home'), path: '/' }, ...items]
+      .map(c => ({ ...c, path: localizedPath(lang, c.path) }));
     this.setJsonLd('schema-breadcrumb', {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',

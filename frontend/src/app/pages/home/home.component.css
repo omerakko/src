@@ -16,3 +16,6 @@
   border-bottom: 1px solid #d9cfc1;
 }
 .home-intro-links a:hover { border-bottom-color: #74603f; }
+
+/* Featured works link to their own painting page. */
+.featured-item { display: block; color: inherit; text-decoration: none; }

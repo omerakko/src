@@ -1,16 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ExhibitionService } from '../../../services/exhibition.service';
 import { ARTIST_ID, SeoService } from '../../../services/seo.service';
 import { Exhibition, ExhibitionPhoto } from '../../../models/exhibition.model';
 import { imageSrcset, imageUrl } from '../../../models/image-url';
 import { ImageModalComponent } from '../../../components/image-modal/image-modal.component';
+import { I18nService } from '../../../i18n/i18n.service';
+import { StringKey } from '../../../i18n/strings';
 
 @Component({
   selector: 'app-exhibition-detail',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, ImageModalComponent],
+  imports: [CommonModule, RouterLink, ImageModalComponent],
   templateUrl: './exhibition-detail.component.html',
   styleUrl: './exhibition-detail.component.css'
 })
@@ -18,6 +20,7 @@ export class ExhibitionDetailComponent implements OnInit {
   private route             = inject(ActivatedRoute);
   private exhibitionService = inject(ExhibitionService);
   private seo               = inject(SeoService);
+  readonly i18n             = inject(I18nService);
 
   exhibition: Exhibition | null = null;
   notFound = false;
@@ -28,6 +31,8 @@ export class ExhibitionDetailComponent implements OnInit {
 
   readonly imageUrl    = imageUrl;
   readonly imageSrcset = imageSrcset;
+
+  t(key: StringKey) { return this.i18n.t(key); }
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -42,8 +47,8 @@ export class ExhibitionDetailComponent implements OnInit {
         // failing, which must not be cached or indexed as "not found".
         if (err?.status !== 404) this.seo.markRenderError();
         this.seo.setPage({
-          title: 'Exhibition not found | Nilüfer Örel',
-          description: 'This exhibition page does not exist.',
+          title: `${this.t('ex.notFound')} | Nilüfer Örel`,
+          description: this.t('ex.notFound'),
           path: '/exhibitions'
         });
       }
@@ -57,25 +62,25 @@ export class ExhibitionDetailComponent implements OnInit {
     const path     = `/exhibitions/${ex.id}`;
     const summary  = (ex.description || '').replace(/\s+/g, ' ').trim();
     const description = summary
-      ? `${ex.title}${year ? ` (${year})` : ''}, ${where} — exhibition with paintings by Nilüfer Örel. ${summary}`.slice(0, 300)
-      : `${ex.title}${year ? ` (${year})` : ''} in ${where}: exhibition with paintings by Turkish contemporary artist Nilüfer Örel.`;
+      ? `${ex.title}${year ? ` (${year})` : ''}, ${where} — ${this.t('ex.withPaintings')}. ${summary}`.slice(0, 300)
+      : `${ex.title}${year ? ` (${year})` : ''}, ${where}. ${this.t('ex.detailDesc')}`;
 
     this.seo.setPage({
-      title: `${ex.title}${year ? ` (${year})` : ''} – Nilüfer Örel | Exhibition, ${where}`,
+      title: `${ex.title}${year ? ` (${year})` : ''} – Nilüfer Örel | ${this.t('ex.title')}, ${where}`,
       description,
       path,
       image: cover,
       type: 'article'
     });
     this.seo.setBreadcrumbs([
-      { name: 'Exhibitions', path: '/exhibitions' },
+      { name: this.t('nav.exhibitions'), path: '/exhibitions' },
       { name: ex.title, path }
     ]);
     this.seo.setJsonLd('schema-exhibition', {
       '@context': 'https://schema.org',
       '@type': 'ExhibitionEvent',
       'name': ex.title,
-      'url': this.seo.canonicalUrl(path),
+      'url': this.seo.canonicalUrl(this.i18n.link(path)),
       ...(ex.date ? { 'startDate': ex.date.slice(0, 10) } : {}),
       'location': { '@type': 'Place', 'name': where },
       ...(summary ? { 'description': summary } : {}),

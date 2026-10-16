@@ -1,11 +1,18 @@
 <nav [class.scrolled]="scrolled">
   <div class="nav-container">
-    <a routerLink="/" class="logo">Nilufer Orel</a>
+    <a [routerLink]="i18n.link('/')" class="logo">Nilüfer Örel</a>
     <div class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-      <a routerLink="/paintings" routerLinkActive="active">Paintings</a>
-      <a routerLink="/exhibitions" routerLinkActive="active">Exhibitions</a>
-      <a routerLink="/about" routerLinkActive="active">About</a>
+      <a [routerLink]="i18n.link('/')" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ t('nav.home') }}</a>
+      <a [routerLink]="i18n.link('/paintings')" routerLinkActive="active">{{ t('nav.paintings') }}</a>
+      <a [routerLink]="i18n.link('/exhibitions')" routerLinkActive="active">{{ t('nav.exhibitions') }}</a>
+      <a [routerLink]="i18n.link('/about')" routerLinkActive="active">{{ t('nav.about') }}</a>
+      <span class="lang-switch" role="group" [attr.aria-label]="t('nav.lang')">
+        @for (l of langs; track l) {
+          <a [routerLink]="i18n.switchTo(l)" [attr.hreflang]="l" [attr.lang]="l"
+             [attr.aria-label]="names[l]" [attr.aria-current]="i18n.lang() === l ? 'true' : null"
+             [class.current]="i18n.lang() === l">{{ labels[l] }}</a>
+        }
+      </span>
       @if (isAdmin) {
         <a routerLink="/admin" routerLinkActive="active">Admin</a>
         <button class="logout-btn" (click)="auth.logout()">⏏ Logout</button>

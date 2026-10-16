@@ -115,10 +115,27 @@ router.get('/categories', asyncHandler(async (_req, res) => {
 // ---------------------------------------------------------------------------
 // GET /api/paintings/:id  — single painting (public)
 // ---------------------------------------------------------------------------
+// GET /api/paintings/:id — one painting plus its neighbours in gallery order
+// (prev/next) and a few more works, so a painting page needs one request.
 router.get('/:id', asyncHandler(async (req, res) => {
-  const painting = await Painting.findByPk(req.params.id);
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(404).json({ error: 'Painting not found' });
+
+  const painting = await Painting.findByPk(id, { attributes: { exclude: ['updatedAt'] } });
   if (!painting) return res.status(404).json({ error: 'Painting not found' });
-  res.json(painting);
+
+  const brief = ['id', 'title', 'medium', 'year', 'imageurl', 'imagewidth', 'imageheight', 'isavailable'];
+  const order = painting.order;
+  const [prev, next, after, before] = await Promise.all([
+    Painting.findOne({ where: { order: { [Op.gt]: order } }, order: [['order', 'ASC']], attributes: brief }),
+    Painting.findOne({ where: { order: { [Op.lt]: order } }, order: [['order', 'DESC']], attributes: brief }),
+    Painting.findAll({ where: { order: { [Op.lt]: order } }, order: [['order', 'DESC']], limit: 4, attributes: brief }),
+    Painting.findAll({ where: { order: { [Op.gt]: order } }, order: [['order', 'ASC']], limit: 4, attributes: brief }),
+  ]);
+  // Works that follow in the gallery first; near the end, fill from before.
+  const more = [...after, ...before].slice(0, 4);
+
+  res.json({ ...painting.toJSON(), prev, next, more });
 }));
 
 module.exports = router;

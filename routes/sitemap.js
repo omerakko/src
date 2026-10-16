@@ -1,6 +1,7 @@
 const express  = require('express');
 const { Op }   = require('sequelize');
 const { Painting, Exhibition, ExhibitionPhoto } = require('../models');
+const { artworkTitle, artworkSlug } = require('../lib/artwork');
 
 const router = express.Router();
 
@@ -32,34 +33,52 @@ router.get('/robots.txt', (_req, res) => {
 // ---------------------------------------------------------------------------
 // GET /sitemap.xml — every indexable page with a real last-modified date.
 // ---------------------------------------------------------------------------
+// Each page exists in three languages: English at the root, Turkish and French
+// under /tr and /fr. Every <url> lists all three as alternates (hreflang) so
+// Google shows searchers the version in their language.
+const LANGS = ['en', 'tr', 'fr'];
+const localized = (lang, path) => lang === 'en' ? path : (path === '/' ? `/${lang}` : `/${lang}${path}`);
+
 router.get('/sitemap.xml', async (_req, res) => {
   try {
-    const [latestPainting, exhibitions] = await Promise.all([
+    const [latestPainting, exhibitions, paintings] = await Promise.all([
       Painting.max('updatedAt'),
-      Exhibition.findAll({ attributes: ['id', 'updatedAt'], order: [['date', 'DESC']] })
+      Exhibition.findAll({ attributes: ['id', 'updatedAt'], order: [['date', 'DESC']] }),
+      Painting.findAll({ attributes: ['id', 'title', 'year', 'updatedAt'], order: [['order', 'DESC']] })
     ]);
 
     const latestExhibition = exhibitions.reduce(
       (max, ex) => (!max || ex.updatedAt > max ? ex.updatedAt : max), null);
 
-    const urls = [
-      { loc: '/',            lastmod: newest(latestPainting, latestExhibition), changefreq: 'weekly',  priority: '1.0' },
-      { loc: '/paintings',   lastmod: latestPainting,                            changefreq: 'weekly',  priority: '0.9' },
-      { loc: '/exhibitions', lastmod: latestExhibition,                          changefreq: 'monthly', priority: '0.8' },
-      { loc: '/about',                                                           changefreq: 'monthly', priority: '0.7' },
+    const pages = [
+      { path: '/',            lastmod: newest(latestPainting, latestExhibition), changefreq: 'weekly',  priority: '1.0' },
+      { path: '/paintings',   lastmod: latestPainting,                            changefreq: 'weekly',  priority: '0.9' },
+      { path: '/exhibitions', lastmod: latestExhibition,                          changefreq: 'monthly', priority: '0.8' },
+      { path: '/about',                                                           changefreq: 'monthly', priority: '0.7' },
+      ...paintings.map(p => ({
+        path: `/paintings/${artworkSlug(p)}`, lastmod: p.updatedAt, changefreq: 'monthly', priority: '0.7'
+      })),
       ...exhibitions.map(ex => ({
-        loc: `/exhibitions/${ex.id}`, lastmod: ex.updatedAt, changefreq: 'yearly', priority: '0.6'
+        path: `/exhibitions/${ex.id}`, lastmod: ex.updatedAt, changefreq: 'yearly', priority: '0.6'
       }))
     ];
 
+    const alternates = path => [
+      ...LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${BASE}${localized(l, path)}"/>`),
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE}${path}"/>`
+    ].join('\n');
+
+    const urls = pages.flatMap(p => LANGS.map(lang => `  <url>
+    <loc>${BASE}${localized(lang, p.path)}</loc>${p.lastmod ? `
+    <lastmod>${isoDate(p.lastmod)}</lastmod>` : ''}
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+${alternates(p.path)}
+  </url>`));
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(u => `  <url>
-    <loc>${BASE}${u.loc}</loc>${u.lastmod ? `
-    <lastmod>${isoDate(u.lastmod)}</lastmod>` : ''}
-    <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.join('\n')}
 </urlset>`;
 
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
@@ -80,7 +99,7 @@ router.get('/sitemap-images.xml', async (_req, res) => {
     const [paintings, exhibitions] = await Promise.all([
       Painting.findAll({
         where:      { imageurl: { [Op.ne]: null } },
-        attributes: ['title', 'imageurl', 'medium', 'year'],
+        attributes: ['id', 'title', 'imageurl', 'medium', 'year'],
         order:      [['order', 'DESC']]
       }),
       Exhibition.findAll({
@@ -91,19 +110,16 @@ router.get('/sitemap-images.xml', async (_req, res) => {
 
     const urls = [];
 
-    const paintingImages = paintings
-      .filter(p => p.imageurl)
-      .map(p => `
+    // Each painting image belongs to its own page.
+    for (const p of paintings.filter(p => p.imageurl)) {
+      urls.push(`
+  <url>
+    <loc>${BASE}/paintings/${artworkSlug(p)}</loc>
     <image:image>
       <image:loc>${BASE}${escXml(encodePath(p.imageurl))}</image:loc>
       <image:title>${escXml(artworkTitle(p.title))}${p.medium ? ` — ${escXml(p.medium)}` : ''}, ${escXml(String(p.year))} — painting by Nilüfer Örel</image:title>
       <image:caption>Original painting by Turkish contemporary artist Nilüfer Örel, Bodrum, Türkiye</image:caption>
-    </image:image>`).join('');
-
-    if (paintingImages) {
-      urls.push(`
-  <url>
-    <loc>${BASE}/paintings</loc>${paintingImages}
+    </image:image>
   </url>`);
     }
 
@@ -140,13 +156,6 @@ ${urls.join('\n')}
     res.status(500).send('Error generating sitemap');
   }
 });
-
-// Mirrors frontend/src/app/models/artwork.ts: placeholder titles ('.', '..')
-// and stray quotes become "Untitled" / a clean name.
-function artworkTitle(title) {
-  const t = String(title ?? '').trim().replace(/^["'“”„]+|["'“”„]+$/g, '').trim();
-  return t && !/^[.\s]+$/.test(t) ? t : 'Untitled';
-}
 
 // Older upload names contain spaces, which are invalid in a sitemap <loc>.
 function encodePath(p) {

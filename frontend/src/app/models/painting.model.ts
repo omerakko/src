@@ -29,3 +29,10 @@ export interface PaintingsResponse {
 export interface FeaturedResponse {
   paintings: Painting[];
 }
+
+/** A painting as returned by GET /api/paintings/:id. */
+export interface PaintingDetail extends Painting {
+  prev: Painting | null;
+  next: Painting | null;
+  more: Painting[];
+}

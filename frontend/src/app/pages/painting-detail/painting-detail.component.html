@@ -1,0 +1,79 @@
+@if (notFound) {
+  <div class="art-wrap art-missing">
+    <p>{{ t('art.notFound') }}</p>
+    <a [routerLink]="i18n.link('/paintings')">← {{ t('art.back') }}</a>
+  </div>
+}
+
+@if (p) {
+  <article class="art-wrap">
+    <a class="art-back" [routerLink]="i18n.link('/paintings')">← {{ t('art.back') }}</a>
+
+    <div class="art-main">
+      <button type="button" class="art-figure" (click)="modalVisible = true" [attr.aria-label]="t('art.viewLarge')">
+        <img [src]="imageUrl(p.imageurl, 1600)" [attr.srcset]="imageSrcset(p.imageurl)"
+             sizes="(max-width: 900px) 100vw, 62vw"
+             [alt]="alt(p)" [style.aspect-ratio]="ratio(p)" fetchpriority="high" decoding="async">
+      </button>
+
+      <div class="art-info">
+        <h1 class="art-title">{{ title(p) }}</h1>
+
+        <dl class="art-facts">
+          @if (size) {
+            <div><dt>{{ t('art.size') }}</dt><dd>{{ size }}</dd></div>
+          }
+          @if (technique) {
+            <div><dt>{{ t('art.medium') }}</dt><dd>{{ technique }}</dd></div>
+          }
+          <div><dt>{{ t('art.year') }}</dt><dd>{{ p.year }}</dd></div>
+          <div>
+            <dt>{{ t('art.status') }}</dt>
+            <dd><span class="status" [class.sold]="!p.isavailable">{{ p.isavailable ? t('art.available') : t('art.sold') }}</span></dd>
+          </div>
+        </dl>
+
+        <p class="art-desc">{{ description }}</p>
+        @if (ownText) {
+          <p class="art-desc" lang="en">{{ ownText }}</p>
+        }
+
+        <div class="art-enquire">
+          <a class="art-btn" [href]="mailto">{{ t('art.enquire') }}</a>
+          <p>{{ t('art.enquireNote') }} <span class="art-email">{{ email }}</span></p>
+        </div>
+
+        <div class="art-pager" role="navigation" [attr.aria-label]="t('nav.paintings')">
+          @if (p.prev) {
+            <a [routerLink]="link(p.prev)" rel="prev">← {{ t('art.prev') }}</a>
+          } @else { <span></span> }
+          @if (p.next) {
+            <a [routerLink]="link(p.next)" rel="next">{{ t('art.next') }} →</a>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (p.more.length) {
+      <section class="art-more">
+        <h2>{{ t('art.more') }}</h2>
+        <div class="art-more-grid">
+          @for (m of p.more; track m.id) {
+            <a class="art-card" [routerLink]="link(m)">
+              <div class="art-card-img"><img [src]="imageUrl(m.imageurl, 480)" [attr.srcset]="imageSrcset(m.imageurl, thumbWidths)" sizes="(max-width: 700px) 50vw, 25vw" [alt]="alt(m)" loading="lazy" decoding="async"></div>
+              <span class="art-card-title">{{ title(m) }}</span>
+              <span class="art-card-meta">{{ meta(m) }}</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  </article>
+
+  <app-image-modal
+    [imageUrl]="p.imageurl"
+    [caption]="title(p) + ' — ' + meta(p)"
+    [visible]="modalVisible"
+    (close)="modalVisible = false">
+  </app-image-modal>
+}

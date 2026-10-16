@@ -1,33 +1,30 @@
 <header class="masthead">
   <div class="masthead-inner">
-    <h1 class="masthead-title">Paintings</h1>
-    <p class="masthead-statement">Original mixed media, acrylic and oil works by Nilüfer Örel — explore the full collection.</p>
+    <h1 class="masthead-title">{{ t('paintings.title') }}</h1>
+    <p class="masthead-statement">{{ t('paintings.statement') }}</p>
   </div>
 </header>
 
 <div class="gallery-container">
   <div class="gallery-grid">
     @for (painting of paintings; track painting.id; let i = $index) {
-      <figure
+      <a
         class="gallery-item"
+        [routerLink]="link(painting)"
         [style.flex-grow]="aspect(painting)"
-        [style.flex-basis.px]="aspect(painting) * rowBase"
-        (click)="openModal(painting)">
+        [style.flex-basis.px]="aspect(painting) * rowBase">
         <div class="artwork-media" [style.padding-bottom.%]="100 / aspect(painting)">
           <img [src]="imageUrl(painting.imageurl, 960)" [attr.srcset]="imageSrcset(painting.imageurl)" sizes="(max-width: 700px) 100vw, 60vw"
-               [alt]="artworkAlt(painting)" class="artwork-img" [attr.loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 2 ? 'high' : null" decoding="async">
+               [alt]="alt(painting)" class="artwork-img" [attr.loading]="i < 4 ? 'eager' : 'lazy'" [attr.fetchpriority]="i < 2 ? 'high' : null" decoding="async">
           @if (!painting.isavailable) {
-            <div class="sold-badge" title="Sold"></div>
+            <div class="sold-badge" [title]="t('art.sold')"></div>
           }
         </div>
-        <figcaption class="artwork-info">
-          <h2 class="artwork-name">{{ artworkTitle(painting) }}</h2>
-          <p class="artwork-line">
-            @if (painting.medium) { <span>{{ painting.medium }}</span> }
-            @if (painting.year)   { <span>{{ painting.year }}</span> }
-          </p>
-        </figcaption>
-      </figure>
+        <div class="artwork-info">
+          <h2 class="artwork-name">{{ title(painting) }}</h2>
+          <p class="artwork-line">{{ meta(painting) }}</p>
+        </div>
+      </a>
     }
   </div>
 
@@ -38,13 +35,6 @@
   }
 
   @if (!loading && paintings.length === 0) {
-    <p style="text-align:center;color:#888;padding:60px 0;">No paintings found.</p>
+    <p style="text-align:center;color:#666;padding:60px 0;">{{ t('paintings.none') }}</p>
   }
 </div>
-
-<app-image-modal
-  [imageUrl]="modalImage"
-  [caption]="modalCaption"
-  [visible]="modalVisible"
-  (close)="closeModal()">
-</app-image-modal>

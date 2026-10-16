@@ -1,14 +1,14 @@
 @if (notFound) {
   <div class="not-found">
-    <p>Exhibition not found.</p>
-    <a routerLink="/exhibitions">← Back to Exhibitions</a>
+    <p>{{ t('ex.notFound') }}</p>
+    <a [routerLink]="i18n.link('/exhibitions')">{{ t('ex.back') }}</a>
   </div>
 }
 
 @if (exhibition) {
   <div class="detail-wrapper">
 
-    <a routerLink="/exhibitions" class="back-link">← All Exhibitions</a>
+    <a [routerLink]="i18n.link('/exhibitions')" class="back-link">{{ t('ex.back') }}</a>
 
     <header class="detail-header">
       <h1 class="detail-title">{{ exhibition.title }}</h1>
@@ -16,7 +16,7 @@
         @if (exhibition.date) {
           <span class="detail-meta-item">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            {{ exhibition.date | date:'MMMM d, y':'UTC' }}
+            {{ i18n.date(exhibition.date, true) }}
           </span>
         }
         @if (exhibition.location) {
@@ -37,13 +37,13 @@
     @if (exhibition.photos?.length) {
       <section class="detail-photos">
         @for (photo of exhibition.photos; track photo.id) {
-          <div class="detail-photo" (click)="openPhoto(photo)">
+          <button type="button" class="detail-photo" (click)="openPhoto(photo)" [attr.aria-label]="(photo.title || exhibition.title)">
             <img [src]="imageUrl(photo.imageurl, 960)" [attr.srcset]="imageSrcset(photo.imageurl)" sizes="(max-width: 420px) 100vw, (max-width: 900px) 50vw, 340px"
-                 [alt]="(photo.title || exhibition.title) + ' — exhibition with paintings by Nilüfer Örel'" loading="lazy">
+                 [alt]="(photo.title || exhibition.title) + ' — ' + t('ex.withPaintings')" loading="lazy">
             @if (photo.title) {
               <div class="photo-caption">{{ photo.title }}</div>
             }
-          </div>
+          </button>
         }
       </section>
     }

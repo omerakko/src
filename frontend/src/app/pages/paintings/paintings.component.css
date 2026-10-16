@@ -78,6 +78,9 @@
 
 /* flex-grow and flex-basis come from the template, per work */
 .gallery-item {
+  display: block;
+  color: inherit;
+  text-decoration: none;
   min-width: 0; /* let a wide piece shrink into its row rather than overflow */
   margin: 0;
   overflow: visible;

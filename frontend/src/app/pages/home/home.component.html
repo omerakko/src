@@ -2,50 +2,38 @@
   <img src="/img/1600/banner/test.jpeg"
        srcset="/img/480/banner/test.jpeg 480w, /img/960/banner/test.jpeg 960w, /img/1600/banner/test.jpeg 1600w"
        sizes="100vw"
-       alt="Painting by Nilüfer Örel, contemporary painter based in Bodrum, Türkiye" class="hero-image" fetchpriority="high" decoding="sync">
+       [alt]="t('home.heroAlt')" class="hero-image" fetchpriority="high" decoding="sync">
   <div class="hero-content">
-    <h1 class="hero-title">Nilüfer Örel<span class="hero-location"> – Painter · Ressam | Bodrum, Türkiye</span></h1>
-    <p class="hero-subtitle">Outsider artist expressing unfiltered emotion and inner worlds through raw, intuitive creation.</p>
-    <a routerLink="/paintings" class="hero-button">View Paintings</a>
+    <h1 class="hero-title">Nilüfer Örel<span class="hero-location"> – {{ t('home.heroLocation') }}</span></h1>
+    <p class="hero-subtitle">{{ t('home.heroSubtitle') }}</p>
+    <a [routerLink]="i18n.link('/paintings')" class="hero-button">{{ t('home.heroCta') }}</a>
   </div>
 </section>
 
 <section class="featured-work">
-  <h2 class="section-title">Featured Works</h2>
+  <h2 class="section-title">{{ t('home.featured') }}</h2>
   <div class="featured-grid">
     @for (painting of featuredPaintings; track painting.id) {
-      <div class="featured-item" (click)="openModal(painting)">
+      <a class="featured-item" [routerLink]="link(painting)">
         <img [src]="imageUrl(painting.imageurl, 960)" [attr.srcset]="imageSrcset(painting.imageurl)" sizes="(max-width: 900px) 100vw, 400px"
-             [alt]="artworkAlt(painting)" class="featured-image" loading="lazy" decoding="async">
+             [alt]="alt(painting)" class="featured-image" loading="lazy" decoding="async">
         <div class="featured-caption">
-          <h3 class="featured-title">{{ artworkTitle(painting) }}</h3>
+          <h3 class="featured-title">{{ title(painting) }}</h3>
           <p class="featured-year">{{ painting.year }}</p>
         </div>
-      </div>
+      </a>
     } @empty {
-      <p style="text-align:center;color:#888;">No featured paintings selected yet.</p>
+      <p style="text-align:center;color:#666;">{{ t('home.noFeatured') }}</p>
     }
   </div>
 </section>
 
 <section class="home-intro">
-  <h2 class="section-title">About the Artist</h2>
-  <p>
-    Nilüfer Örel is a Turkish contemporary painter living and working in a forest village near Bodrum, Muğla.
-    Her mixed-media, acrylic and pastel works grow out of the sea, the forest and the animals around her,
-    and have been shown at the Bodrum Art Fair, DenizBank Art Gallery, the International İzmir Art Biennial
-    and Awita Gallery in New York.
-  </p>
+  <h2 class="section-title">{{ t('home.aboutTitle') }}</h2>
+  <p>{{ t('home.intro') }}</p>
   <p class="home-intro-links">
-    <a routerLink="/about">Read the biography</a> ·
-    <a routerLink="/exhibitions">See all exhibitions</a> ·
-    <a href="mailto:orel.nilufer@gmail.com">Contact for commissions and gallery enquiries</a>
+    <a [routerLink]="i18n.link('/about')">{{ t('home.readBio') }}</a> ·
+    <a [routerLink]="i18n.link('/exhibitions')">{{ t('home.seeExhibitions') }}</a> ·
+    <a href="mailto:orel.nilufer@gmail.com">{{ t('home.contactLink') }}</a>
   </p>
 </section>
-
-<app-image-modal
-  [imageUrl]="modalImage"
-  [caption]="modalCaption"
-  [visible]="modalVisible"
-  (close)="closeModal()">
-</app-image-modal>

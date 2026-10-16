@@ -132,3 +132,6 @@
 @media (max-width: 420px) {
   .detail-photos { grid-template-columns: 1fr; }
 }
+
+/* Photos are buttons (keyboard-reachable); drop the default button chrome. */
+button.detail-photo { border: 0; padding: 0; display: block; width: 100%; font: inherit; color: inherit; text-align: left; }

@@ -1,0 +1,170 @@
+:host { display: block; }
+
+/* Same measure as the paintings page; top padding clears the fixed nav. */
+.art-wrap {
+  max-width: min(1500px, 93vw);
+  margin: 0 auto;
+  padding: 128px 28px 96px;
+}
+
+.art-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+.art-back:hover { color: #1a1a1a; }
+
+/* Image ~ two thirds, details beside it; details stay in view while the
+   image scrolls on tall works. */
+.art-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr);
+  gap: 56px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.art-figure {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #f1efec;
+  cursor: zoom-in;
+}
+.art-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 82vh;
+  object-fit: contain;
+}
+
+.art-info {
+  position: sticky;
+  top: 112px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.art-title {
+  margin: 0;
+  font-size: clamp(32px, 3.4vw, 48px);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  text-wrap: balance;
+}
+
+.art-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e6e3df;
+}
+.art-facts div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e6e3df;
+  font-size: 15px;
+}
+.art-facts dt { color: #666; }
+.art-facts dd { margin: 0; color: #1a1a1a; }
+
+.status::before {
+  content: "";
+  display: inline-block;
+  width: 8px; height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #2e7d4f;
+  vertical-align: 1px;
+}
+.status.sold::before { background: #b3261e; }
+
+.art-desc {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #444;
+  max-width: 60ch;
+}
+
+.art-enquire { display: flex; flex-direction: column; gap: 12px; }
+.art-enquire p { margin: 0; font-size: 14px; line-height: 1.6; color: #666; }
+.art-email { color: #1a1a1a; user-select: all; }
+.art-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 12px 26px;
+  background: #1a1a1a;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 999px;
+}
+.art-btn:hover { background: #333; }
+
+.art-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid #e6e3df;
+}
+.art-pager a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 15px;
+}
+.art-pager a:hover { color: #666; }
+
+.art-more { margin-top: 96px; }
+.art-more h2 {
+  margin: 0 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+}
+.art-more-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
+.art-card { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: #1a1a1a; }
+.art-card-img { aspect-ratio: 4 / 5; overflow: hidden; background: #f1efec; }
+.art-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
+.art-card:hover .art-card-img img { transform: scale(1.03); }
+.art-card-title { font-size: 15px; }
+.art-card-meta { font-size: 13px; color: #666; }
+
+.art-missing { text-align: center; color: #666; padding-top: 180px; }
+.art-missing a { color: #1a1a1a; }
+
+@media (max-width: 900px) {
+  .art-wrap { padding: 150px 20px 72px; }
+  .art-main { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .art-info { position: static; }
+  .art-figure img { max-height: none; }
+  .art-more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-card-img img { transition: none; }
+}
