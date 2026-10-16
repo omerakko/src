@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PaintingService } from '../../services/painting.service';
@@ -28,6 +28,7 @@ import { ImageModalComponent } from '../../components/image-modal/image-modal.co
 export class PaintingDetailComponent implements OnInit, OnDestroy {
   private route           = inject(ActivatedRoute);
   private router          = inject(Router);
+  private platformId      = inject(PLATFORM_ID);
   private paintingService = inject(PaintingService);
   private seo             = inject(SeoService);
   readonly i18n           = inject(I18nService);
@@ -67,32 +68,85 @@ export class PaintingDetailComponent implements OnInit, OnDestroy {
       const id = parseInt(params.get('slug') ?? '', 10);
       this.load(id);
     });
+
+    // First visit on a phone: show the swipe hint for a few seconds.
+    if (isPlatformBrowser(this.platformId) && window.matchMedia('(max-width: 768px)').matches) {
+      let seen = false;
+      try { seen = localStorage.getItem('swipe-hint-seen') === '1'; } catch { /* storage blocked */ }
+      if (!seen) {
+        this.showHint = true;
+        setTimeout(() => this.hideHint(), 4500);
+      }
+    }
   }
 
   ngOnDestroy() { this.sub?.unsubscribe(); }
 
-  /** Phones: swipe left/right on the painting for the next/previous work. */
-  private touch: { x: number; y: number } | null = null;
+  /**
+   * Phones: swipe left/right on the painting for the next/previous work.
+   * The image follows the finger so the gesture explains itself; a short
+   * "Swipe" hint shows on the first painting page a visitor opens.
+   */
+  private touch: { x: number; y: number; horizontal: boolean | null } | null = null;
+  dragX = 0;
+  dragging = false;
+  showHint = false;
+  private justSwiped = false;
+
   swipeStart(e: TouchEvent) {
     const t = e.changedTouches[0];
-    this.touch = { x: t.clientX, y: t.clientY };
+    this.touch = { x: t.clientX, y: t.clientY, horizontal: null };
+    this.dragging = true;
+  }
+  swipeMove(e: TouchEvent) {
+    if (!this.touch || !this.p) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - this.touch.x, dy = t.clientY - this.touch.y;
+    if (this.touch.horizontal === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      this.touch.horizontal = Math.abs(dx) > Math.abs(dy);
+    }
+    if (!this.touch.horizontal) return; // vertical: let the page scroll
+    // Resist at the ends of the collection.
+    const blocked = (dx < 0 && !this.p.next) || (dx > 0 && !this.p.prev);
+    this.dragX = blocked ? dx * 0.25 : dx;
   }
   swipeEnd(e: TouchEvent) {
     if (!this.touch || !this.p) return;
     const t = e.changedTouches[0];
-    const dx = t.clientX - this.touch.x, dy = t.clientY - this.touch.y;
+    const dx = t.clientX - this.touch.x;
+    const horizontal = this.touch.horizontal;
     this.touch = null;
-    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // a tap or a scroll
-    const target = dx < 0 ? this.p.next : this.p.prev;
-    if (target) {
-      e.preventDefault(); // don't also open the enlarged view
-      this.router.navigateByUrl(this.link(target));
+    this.dragging = false;
+    if (horizontal && Math.abs(dx) > 60) {
+      const target = dx < 0 ? this.p.next : this.p.prev;
+      if (target) {
+        this.justSwiped = true;
+        this.hideHint();
+        this.dragX = dx < 0 ? -window.innerWidth : window.innerWidth; // slide out
+        setTimeout(() => this.router.navigateByUrl(this.link(target)), 160);
+        return;
+      }
     }
+    if (horizontal) this.justSwiped = Math.abs(dx) > 8;
+    this.dragX = 0; // snap back
+  }
+  swipeCancel() { this.touch = null; this.dragging = false; this.dragX = 0; }
+
+  openLarge() {
+    if (this.justSwiped) { this.justSwiped = false; return; }
+    this.modalVisible = true;
+  }
+
+  private hideHint() {
+    this.showHint = false;
+    try { localStorage.setItem('swipe-hint-seen', '1'); } catch { /* storage blocked */ }
   }
 
   private load(id: number) {
     this.notFound = false;
     this.modalVisible = false;
+    this.dragX = 0;
+    this.justSwiped = false;
     if (!Number.isInteger(id)) { this.showNotFound(); return; }
 
     this.paintingService.getById(id).subscribe({

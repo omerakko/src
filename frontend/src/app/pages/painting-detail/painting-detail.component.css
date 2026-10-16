@@ -97,24 +97,23 @@
   max-width: 60ch;
 }
 
-.art-enquire { display: flex; flex-direction: column; gap: 12px; }
-.art-enquire p { margin: 0; font-size: 14px; line-height: 1.6; color: #666; }
-.art-email { color: #1a1a1a; user-select: all; }
+/* Quiet text link with a hairline underline, not a filled button. */
+.art-enquire { display: flex; }
 .art-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  min-height: 48px;
-  padding: 12px 26px;
-  background: #1a1a1a;
-  color: #fff;
-  text-decoration: none;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0;
+  color: #1a1a1a;
   font-size: 15px;
-  font-weight: 500;
-  border-radius: 999px;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+  transition: gap .2s ease, color .2s ease;
 }
-.art-btn:hover { background: #333; }
+.art-btn:hover { gap: 12px; color: #444; }
 
 .art-topbar {
   display: flex;
@@ -168,51 +167,79 @@
   .art-more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }
 
-.art-dock { display: none; }
+.art-stage { position: relative; }
+.art-edge, .art-hint { display: none; }
 
 @media (max-width: 768px) {
-  /* Bottom padding leaves room for the dock. */
-  .art-wrap { max-width: 100%; padding: 72px 20px calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .art-wrap { max-width: 100%; padding: 64px 20px 64px; }
 
-  /* Prev/next live in the bottom dock on phones, not the top row. */
+  /* Phones browse by swiping the painting; the top row keeps only "back". */
   .art-topbar .art-pager { display: none; }
 
-  /* The whole painting fits on screen: height capped to what's left under
-     the bar and the back link, above the dock. Narrow works are centred. */
-  .art-figure { display: flex; justify-content: center; touch-action: pan-y; }
+  /* Painting edge to edge, as tall as the screen allows below the bar and
+     the back link, so the whole work is seen without scrolling. */
+  .art-stage { margin: 0 -20px; }
+  .art-figure {
+    display: flex;
+    justify-content: center;
+    background: transparent;
+    touch-action: pan-y;
+    overflow: hidden;
+  }
   .art-figure img {
     width: auto;
     max-width: 100%;
-    max-height: calc(100svh - 56px - 44px - 72px - 40px);
+    max-height: calc(100svh - 56px - 44px - 24px);
+    transition: transform .25s ease;
   }
+  .art-figure img.dragging { transition: none; }
 
-  .art-dock {
+  /* Faint arrows on the painting's edges: show it swipes, and can be tapped. */
+  .art-edge {
     display: flex;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 50;
-    gap: 1px;
-    background: #e6e3df;
-    border-top: 1px solid #e6e3df;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  .art-dock a, .art-dock .art-pager-off {
-    flex: 1;
-    min-height: 56px;
-    display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 64px;
     align-items: center;
     justify-content: center;
-    background: #fafafa;
-    font-size: 16px;
-    color: #1a1a1a;
+    font-size: 30px;
+    line-height: 1;
+    color: #fff;
     text-decoration: none;
+    background: rgba(0, 0, 0, 0.22);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
-  .art-dock a:active { background: #eee; }
-  .art-dock .art-pager-off { color: #bbb; }
+  .art-edge-prev { left: 0; border-radius: 0 999px 999px 0; }
+  .art-edge-next { right: 0; border-radius: 999px 0 0 999px; }
+
+  /* First visit only: a small "‹ Swipe ›" pill that nudges sideways, then fades. */
+  .art-hint {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    animation: art-nudge 1.4s ease-in-out 2;
+  }
+}
+
+@keyframes art-nudge {
+  0%, 100% { transform: translateX(-50%); }
+  30% { transform: translateX(calc(-50% - 12px)); }
+  60% { transform: translateX(calc(-50% + 12px)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .art-card-img img { transition: none; }
+  .art-card-img img, .art-figure img { transition: none; }
+  .art-hint { animation: none; }
 }

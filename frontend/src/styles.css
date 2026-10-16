@@ -414,6 +414,9 @@ footer {
 
 .close-modal {
   position: fixed;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
   top: max(8px, env(safe-area-inset-top));
   right: 12px;
   color: #f1f1f1;
