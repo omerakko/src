@@ -26,7 +26,8 @@
     </div>
 
     <div class="art-main">
-      <button type="button" class="art-figure" (click)="modalVisible = true" [attr.aria-label]="t('art.viewLarge')">
+      <button type="button" class="art-figure" (click)="modalVisible = true" [attr.aria-label]="t('art.viewLarge')"
+              (touchstart)="swipeStart($event)" (touchend)="swipeEnd($event)">
         <img [src]="imageUrl(p.imageurl, 1600)" [attr.srcset]="imageSrcset(p.imageurl)"
              sizes="(max-width: 900px) 100vw, 62vw"
              [alt]="alt(p)" [style.aspect-ratio]="ratio(p)" fetchpriority="high" decoding="async">
@@ -77,6 +78,20 @@
       </section>
     }
   </article>
+
+  <!-- Phones: previous/next within thumb reach at the bottom of the screen. -->
+  <div class="art-dock" role="navigation" [attr.aria-label]="t('nav.paintings')">
+    @if (p.prev) {
+      <a [routerLink]="link(p.prev)" rel="prev">← {{ t('art.prev') }}</a>
+    } @else {
+      <span class="art-pager-off" aria-hidden="true">← {{ t('art.prev') }}</span>
+    }
+    @if (p.next) {
+      <a [routerLink]="link(p.next)" rel="next">{{ t('art.next') }} →</a>
+    } @else {
+      <span class="art-pager-off" aria-hidden="true">{{ t('art.next') }} →</span>
+    }
+  </div>
 
   <app-image-modal
     [imageUrl]="p.imageurl"

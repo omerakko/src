@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PaintingService } from '../../services/painting.service';
 import { ARTIST_ID, SeoService } from '../../services/seo.service';
@@ -27,6 +27,7 @@ import { ImageModalComponent } from '../../components/image-modal/image-modal.co
 })
 export class PaintingDetailComponent implements OnInit, OnDestroy {
   private route           = inject(ActivatedRoute);
+  private router          = inject(Router);
   private paintingService = inject(PaintingService);
   private seo             = inject(SeoService);
   readonly i18n           = inject(I18nService);
@@ -69,6 +70,25 @@ export class PaintingDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() { this.sub?.unsubscribe(); }
+
+  /** Phones: swipe left/right on the painting for the next/previous work. */
+  private touch: { x: number; y: number } | null = null;
+  swipeStart(e: TouchEvent) {
+    const t = e.changedTouches[0];
+    this.touch = { x: t.clientX, y: t.clientY };
+  }
+  swipeEnd(e: TouchEvent) {
+    if (!this.touch || !this.p) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - this.touch.x, dy = t.clientY - this.touch.y;
+    this.touch = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // a tap or a scroll
+    const target = dx < 0 ? this.p.next : this.p.prev;
+    if (target) {
+      e.preventDefault(); // don't also open the enlarged view
+      this.router.navigateByUrl(this.link(target));
+    }
+  }
 
   private load(id: number) {
     this.notFound = false;
