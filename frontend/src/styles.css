@@ -1097,8 +1097,11 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .nav-container { flex-direction: column; gap: 15px; padding: 15px 20px; }
-  .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; }
+  /* Phone nav (one 56px row + menu button) lives in nav.component.css. */
+  .about-container { padding: 84px 20px 48px; }
+  .about-header { margin-bottom: 28px; }
+  .artist-bio { gap: 28px; margin-bottom: 48px; }
+  .artist-image { margin: 0 auto 8px; }
   .hero-title { font-size: 42px; }
   .hero-subtitle { font-size: 18px; }
   .featured-grid { grid-template-columns: 1fr; }

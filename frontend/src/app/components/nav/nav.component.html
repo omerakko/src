@@ -1,7 +1,18 @@
-<nav [class.scrolled]="scrolled">
+<nav [class.scrolled]="scrolled" [class.nav-hidden]="hidden" [class.menu-open]="menuOpen">
   <div class="nav-container">
-    <a [routerLink]="i18n.link('/')" class="logo">Nilüfer Örel</a>
-    <div class="nav-links">
+    <a [routerLink]="i18n.link('/')" class="logo" (click)="menuOpen = false">Nilüfer Örel</a>
+
+    <button type="button" class="menu-toggle" (click)="toggleMenu()"
+            [attr.aria-expanded]="menuOpen" aria-controls="site-menu"
+            [attr.aria-label]="menuOpen ? 'Close menu' : 'Open menu'">
+      @if (menuOpen) {
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      } @else {
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="8" x2="20" y2="8"></line><line x1="4" y1="16" x2="20" y2="16"></line></svg>
+      }
+    </button>
+
+    <div class="nav-links" id="site-menu" (click)="menuOpen = false">
       <a [routerLink]="i18n.link('/')" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ t('nav.home') }}</a>
       <a [routerLink]="i18n.link('/paintings')" routerLinkActive="active">{{ t('nav.paintings') }}</a>
       <a [routerLink]="i18n.link('/exhibitions')" routerLinkActive="active">{{ t('nav.exhibitions') }}</a>

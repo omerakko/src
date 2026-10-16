@@ -116,22 +116,25 @@
 }
 .art-btn:hover { background: #333; }
 
-.art-pager {
+.art-topbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  padding-top: 8px;
-  border-top: 1px solid #e6e3df;
 }
-.art-pager a {
+.art-pager { display: flex; gap: 24px; margin-left: auto; }
+.art-pager a, .art-pager-off {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  color: #1a1a1a;
-  text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
+  white-space: nowrap;
 }
+.art-pager a { color: #1a1a1a; text-decoration: none; }
 .art-pager a:hover { color: #666; }
+/* Same slot when there is no previous/next, so the other link never shifts. */
+.art-pager-off { color: #bbb; }
 
 .art-more { margin-top: 96px; }
 .art-more h2 {
@@ -163,6 +166,10 @@
   .art-info { position: static; }
   .art-figure img { max-height: none; }
   .art-more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+
+@media (max-width: 768px) {
+  .art-wrap { max-width: 100%; padding: 72px 20px 64px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

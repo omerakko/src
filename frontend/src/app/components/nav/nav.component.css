@@ -1,4 +1,5 @@
-/* Nav styles live in global styles.css; only the language switcher is here. */
+/* Desktop nav styles live in global styles.css; this file holds the language
+   switcher and the compact phone bar. */
 .lang-switch {
   display: inline-flex;
   align-items: center;
@@ -19,14 +20,69 @@
 .lang-switch a:hover { color: #1a1a1a; }
 .lang-switch a.current { color: #1a1a1a; font-weight: 600; }
 
+.menu-toggle { display: none; }
+
+nav { transition: transform .3s ease, padding .3s ease, background-color .3s ease; }
+
+/* ---------- Phones: one slim row, menu behind a button ---------- */
 @media (max-width: 768px) {
-  .lang-switch { padding-left: 10px; }
+  nav { padding: 0; }
+  nav.scrolled { padding: 0; }
+  nav.nav-hidden { transform: translateY(-100%); box-shadow: none; }
+
+  .nav-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    padding: 0 8px 0 20px;
+  }
+  .logo { font-size: 18px; letter-spacing: 0.5px; }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+
+  /* The menu panel drops down under the bar. */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 4px 20px 16px;
+    background: #fff;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  }
+  nav.menu-open .nav-links { display: flex; }
+  .nav-links > a {
+    padding: 14px 0;
+    font-size: 18px;
+    border-bottom: 1px solid #eee !important;
+  }
+  .nav-links > a.active { font-weight: 600; }
+
+  .lang-switch {
+    border-left: 0;
+    padding: 14px 0 0;
+    gap: 8px;
+  }
+  .lang-switch a { padding: 8px 10px; min-width: 44px; border: 1px solid #ddd !important; border-radius: 999px; }
+  .lang-switch a.current { border-color: #1a1a1a !important; }
 }
 
-/* Phones: keep the switcher on the logo row so the menu stays two rows
-   high (page paddings are sized for that). */
-.nav-container { position: relative; }
-@media (max-width: 768px) {
-  .lang-switch { position: absolute; top: 12px; right: 12px; border-left: 0; padding-left: 0; }
-  .lang-switch a { padding: 8px 4px; min-width: 30px; }
+@media (prefers-reduced-motion: reduce) {
+  nav { transition: none; }
 }
