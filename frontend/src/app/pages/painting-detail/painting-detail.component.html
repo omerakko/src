@@ -50,8 +50,6 @@
 
       <div class="art-info">
         <h1 class="art-title">{{ title(p) }}</h1>
-        <!-- Phones: the facts in one line instead of the table below. -->
-        <p class="art-line">{{ meta(p) }} · <span class="status" [class.sold]="!p.isavailable">{{ p.isavailable ? t('art.available') : t('art.sold') }}</span></p>
 
         <dl class="art-facts">
           @if (size) {
@@ -67,9 +65,9 @@
           </div>
         </dl>
 
-        <p class="art-desc">{{ description }}</p>
+        <!-- Only the artist's own words; the generated sentence is for search engines (meta tags). -->
         @if (ownText) {
-          <p class="art-desc" lang="en">{{ ownText }}</p>
+          <p class="art-desc">{{ ownText }}</p>
         }
 
         <div class="art-enquire">

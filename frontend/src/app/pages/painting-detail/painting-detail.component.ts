@@ -54,8 +54,8 @@ export class PaintingDetailComponent implements OnInit, OnDestroy {
   get size()        { return this.p ? parseMedium(this.p.medium).size : ''; }
   get technique()   { return this.p ? techniqueLabel(parseMedium(this.p.medium).technique, this.i18n.lang()) : ''; }
   get description() { return this.p ? artworkDescription(this.p, this.i18n.lang()) : ''; }
-  /** The artist's own (English) text, shown on its own on TR/FR pages. */
-  get ownText() { return this.p && this.i18n.lang() !== 'en' ? (this.p.description || '').trim() : ''; }
+  /** The artist's own description, if she has written one. */
+  get ownText() { return (this.p?.description || '').trim(); }
   get mailto() {
     if (!this.p) return `mailto:${this.email}`;
     const subject = `${this.t('art.subject')} ${this.title(this.p)} (${this.p.year}, #${this.p.id})`;

@@ -169,7 +169,6 @@
 }
 
 .art-stage { position: relative; }
-.art-line { display: none; }
 .art-edge, .art-hint { display: none; }
 
 @media (max-width: 768px) {
@@ -256,8 +255,25 @@
   .art-main { gap: 16px; }
   .art-info { gap: 14px; }
   .art-title { font-size: 26px; }
-  .art-line { display: block; margin: -6px 0 0; font-size: 14px; line-height: 1.5; color: #666; }
-  .art-facts { display: none; }
+  /* Facts as a 2-column grid: small label above each value, clear spacing. */
+  .art-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+    border-top: 0;
+    padding: 16px 0;
+    border-top: 1px solid #e6e3df;
+    border-bottom: 1px solid #e6e3df;
+  }
+  .art-facts div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 0;
+    border-bottom: 0;
+    font-size: 15px;
+  }
+  .art-facts dt { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #666; }
   .art-desc { font-size: 15px; line-height: 1.6; }
   .art-more { margin-top: 56px; }
 }
