@@ -38,18 +38,20 @@
         </button>
         <!-- Phones: edge arrows hint that the painting can be swiped (and are tappable). -->
         @if (p.prev) {
-          <a class="art-edge art-edge-prev" [routerLink]="link(p.prev)" rel="prev" [attr.aria-label]="t('art.prev')">‹</a>
+          <a class="art-edge art-edge-prev" [routerLink]="link(p.prev)" rel="prev" [attr.aria-label]="t('art.prev')"><svg width="14" height="24" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 3 3 12 11 21"></polyline></svg></a>
         }
         @if (p.next) {
-          <a class="art-edge art-edge-next" [routerLink]="link(p.next)" rel="next" [attr.aria-label]="t('art.next')">›</a>
+          <a class="art-edge art-edge-next" [routerLink]="link(p.next)" rel="next" [attr.aria-label]="t('art.next')"><svg width="14" height="24" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 3 11 12 3 21"></polyline></svg></a>
         }
         @if (showHint) {
-          <span class="art-hint" aria-hidden="true">‹ {{ t('art.swipe') }} ›</span>
+          <span class="art-hint" aria-hidden="true">← {{ t('art.swipe') }} →</span>
         }
       </div>
 
       <div class="art-info">
         <h1 class="art-title">{{ title(p) }}</h1>
+        <!-- Phones: the facts in one line instead of the table below. -->
+        <p class="art-line">{{ meta(p) }} · <span class="status" [class.sold]="!p.isavailable">{{ p.isavailable ? t('art.available') : t('art.sold') }}</span></p>
 
         <dl class="art-facts">
           @if (size) {

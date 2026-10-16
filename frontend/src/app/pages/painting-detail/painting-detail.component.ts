@@ -122,13 +122,49 @@ export class PaintingDetailComponent implements OnInit, OnDestroy {
       if (target) {
         this.justSwiped = true;
         this.hideHint();
-        this.dragX = dx < 0 ? -window.innerWidth : window.innerWidth; // slide out
-        setTimeout(() => this.router.navigateByUrl(this.link(target)), 160);
+        // Slide out; the next painting then slides in from the other side
+        // (see load), with no snap-back of the old one in between.
+        this.enterFrom = dx < 0 ? 1 : -1;
+        this.dragX = -this.enterFrom * window.innerWidth;
+        setTimeout(() => this.router.navigateByUrl(this.link(target)), 200);
         return;
       }
     }
     if (horizontal) this.justSwiped = Math.abs(dx) > 8;
     this.dragX = 0; // snap back
+  }
+
+  /** Side the next painting enters from after a swipe: 1 = right, -1 = left, 0 = none. */
+  private enterFrom = 0;
+  /** Neighbours fetched ahead of time so a swipe shows the next work at once. */
+  private cache = new Map<number, PaintingDetail>();
+
+  private prefetchNeighbours(p: PaintingDetail) {
+    if (!isPlatformBrowser(this.platformId)) return;
+    for (const n of [p.prev, p.next]) {
+      if (!n) continue;
+      const img = new Image();
+      img.src = imageUrl(n.imageurl, 1600);
+      if (!this.cache.has(n.id)) {
+        this.paintingService.getById(n.id).subscribe({ next: d => this.cache.set(n.id, d), error: () => {} });
+      }
+    }
+  }
+
+  private show(p: PaintingDetail) {
+    this.p = p;
+    this.applySeo(p);
+    this.prefetchNeighbours(p);
+    if (this.enterFrom && isPlatformBrowser(this.platformId)) {
+      // Park the new painting just off-screen without animation, then let it
+      // glide to the centre on the next frame.
+      this.dragging = true;
+      this.dragX = this.enterFrom * window.innerWidth;
+      this.enterFrom = 0;
+      requestAnimationFrame(() => requestAnimationFrame(() => { this.dragging = false; this.dragX = 0; }));
+    } else {
+      this.dragX = 0;
+    }
   }
   swipeCancel() { this.touch = null; this.dragging = false; this.dragX = 0; }
 
@@ -145,12 +181,15 @@ export class PaintingDetailComponent implements OnInit, OnDestroy {
   private load(id: number) {
     this.notFound = false;
     this.modalVisible = false;
-    this.dragX = 0;
     this.justSwiped = false;
+    if (!this.enterFrom) this.dragX = 0;
     if (!Number.isInteger(id)) { this.showNotFound(); return; }
 
+    const cached = this.cache.get(id);
+    if (cached) { this.show(cached); return; }
+
     this.paintingService.getById(id).subscribe({
-      next: p => { this.p = p; this.applySeo(p); },
+      next: p => this.show(p),
       error: err => {
         if (err?.status !== 404) this.seo.markRenderError();
         this.showNotFound();

@@ -1,7 +1,7 @@
 @if (visible) {
   <!-- Any tap outside the painting itself closes the view (the X is optional). -->
   <div class="modal" style="display:flex" (click)="close.emit()">
-    <button type="button" class="close-modal" (click)="close.emit()" aria-label="Close">&times;</button>
+    <button type="button" class="close-modal" (click)="close.emit()" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>
     <div class="modal-content">
       <img [src]="src" [attr.srcset]="srcset" sizes="100vw" [alt]="caption" class="modal-image"
            (click)="onImageClick($event)">

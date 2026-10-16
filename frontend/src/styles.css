@@ -497,6 +497,7 @@ footer {
 
 .contact-button {
   display: inline-block;
+  margin: 6px; /* keeps Email and Instagram apart, also when they wrap on phones */
   padding: 12px 30px;
   background-color: #333;
   color: #fff;
