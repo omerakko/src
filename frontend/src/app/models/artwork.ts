@@ -33,8 +33,12 @@ export function parseMedium(medium: string | null | undefined): { size: string; 
   const raw = (medium ?? '').trim();
   const m = raw.match(/^(\d+(?:[.,]\d+)?)\s*[xX×*]\s*(\d+(?:[.,]\d+)?)\s*(?:cm)?\s*(.*)$/);
   const size = m ? `${m[1]} × ${m[2]} cm` : '';
-  let technique = (m ? m[3] : raw).replace(/["”]+$/, '').trim();
-  technique = technique.replace(/\b(ın|in)\s+canvas\b/i, 'on canvas');
+  let technique = (m ? m[3] : raw).replace(/["”]+$/, '').replace(/^[\s,;:.\-–]+/, '').trim();
+  technique = technique
+    // \b doesn't treat the Turkish dotless ı as a letter, so match on spaces.
+    .replace(/(^|\s)(ın|in)\s+canvas/i, '$1on canvas')
+    .replace(/\bnedia\b/i, 'media')
+    .replace(/\s+/g, ' ');
   return { size, technique };
 }
 
